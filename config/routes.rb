@@ -1,7 +1,23 @@
 Rails.application.routes.draw do
-  devise_for :students
-  devise_for :teachers
-  devise_for :admins
+  # Devise認証ルーティング
+  devise_for :admins, path: 'admin', path_names: {
+    sign_in: 'login',
+    sign_out: 'logout',
+    sign_up: 'register'
+  }
+  
+  devise_for :teachers, path: 'teacher', path_names: {
+    sign_in: 'login',
+    sign_out: 'logout',
+    sign_up: 'register'
+  }
+  
+  devise_for :students, path: 'student', path_names: {
+    sign_in: 'login',
+    sign_out: 'logout',
+    sign_up: 'register'
+  }
+  
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
