@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # 統合ログイン（管理者・教師）
+  get 'staff/login', to: 'auth#staff_login', as: 'staff_login'
+  post 'staff/login', to: 'auth#staff_authenticate'
+  
   # Devise認証ルーティング
   devise_for :admins, path: 'admin', path_names: {
     sign_in: 'login',

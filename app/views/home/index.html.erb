@@ -17,12 +17,12 @@
 
       <!-- CTA ボタン -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-        <a href="#" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-          🎯 今すぐ予約する
-        </a>
-        <a href="#" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-8 rounded-xl text-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
-          📅 予約を確認する
-        </a>
+        <%= link_to student_session_path, class: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" do %>
+        🎯 学生ログイン
+        <% end %>
+        <%= link_to staff_login_path, class: "bg-white hover:bg-gray-50 text-gray-700 font-semibold py-4 px-8 rounded-xl text-lg border-2 border-gray-200 hover:border-green-300 transition-all duration-300" do %>
+        👨‍🏫 講師ログイン
+        <% end %>
       </div>
 
       <!-- 装飾的な要素 -->
@@ -84,9 +84,9 @@
 
     <!-- CTA -->
     <div class="text-center mt-12">
-      <a href="#" class="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-        さっそく始めてみる 🚀
-      </a>
+      <%= link_to student_session_path, class: "inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" do %>
+      さっそく始めてみる 🚀
+      <% end %>
     </div>
   </div>
 </section>

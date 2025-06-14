@@ -26,6 +26,15 @@ class Student < ApplicationRecord
     false
   end
   
+  # emailメソッドをstudent_numberのエイリアスとして定義
+  def email
+    student_number
+  end
+  
+  def email=(value)
+    self.student_number = value
+  end
+  
   # 生徒番号でログインするための設定
   def self.find_for_database_authentication(login_conditions)
     search_conditions = login_conditions.dup
