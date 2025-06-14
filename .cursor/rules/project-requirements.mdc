@@ -54,6 +54,32 @@ alwaysApply: true
 - **講師**: ユーザー名 + パスワードでログイン（管理者が作成）
 - **生徒**: 生徒番号 + パスワード9999（統一）でログイン
 
+### **認証システム詳細設計**
+
+#### **管理者認証**
+- **ログイン方式**: ログイン名 + パスワード
+- **ログイン名**: 英数字（例：admin_master, admin_sub）
+- **パスワード**: 管理者が設定（強固なパスワード推奨）
+- **実名**: 管理者の氏名（例：管理者 田中太郎）
+- **メールアドレス**: 任意（プロフィールで設定可能）
+- **権限**: 講師アカウントの作成・削除・管理
+
+#### **講師認証**
+- **ログイン方式**: ログイン名 + パスワード
+- **ログイン名**: 英数字（例：shibaguti, tanaka_a）
+- **パスワード**: 管理者が設定（例：okkrskz-shibaguti）
+- **実名**: 講師の氏名（例：柴口太郎先生）
+- **メールアドレス**: 任意（プロフィールで設定可能）
+- **リマインダー設定**: プロフィールでメールアドレス・送信時刻を設定可能
+- **アカウント管理**: 管理者のみが作成・削除可能
+
+#### **生徒認証**
+- **ログイン方式**: 生徒番号 + パスワード9999（統一）
+- **生徒番号**: 数字（例：2024001, 2024002）
+- **パスワード**: 全生徒共通で"9999"
+- **メールアドレス**: 不要（メール通知なし）
+- **追加情報**: 氏名・学年・高校名・所属校舎（CSVインポート対応）
+
 ### **権限管理**
 - **管理者権限**: 講師アカウントの作成・削除・管理
 - **講師権限**: 自分が担当する校舎の面談枠設定・予約管理
@@ -176,4 +202,72 @@ alwaysApply: true
 - モバイルアプリ対応
 - 校舎間連携機能
 - 詳細な統計・分析機能
-- 外部システム連携（学校管理システム等） 
+- 外部システム連携（学校管理システム等）
+
+## **データベース設計**
+
+### **テーブル構成**
+
+#### **管理者テーブル (admins)**
+```sql
+- id: bigint (主キー)
+- user_login_name: string (ログイン名・ユニーク・必須)
+- email: string (メールアドレス・任意)
+- encrypted_password: string (暗号化パスワード・必須)
+- name: string (実名・必須)
+- reset_password_token: string (パスワードリセット用)
+- reset_password_sent_at: datetime
+- remember_created_at: datetime
+- created_at: datetime
+- updated_at: datetime
+```
+
+#### **講師テーブル (teachers)**
+```sql
+- id: bigint (主キー)
+- user_login_name: string (ログイン名・ユニーク・必須)
+- email: string (メールアドレス・任意)
+- encrypted_password: string (暗号化パスワード・必須)
+- name: string (実名・必須)
+- notification_email: string (リマインダー用メール・任意)
+- notification_time: time (リマインダー送信時刻・任意)
+- reset_password_token: string (パスワードリセット用)
+- reset_password_sent_at: datetime
+- remember_created_at: datetime
+- created_at: datetime
+- updated_at: datetime
+```
+
+#### **生徒テーブル (students)**
+```sql
+- id: bigint (主キー)
+- student_number: string (生徒番号・ユニーク・必須)
+- encrypted_password: string (暗号化パスワード・必須・固定9999)
+- name: string (氏名・必須)
+- grade: string (学年・任意・CSVインポート用)
+- school_name: string (高校名・任意・CSVインポート用)
+- campus_id: bigint (所属校舎・任意・外部キー)
+- reset_password_token: string (パスワードリセット用)
+- reset_password_sent_at: datetime
+- remember_created_at: datetime
+- created_at: datetime
+- updated_at: datetime
+```
+
+#### **校舎テーブル (campuses)**
+```sql
+- id: bigint (主キー)
+- name: string (校舎名・必須)
+- address: string (住所・任意)
+- created_at: datetime
+- updated_at: datetime
+```
+
+### **インデックス設計**
+- **admins**: user_login_name (ユニーク), email (ユニーク)
+- **teachers**: user_login_name (ユニーク), email (ユニーク)
+- **students**: student_number (ユニーク)
+- **campuses**: name
+
+### **外部キー制約**
+- **students.campus_id** → **campuses.id** 
