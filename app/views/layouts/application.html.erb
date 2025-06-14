@@ -1,30 +1,105 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= content_for(:title) || "Quick Mendan" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
 
-    <%= yield :head %>
+<head>
+  <title><%= content_for(:title) || "Quick Mendan - 個人面談予約システム" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+  <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+  <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+  <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
-  </body>
+  <%# Includes all stylesheet files in app/assets/stylesheets %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <!-- ナビゲーションバー -->
+  <nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- ロゴ・ブランド名 -->
+        <div class="flex items-center">
+          <%= link_to root_path, class: "flex items-center space-x-2" do %>
+          <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">QM</span>
+          </div>
+          <span class="text-xl font-bold text-gray-800">Quick Mendan</span>
+          <% end %>
+        </div>
+
+        <!-- ナビゲーションメニュー -->
+        <div class="hidden md:flex items-center space-x-8">
+          <%= link_to "ホーム", root_path, class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "予約する", "#", class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "予約確認", "#", class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "講師ログイン", "#", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
+        </div>
+
+        <!-- モバイルメニューボタン -->
+        <div class="md:hidden flex items-center">
+          <button type="button" class="text-gray-600 hover:text-gray-800 focus:outline-none focus:text-gray-800" id="mobile-menu-button">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- モバイルメニュー -->
+    <div class="md:hidden hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+        <%= link_to "ホーム", root_path, class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
+        <%= link_to "予約する", "#", class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
+        <%= link_to "予約確認", "#", class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
+        <%= link_to "講師ログイン", "#", class: "block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-medium" %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1">
+    <%= yield %>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-white border-t border-gray-200 mt-12">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <p class="text-gray-500 text-sm">
+          © 2024 Quick Mendan. All rights reserved.
+        </p>
+        <p class="text-gray-400 text-xs mt-2">
+          個人面談予約システム - シンプル・安全・便利
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- モバイルメニュー用JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+    });
+  </script>
+</body>
+
 </html>
