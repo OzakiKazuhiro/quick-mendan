@@ -23,7 +23,7 @@
   <%= javascript_importmap_tags %>
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-white min-h-screen">
   <!-- ナビゲーションバー -->
   <nav class="bg-white shadow-lg border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +31,7 @@
         <!-- ロゴ・ブランド名 -->
         <div class="flex items-center">
           <%= link_to root_path, class: "flex items-center space-x-2" do %>
-          <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+          <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
             <span class="text-white font-bold text-sm">QM</span>
           </div>
           <span class="text-xl font-bold text-gray-800">Quick Mendan</span>
@@ -40,10 +40,10 @@
 
         <!-- ナビゲーションメニュー -->
         <div class="hidden md:flex items-center space-x-8">
-          <%= link_to "ホーム", root_path, class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "予約する", "#", class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "予約確認", "#", class: "text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "講師ログイン", "#", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
+          <%= link_to "ホーム", root_path, class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "予約する", "#", class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "予約確認", "#", class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= link_to "講師ログイン", "#", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
         </div>
 
         <!-- モバイルメニューボタン -->
@@ -60,10 +60,10 @@
     <!-- モバイルメニュー -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-        <%= link_to "ホーム", root_path, class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
-        <%= link_to "予約する", "#", class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
-        <%= link_to "予約確認", "#", class: "block px-3 py-2 text-gray-600 hover:text-blue-600 rounded-md text-base font-medium" %>
-        <%= link_to "講師ログイン", "#", class: "block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-medium" %>
+        <%= link_to "ホーム", root_path, class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
+        <%= link_to "予約する", "#", class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
+        <%= link_to "予約確認", "#", class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
+        <%= link_to "講師ログイン", "#", class: "block px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-base font-medium" %>
       </div>
     </div>
   </nav>
@@ -72,20 +72,6 @@
   <main class="flex-1">
     <%= yield %>
   </main>
-
-  <!-- フッター -->
-  <footer class="bg-white border-t border-gray-200 mt-12">
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div class="text-center">
-        <p class="text-gray-500 text-sm">
-          © 2024 Quick Mendan. All rights reserved.
-        </p>
-        <p class="text-gray-400 text-xs mt-2">
-          個人面談予約システム - シンプル・安全・便利
-        </p>
-      </div>
-    </div>
-  </footer>
 
   <!-- モバイルメニュー用JavaScript -->
   <script>
