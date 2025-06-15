@@ -2,10 +2,10 @@
   <div class="max-w-md w-full space-y-8">
     <div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        学生ログイン
+        生徒ログイン
       </h2>
       <p class="mt-2 text-center text-sm text-gray-600">
-        Quick Mendan 学生用ログイン画面
+        Quick Mendan 生徒用ログイン画面
       </p>
     </div>
 
@@ -14,10 +14,10 @@
       <div>
         <%= f.label :email, "学生番号", class: "sr-only" %>
         <%= f.text_field :email, 
-                          placeholder: "学生番号", 
+                          placeholder: "生徒番号", 
                           autofocus: true, 
                           autocomplete: "username",
-                          class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" %>
+                          class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm mb-4" %>
       </div>
       <div>
         <%= f.label :password, "パスワード", class: "sr-only" %>
@@ -31,7 +31,7 @@
     <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
       <p class="font-medium text-blue-800">ログイン方法：</p>
       <ul class="mt-1 list-disc list-inside text-blue-700">
-        <li>学生番号を入力してください</li>
+        <li>生徒番号を入力してください</li>
         <li>パスワードは全員共通で「9999」です</li>
       </ul>
     </div>
