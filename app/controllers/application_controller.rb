@@ -16,6 +16,16 @@ class ApplicationController < ActionController::Base
 #   end
 # end
 
+  # Deviseのログイン後のリダイレクト先を設定
+  def after_sign_in_path_for(resource)
+    case resource
+    when Student
+      student_dashboard_path
+    else
+      root_path
+    end
+  end
+
   protected
 
   # 現在のユーザーが管理者かどうかをチェック

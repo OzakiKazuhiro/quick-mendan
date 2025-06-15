@@ -10,6 +10,13 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# Deviseのテストヘルパーを読み込み
+require 'devise'
+
+# Capybaraの設定
+require 'capybara/rails'
+require 'capybara/rspec'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -72,4 +79,13 @@ RSpec.configure do |config|
   
   # FactoryBot設定
   config.include FactoryBot::Syntax::Methods
+
+  # Deviseのテストヘルパーを含める
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :feature
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
+  # Warden test helper for feature specs
+  config.include Warden::Test::Helpers, type: :feature
+  config.after(:each, type: :feature) { Warden.test_reset! }
 end

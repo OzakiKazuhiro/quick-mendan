@@ -6,12 +6,25 @@ class AuthController < ApplicationController
   # ApplicationControllerはRailsのコントローラの基底クラス
   # Webリクエストの処理やレスポンス生成の基本機能を提供
 
+  # 講師権限が必要なアクションの前に実行
+  before_action :require_staff, only: [:staff_dashboard]
+
   # staff_loginアクション
   def staff_login
     # 講師統合ログイン画面
     # ↑ このアクションは講師（管理者・教師）共通のログイン画面を表示
     # 通常はstaff_login.html.erbなどのビューファイルをレンダリング
     # メソッド内に処理がないため、デフォルトでビューを表示
+  end
+
+  # staff_dashboardアクション
+  def staff_dashboard
+    # ログイン後のダッシュボード画面
+    @current_user = current_staff_user
+    @is_admin = current_user_is_admin?
+    @teachers_count = Teacher.count
+    @students_count = Student.count
+    @campuses_count = Campus.count
   end
 
   # staff_authenticateアクション開始
@@ -117,9 +130,7 @@ class AuthController < ApplicationController
     # ログイン後は同じページに遷移し、機能ごとで権限チェック
 
     # 34行目: 遷移先の指定
-    root_path # 後で講師用ダッシュボードに変更
-    # ↑ 現在はルートパス（トップページ）に遷移
-    # コメントの通り、将来的に専用ダッシュボードに変更予定
+    staff_dashboard_path # ログイン後はダッシュボードへ
   end
 # 35行目: クラス定義終了
 end
