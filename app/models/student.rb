@@ -2,7 +2,7 @@ class Student < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable
   
   # 関連付け
   belongs_to :campus, optional: true
@@ -12,6 +12,9 @@ class Student < ApplicationRecord
   validates :student_number, presence: true, uniqueness: true,
             format: { with: /\A[a-zA-Z0-9]+\z/, message: "英数字のみ使用可能です" }
   validates :name, presence: true
+  
+  # カスタムパスワードバリデーション（生徒用の9999パスワードのため4文字以上）
+  validates :password, length: { minimum: 4 }, confirmation: true, if: :password_required?
   
   # Deviseで生徒番号認証を使用するための設定
   def email_required?
@@ -24,6 +27,11 @@ class Student < ApplicationRecord
   
   def will_save_change_to_email?
     false
+  end
+  
+  # パスワードバリデーション用メソッド
+  def password_required?
+    !persisted? || !password.nil? || !password_confirmation.nil?
   end
   
   # emailメソッドをstudent_numberのエイリアスとして定義

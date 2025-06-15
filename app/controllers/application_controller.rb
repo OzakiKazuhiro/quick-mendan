@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   # ApplicationHelperのメソッドをコントローラーでも使用可能にする
   include ApplicationHelper
 
-  # app/helpers/application_helper.rb
+  # app/helpers/application_helper.rbを上の１行でやっている感じです
 # module ApplicationHelper
 #   def current_admin
 #     # メソッドの定義
