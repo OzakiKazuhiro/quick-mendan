@@ -1,6 +1,20 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
+  
+  # ApplicationHelperのメソッドをコントローラーでも使用可能にする
+  include ApplicationHelper
+
+  # app/helpers/application_helper.rb
+# module ApplicationHelper
+#   def current_admin
+#     # メソッドの定義
+#   end
+  
+#   def current_teacher
+#     # メソッドの定義
+#   end
+# end
 
   protected
 
