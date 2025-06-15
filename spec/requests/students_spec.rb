@@ -52,6 +52,15 @@ RSpec.describe 'Students', type: :request do
         expect(response.body).to include("所属校舎:")
         expect(response.body).to include(campus.name)
       end
+
+      it 'キャッシュ制御ヘッダーが正しく設定されること' do
+        get student_dashboard_path
+        # Railsは複数のCache-Controlディレクティブを正規化するため、含まれることを確認
+        expect(response.headers['Cache-Control']).to include('no-store')
+        expect(response.headers['Cache-Control']).to include('private')
+        expect(response.headers['Pragma']).to eq('no-cache')
+        expect(response.headers['Expires']).to eq('0')
+      end
     end
 
     context '校舎が設定されていない生徒の場合' do
@@ -66,6 +75,15 @@ RSpec.describe 'Students', type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(student_without_campus.name)
         expect(response.body).not_to include('所属校舎:')
+      end
+
+      it 'キャッシュ制御ヘッダーが正しく設定されること' do
+        get student_dashboard_path
+        # Railsは複数のCache-Controlディレクティブを正規化するため、含まれることを確認
+        expect(response.headers['Cache-Control']).to include('no-store')
+        expect(response.headers['Cache-Control']).to include('private')
+        expect(response.headers['Pragma']).to eq('no-cache')
+        expect(response.headers['Expires']).to eq('0')
       end
     end
   end

@@ -28,6 +28,14 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # ダッシュボードページのキャッシュを完全に無効化
+  # ログアウト後に戻るボタンでアクセスできないようにする
+  def prevent_caching
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+  end
+
   # 現在のユーザーが管理者かどうかをチェック
   def current_user_is_admin?
     current_admin.present?

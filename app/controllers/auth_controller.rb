@@ -8,6 +8,8 @@ class AuthController < ApplicationController
 
   # 講師権限が必要なアクションの前に実行
   before_action :require_staff, only: [:staff_dashboard]
+  # ダッシュボードページのキャッシュを無効化（セキュリティ対策）
+  before_action :prevent_caching, only: [:staff_dashboard]
 
   # staff_loginアクション
   def staff_login
