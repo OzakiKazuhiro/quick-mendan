@@ -34,16 +34,21 @@ class Teacher < ApplicationRecord
   
   # ユーザー名でログインするための設定
   def self.find_for_database_authentication(warden_conditions)
+    # warden_conditions = {email: "shibaguti"}
     conditions = warden_conditions.dup
+     # conditions = {email: "shibaguti"}  (複製)
     if (email = conditions.delete(:email))
-      # emailキーで渡された値をuser_login_nameで検索
+        # conditions.delete(:email) の動作：
+        # 1. conditions から :email キーを削除
+        # 2. 削除されたキーの値を返す
+        # 実行前: conditions = {email: "shibaguti"}
+        # 実行後: conditions = {}  (空のハッシュ)
+        # 戻り値:   email = "shibaguti"
+        # email = "shibaguti" なので、条件は true
       where(user_login_name: email).first
-    elsif (login = conditions.delete(:user_login_name))
-      # user_login_nameキーで直接検索
-      where(user_login_name: login).first
     else
-      # その他の条件で検索
-      where(conditions.to_h).first
+      # emailキー以外の場合はnilを返す
+      nil
     end
   end
   

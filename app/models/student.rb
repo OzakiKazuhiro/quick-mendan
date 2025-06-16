@@ -45,11 +45,21 @@ class Student < ApplicationRecord
   
   # 生徒番号でログインするための設定
   def self.find_for_database_authentication(login_conditions)
+    # login_conditions = {email: "2024001"}
     search_conditions = login_conditions.dup
+    # search_conditions = {email: "2024001"}  (複製)
     if (student_number_input = search_conditions.delete(:email))
-      where(search_conditions.to_h).where(["student_number = :student_number", { student_number: student_number_input }]).first
-    elsif search_conditions.has_key?(:student_number)
-      where(search_conditions.to_h).first
+      # search_conditions.delete(:email) の動作：
+      # 1. search_conditions から :email キーを削除
+      # 2. 削除されたキーの値を返す
+      # 実行前: search_conditions = {email: "2024001"}
+      # 実行後: search_conditions = {}  (空のハッシュ)
+      # 戻り値:   student_number_input = "2024001"
+      # student_number_input = "2024001" なので、条件は true
+      where(["student_number = :student_number", { student_number: student_number_input }]).first
+    else
+      # emailキー以外の場合はnilを返す
+      nil
     end
   end
   

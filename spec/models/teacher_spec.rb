@@ -174,18 +174,6 @@ RSpec.describe Teacher, type: :model do
         end
       end
 
-      context 'user_login_nameキーが直接渡された場合' do
-        it '正しいteacherを返すこと' do
-          result = Teacher.find_for_database_authentication(user_login_name: 'test_teacher')
-          expect(result).to eq(teacher)
-        end
-
-        it '存在しないuser_login_nameの場合はnilを返すこと' do
-          result = Teacher.find_for_database_authentication(user_login_name: 'nonexistent')
-          expect(result).to be_nil
-        end
-      end
-
       context 'どちらのキーも存在しない場合' do
         it 'nilを返すこと' do
           result = Teacher.find_for_database_authentication(other_key: 'value')

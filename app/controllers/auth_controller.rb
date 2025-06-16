@@ -34,7 +34,8 @@ class AuthController < ApplicationController
 
     # パラメータの取得
     username = params[:username]
-    # ↑ フォームから送信されたユーザー名を取得
+    # ↑ フォームから送信されたユーザー名を取得　
+    # 例 => "shibaguti"
     
     password = params[:password]
     # ↑ フォームから送信されたパスワードを取得
@@ -44,7 +45,9 @@ class AuthController < ApplicationController
     # '1'の場合true、それ以外（nil含む）はfalseになる
 
     # Teacherモデルで認証を試行
+    # Devise は :email キーで認証対象を検索することを前提としているので、ここで意図的にemailキーにusernameを渡している
     teacher = Teacher.find_for_database_authentication(email: username)
+    #↑{email: "shibaguti"} として渡されてteacherモデルのfind_for_database_authenticationメソッドが実行される
     
     if teacher && teacher.valid_password?(password)
       session[:teacher_id] = teacher.id

@@ -147,18 +147,6 @@ RSpec.describe Student, type: :model do
         end
       end
 
-      context 'student_numberキーが直接渡された場合' do
-        it '正しいstudentを返すこと' do
-          result = Student.find_for_database_authentication(student_number: '2024001')
-          expect(result).to eq(student)
-        end
-
-        it '存在しないstudent_numberの場合はnilを返すこと' do
-          result = Student.find_for_database_authentication(student_number: '9999999')
-          expect(result).to be_nil
-        end
-      end
-
       context 'どちらのキーも存在しない場合' do
         it 'nilを返すこと' do
           result = Student.find_for_database_authentication(other_key: 'value')
