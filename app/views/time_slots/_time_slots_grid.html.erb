@@ -1,0 +1,105 @@
+<!-- 時間枠グリッド -->
+<div class="overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-200">
+    <!-- ヘッダー（曜日） -->
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+          時間
+        </th>
+        <% @week_dates.each do |date| %>
+        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <div class="flex flex-col">
+            <span class="text-sm font-semibold text-gray-900">
+              <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
+            </span>
+            <span class="text-xs text-gray-500 mt-1">
+              <%= date.strftime('%m/%d') %>
+            </span>
+            <% if date == Date.current %>
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
+            <% end %>
+          </div>
+        </th>
+        <% end %>
+      </tr>
+    </thead>
+
+    <!-- 時間枠ボディ -->
+    <tbody class="bg-white divide-y divide-gray-200">
+      <% @time_slots_grid.each do |time_slot| %>
+      <tr class="hover:bg-gray-50">
+        <!-- 時間ラベル -->
+        <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
+          <%= time_slot.strftime('%H:%M') %>
+        </td>
+
+        <!-- 各曜日の時間枠 -->
+        <% @week_dates.each do |date| %>
+        <%
+              # 既存の面談枠データを取得
+              existing_slot = @existing_slots[[date, time_slot]]&.first
+              
+              # 過去の日付かチェック
+              is_past = date < Date.current
+              
+              # 土日かチェック
+              is_weekend = date.saturday? || date.sunday?
+              
+              # セルのスタイルを決定
+              if is_past
+                cell_class = "bg-gray-100 cursor-not-allowed"
+                cell_content = "×"
+                cell_title = "過去の日付"
+              elsif is_weekend
+                cell_class = "bg-gray-200 cursor-not-allowed"
+                cell_content = "休"
+                cell_title = "休日"
+              elsif existing_slot
+                case existing_slot.status
+                when 'available'
+                  cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
+                  cell_content = "○"
+                  cell_title = "予約可能（クリックで解除）"
+                when 'booked'
+                  cell_class = "bg-yellow-100 border-yellow-300 cursor-not-allowed"
+                  cell_content = "●"
+                  cell_title = "予約済み"
+                when 'unavailable'
+                  cell_class = "bg-red-100 border-red-300 hover:bg-red-200 cursor-pointer transition-colors"
+                  cell_content = "×"
+                  cell_title = "利用不可（クリックで解除）"
+                end
+              else
+                cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
+                cell_content = ""
+                cell_title = "未設定（クリックで予約可能に設定）"
+              end
+            %>
+
+        <td class="px-1 py-1">
+          <div class="w-full h-8 border rounded text-center flex items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || is_weekend || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
+            <%= cell_content %>
+          </div>
+        </td>
+        <% end %>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- 選択された校舎の表示 -->
+<% if @selected_campus %>
+<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+  <p class="text-sm text-blue-800">
+    <span class="font-medium">現在の設定校舎:</span> <%= @selected_campus.name %>
+  </p>
+</div>
+<% else %>
+<div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+  <p class="text-sm text-yellow-800">
+    <span class="font-medium">注意:</span> 校舎を選択してください
+  </p>
+</div>
+<% end %>

@@ -1,8 +1,13 @@
 # Railsルーティング設定の詳細解説
 
 Rails.application.routes.draw do
-  # ↑ Railsアプリケーションのルーティング設定の開始
-  # このブロック内にすべてのURL設定を記述
+  # 面談枠設定（講師用）
+  resources :time_slots, only: [:index, :create, :update, :destroy] do
+    collection do
+      get :weekly, to: 'time_slots#weekly'
+      post :bulk_update, to: 'time_slots#bulk_update'
+    end
+  end
 
   # 統合ログイン（管理者・教師）
   # ↑ コメント：管理者と教師が共通で使用するログイン機能の説明
@@ -24,9 +29,9 @@ Rails.application.routes.draw do
   # ログイン後のメイン画面
 
   delete 'staff/logout', to: 'auth#staff_logout', as: 'staff_logout'
-  # ↑ DELETEリクエスト用のルート設定（ログアウト時）
+  get 'staff/logout', to: 'auth#staff_logout'
+  # ↑ ログアウト用のルート設定（DELETEとGETの両方に対応）
   # AuthControllerのstaff_logoutアクションで処理
-  # as: 'staff_logout' → ヘルパーメソッド名（staff_logout_pathで参照可能）
 
   # Devise認証ルーティング
   # ↑ コメント：Deviseを使用した各種ユーザー認証の設定

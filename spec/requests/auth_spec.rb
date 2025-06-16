@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Auth', type: :request do
-  let(:admin) { create(:admin) }
-  let(:teacher) { create(:teacher) }
+  let(:admin_teacher) { create(:teacher, role: :admin) }
+  let(:teacher) { create(:teacher, role: :teacher) }
   let!(:teachers) { create_list(:teacher, 3) }
   let!(:students) { create_list(:student, 5) }
   let!(:campuses) { create_list(:campus, 4) }
@@ -17,10 +17,9 @@ RSpec.describe 'Auth', type: :request do
 
     context '管理者としてログインしている場合' do
       before do
-        # セッションに管理者IDを設定
-        allow_any_instance_of(ApplicationController).to receive(:current_admin).and_return(admin)
-        allow_any_instance_of(ApplicationController).to receive(:current_teacher).and_return(nil)
-        allow_any_instance_of(ApplicationController).to receive(:current_staff_user).and_return(admin)
+        # セッションに管理者権限を持つ講師IDを設定
+        allow_any_instance_of(ApplicationController).to receive(:current_teacher).and_return(admin_teacher)
+        allow_any_instance_of(ApplicationController).to receive(:current_staff_user).and_return(admin_teacher)
         allow_any_instance_of(ApplicationController).to receive(:current_user_is_admin?).and_return(true)
         allow_any_instance_of(ApplicationController).to receive(:current_user_is_staff?).and_return(true)
       end
@@ -33,7 +32,7 @@ RSpec.describe 'Auth', type: :request do
       it 'ダッシュボードページが表示されること' do
         get staff_dashboard_path
         expect(response.body).to include('ダッシュボード')
-        expect(response.body).to include(admin.name)
+        expect(response.body).to include(admin_teacher.name)
         expect(response.body).to include('（管理者）')
       end
 
@@ -65,10 +64,9 @@ RSpec.describe 'Auth', type: :request do
       end
     end
 
-    context '教師としてログインしている場合' do
+    context '講師としてログインしている場合' do
       before do
-        # セッションに教師IDを設定
-        allow_any_instance_of(ApplicationController).to receive(:current_admin).and_return(nil)
+        # セッションに講師IDを設定
         allow_any_instance_of(ApplicationController).to receive(:current_teacher).and_return(teacher)
         allow_any_instance_of(ApplicationController).to receive(:current_staff_user).and_return(teacher)
         allow_any_instance_of(ApplicationController).to receive(:current_user_is_admin?).and_return(false)
@@ -96,22 +94,22 @@ RSpec.describe 'Auth', type: :request do
         expect(response.headers['Expires']).to eq('0')
       end
 
-      it '教師向けメニューが表示されること' do
+      it '講師向けメニューが表示されること' do
         get staff_dashboard_path
         expect(response.body).to include('面談枠設定')
         expect(response.body).to include('予約管理')
         expect(response.body).to include('面談記録')
-        # 教師の場合はシステム管理は表示されない
+        # 講師の場合はシステム管理は表示されない
         expect(response.body).not_to include('システム管理')
       end
 
-      it '教師向け統計情報が表示されること' do
+      it '講師向け統計情報が表示されること' do
         get staff_dashboard_path
         expect(response.body).to include('生徒数')
         expect(response.body).to include("#{Student.count}名")
         expect(response.body).to include('校舎数')
         expect(response.body).to include("#{Campus.count}校舎")
-        # 教師の場合は講師数は表示されない
+        # 講師の場合は講師数は表示されない
         expect(response.body).not_to include('講師数')
       end
     end

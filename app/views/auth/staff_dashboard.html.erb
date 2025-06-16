@@ -17,10 +17,9 @@
           </p>
         </div>
         <div class="flex items-center space-x-4">
-          <%= button_to "ログアウト", staff_logout_path, 
-                        method: :delete,
-                        class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer border-0",
-                        data: { confirm: "ログアウトしますか？" } %>
+          <%= link_to "ログアウト", staff_logout_path, 
+                      class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                      data: { confirm: "ログアウトしますか？" } %>
         </div>
       </div>
     </div>
@@ -120,9 +119,9 @@
             </div>
           </div>
           <div class="mt-4">
-            <a href="#" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
-              設定画面へ →
-            </a>
+            <%= link_to time_slots_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
+            設定画面へ →
+            <% end %>
           </div>
         </div>
       </div>

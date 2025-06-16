@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_14_201811) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_16_004308) do
   create_table "admins", force: :cascade do |t|
     t.string "user_login_name", default: "", null: false
     t.string "email"
@@ -62,10 +62,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_201811) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_teachers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_teachers_on_reset_password_token", unique: true
+    t.index ["role"], name: "index_teachers_on_role"
     t.index ["user_login_name"], name: "index_teachers_on_user_login_name", unique: true
   end
 
+  create_table "time_slots", force: :cascade do |t|
+    t.integer "teacher_id", null: false
+    t.integer "campus_id", null: false
+    t.date "date", null: false
+    t.time "start_time", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campus_id", "date", "start_time"], name: "index_time_slots_on_campus_id_and_date_and_start_time"
+    t.index ["campus_id"], name: "index_time_slots_on_campus_id"
+    t.index ["date", "start_time"], name: "index_time_slots_on_date_and_start_time"
+    t.index ["status"], name: "index_time_slots_on_status"
+    t.index ["teacher_id", "date", "start_time"], name: "index_time_slots_unique", unique: true
+    t.index ["teacher_id"], name: "index_time_slots_on_teacher_id"
+  end
+
   add_foreign_key "students", "campus", column: "campus_id"
+  add_foreign_key "time_slots", "campus", column: "campus_id"
+  add_foreign_key "time_slots", "teachers"
 end

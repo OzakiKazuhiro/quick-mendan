@@ -22,10 +22,10 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     context 'リソースがStudent以外の場合' do
-      let(:admin) { create(:admin) }
+      let(:teacher) { create(:teacher) }
 
       it 'root_pathを返すこと' do
-        expect(controller.send(:after_sign_in_path_for, admin)).to eq(root_path)
+        expect(controller.send(:after_sign_in_path_for, teacher)).to eq(root_path)
       end
     end
 
@@ -55,7 +55,6 @@ RSpec.describe ApplicationController, type: :controller do
 
   describe 'helper method inclusion' do
     it 'ApplicationHelperのメソッドが使用可能であること' do
-      expect(controller.respond_to?(:current_admin, true)).to be true
       expect(controller.respond_to?(:current_teacher, true)).to be true
       expect(controller.respond_to?(:current_staff_user, true)).to be true
     end
