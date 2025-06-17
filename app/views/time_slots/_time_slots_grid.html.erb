@@ -1,19 +1,19 @@
 <!-- 時間枠グリッド -->
 <div class="overflow-x-auto">
-  <table class="min-w-full divide-y divide-gray-200">
+  <table class="min-w-full divide-y divide-gray-200" id="time-slots-table">
     <!-- ヘッダー（曜日） -->
-    <thead class="bg-gray-50">
+    <thead class="bg-gray-50" id="table-header">
       <tr>
-        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
           時間
         </th>
         <% @week_dates.each do |date| %>
-        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
           <div class="flex flex-col">
-            <span class="text-sm font-semibold text-gray-900">
+            <span class="text-sm font-semibold text-gray-900 mobile-text">
               <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
             </span>
-            <span class="text-xs text-gray-500 mt-1">
+            <span class="text-xs text-gray-500 mt-1 mobile-text">
               <%= date.strftime('%m/%d') %>
             </span>
             <% if date == Date.current %>
@@ -30,7 +30,7 @@
       <% @time_slots_grid.each do |time_slot| %>
       <tr class="hover:bg-gray-50">
         <!-- 時間ラベル -->
-        <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
+        <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 time-column">
           <%= time_slot.strftime('%H:%M') %>
         </td>
 
@@ -77,9 +77,16 @@
               end
             %>
 
-        <td class="px-1 py-1">
-          <div class="w-full h-8 border rounded text-center flex items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || is_weekend || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
-            <%= cell_content %>
+        <td class="px-1 py-1 date-column">
+          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || is_weekend || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
+            <!-- 時刻表示 -->
+            <div class="text-xs text-gray-600 leading-none mb-1 mobile-time">
+              <%= time_slot.strftime('%H:%M') %>
+            </div>
+            <!-- ステータスシンボル -->
+            <div class="text-lg leading-none mobile-symbol">
+              <%= cell_content %>
+            </div>
           </div>
         </td>
         <% end %>
@@ -88,6 +95,174 @@
     </tbody>
   </table>
 </div>
+
+<!-- 固定ヘッダー用の隠しクローン -->
+<div id="fixed-header" class="fixed top-0 left-0 right-0 z-50 hidden bg-gray-50 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
+              時間
+            </th>
+            <% @week_dates.each do |date| %>
+            <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold text-gray-900 mobile-text">
+                  <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
+                </span>
+                <span class="text-xs text-gray-500 mt-1 mobile-text">
+                  <%= date.strftime('%m/%d') %>
+                </span>
+                <% if date == Date.current %>
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
+                <% end %>
+              </div>
+            </th>
+            <% end %>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- スマホ対応CSS -->
+<style>
+  /* スマホ表示時の調整（640px以下） */
+  @media (max-width: 640px) {
+
+    /* 時間列を非表示 */
+    .time-column {
+      display: none !important;
+    }
+
+    /* 日付列を画面幅いっぱいに調整 */
+    .date-column {
+      width: 14.28% !important;
+      /* 100% ÷ 7日 = 14.28% */
+      min-width: auto !important;
+      padding: 0.25rem !important;
+      /* パディングを小さく */
+    }
+
+    /* テーブル全体の最小幅を削除してレスポンシブに */
+    #time-slots-table,
+    #fixed-header table {
+      min-width: 100% !important;
+      width: 100% !important;
+    }
+
+    /* スマホ用の文字サイズ調整 */
+    .mobile-text {
+      font-size: 0.65rem !important;
+      /* より小さく */
+      line-height: 1.1 !important;
+    }
+
+    .mobile-time {
+      font-size: 0.6rem !important;
+      /* セル内時刻をより小さく */
+      margin-bottom: 0.125rem !important;
+    }
+
+    .mobile-symbol {
+      font-size: 0.875rem !important;
+      /* シンボルも少し小さく */
+    }
+
+    /* セルの高さを調整 */
+    .date-column>div {
+      height: 2.5rem !important;
+      /* 40px → 少し小さく */
+    }
+
+    /* 横スクロールを無効化 */
+    .overflow-x-auto {
+      overflow-x: visible !important;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ページが完全に読み込まれた後に実行される処理
+    // HTML要素を取得（画面上の特定の部分を操作するため）
+    const tableHeader = document.getElementById('table-header'); // 元のテーブルのヘッダー部分
+    const fixedHeader = document.getElementById('fixed-header'); // 固定表示用のヘッダー（最初は隠れている）
+    const table = document.getElementById('time-slots-table'); // テーブル全体
+
+    // 必要な要素が存在しない場合は処理を中止（エラー防止）
+    if (!tableHeader || !fixedHeader || !table) return;
+
+    // 列幅を同期させる関数
+    function syncColumnWidths() {
+      // 元のテーブルのヘッダー列を取得
+      const originalHeaders = tableHeader.querySelectorAll('th');
+      // 固定ヘッダーの列を取得
+      const fixedHeaders = fixedHeader.querySelectorAll('th');
+
+      // 各列の幅を元のテーブルから固定ヘッダーにコピー
+      originalHeaders.forEach((originalHeader, index) => {
+        if (fixedHeaders[index]) {
+          // 元のヘッダーの実際の幅を取得
+          const width = originalHeader.getBoundingClientRect().width;
+          // 固定ヘッダーの対応する列に同じ幅を設定
+          fixedHeaders[index].style.width = width + 'px';
+          fixedHeaders[index].style.minWidth = width + 'px';
+          fixedHeaders[index].style.maxWidth = width + 'px';
+        }
+      });
+
+      // 固定ヘッダーのテーブル全体の幅も同期
+      const fixedTable = fixedHeader.querySelector('table');
+      if (fixedTable) {
+        const originalWidth = table.getBoundingClientRect().width;
+        fixedTable.style.width = originalWidth + 'px';
+      }
+    }
+
+    // スクロール時の処理を定義する関数
+    function handleScroll() {
+      // 各要素の画面上での位置を取得
+      const tableRect = table.getBoundingClientRect(); // テーブル全体の位置とサイズ
+      const headerRect = tableHeader.getBoundingClientRect(); // 元のヘッダーの位置とサイズ
+
+      // 条件判定：ヘッダーを固定表示するかどうか決める
+      // headerRect.top <= 0 → 元のヘッダーが画面上部を通り過ぎた
+      // tableRect.bottom > 0 → テーブルの一部がまだ画面に見えている
+      if (headerRect.top <= 0 && tableRect.bottom > 0) {
+        // 条件を満たす場合：固定ヘッダーを表示する
+
+        // 列幅を同期してからヘッダーを表示（ズレを防ぐ）
+        syncColumnWidths();
+
+        fixedHeader.classList.remove('hidden'); // 'hidden'クラスを削除して表示
+      } else {
+        // 条件を満たさない場合：固定ヘッダーを隠す
+        fixedHeader.classList.add('hidden'); // 'hidden'クラスを追加して非表示
+      }
+    }
+
+    // ウィンドウサイズが変更された時の処理（レスポンシブ対応）
+    function handleResize() {
+      // リサイズ時は列幅を再計算
+      if (!fixedHeader.classList.contains('hidden')) {
+        syncColumnWidths();
+      }
+    }
+
+    // ユーザーがページをスクロールするたびにhandleScroll関数を実行
+    window.addEventListener('scroll', handleScroll);
+
+    // ウィンドウサイズが変更された時にhandleResize関数を実行
+    window.addEventListener('resize', handleResize);
+
+    // ページ読み込み直後にも一度チェック実行（初期状態の設定）
+    handleScroll();
+  });
+</script>
 
 <!-- 選択された校舎の表示 -->
 <% if @selected_campus %>

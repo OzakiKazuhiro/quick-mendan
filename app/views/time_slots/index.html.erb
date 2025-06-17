@@ -73,7 +73,7 @@
     </div>
 
     <!-- 面談枠グリッド -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm">
       <div id="time-slots-grid">
         <%= render 'time_slots_grid' %>
       </div>
@@ -250,15 +250,22 @@
       // 既存のクラスを削除
       cell.className = cell.className.replace(/bg-\w+-\d+/g, '').replace(/border-\w+-\d+/g, '').replace(/hover:bg-\w+-\d+/g, '');
 
+      // ステータスシンボル要素を取得（新しい構造に対応）
+      const statusSymbolEl = cell.querySelector('div:last-child');
+
       if (status === 'available') {
         cell.className += ' bg-green-100 border-green-300 hover:bg-green-200';
-        cell.textContent = '○';
+        if (statusSymbolEl) {
+          statusSymbolEl.textContent = '○';
+        }
         cell.title = '予約可能（クリックで解除）';
         cell.dataset.existingId = slotId;
         cell.dataset.currentStatus = 'available';
       } else if (status === 'none') {
         cell.className += ' bg-gray-50 border-gray-300 hover:bg-green-100';
-        cell.textContent = '';
+        if (statusSymbolEl) {
+          statusSymbolEl.textContent = '';
+        }
         cell.title = '未設定（クリックで予約可能に設定）';
         cell.dataset.existingId = '';
         cell.dataset.currentStatus = 'none';
