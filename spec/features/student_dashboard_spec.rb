@@ -8,11 +8,11 @@ RSpec.feature '生徒ダッシュボード', type: :feature do
 
   scenario '生徒がログインしてダッシュボードを表示する' do
     # ログインページにアクセス
-    visit new_student_session_path
+    visit student_login_path
 
     # ログイン情報を入力
-    fill_in 'student[email]', with: student.student_number
-    fill_in 'student[password]', with: '9999'
+    fill_in 'student_number', with: student.student_number
+    fill_in 'password', with: '9999'
     click_button 'ログイン'
 
     # ダッシュボードにリダイレクトされることを確認
@@ -55,9 +55,9 @@ RSpec.feature '生徒ダッシュボード', type: :feature do
     student_without_campus = create(:student, name: '佐藤花子', student_number: '2024002', campus: nil)
 
     # ログイン
-    visit new_student_session_path
-    fill_in 'student[email]', with: student_without_campus.student_number
-    fill_in 'student[password]', with: '9999'
+    visit student_login_path
+    fill_in 'student_number', with: student_without_campus.student_number
+    fill_in 'password', with: '9999'
     click_button 'ログイン'
 
     # ダッシュボードにアクセス成功
@@ -73,6 +73,6 @@ RSpec.feature '生徒ダッシュボード', type: :feature do
     visit student_dashboard_path
 
     # ログインページにリダイレクトされることを確認
-    expect(current_path).to eq(new_student_session_path)
+    expect(current_path).to eq(student_login_path)
   end
 end 

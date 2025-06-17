@@ -4,6 +4,11 @@ module ApplicationHelper
     @current_teacher ||= session[:teacher_id] && Teacher.find_by(id: session[:teacher_id])
   end
 
+  # 現在ログインしている生徒を取得（講師方式と統一）
+  def current_student
+    @current_student ||= session[:student_id] && Student.find_by(id: session[:student_id])
+  end
+
   # 現在ログインしているスタッフ（講師）を取得
   def current_staff_user
     current_teacher
@@ -17,6 +22,11 @@ module ApplicationHelper
   # 講師がログインしているかチェック
   def teacher_signed_in?
     current_teacher.present?
+  end
+
+  # 生徒がログインしているかチェック（講師方式と統一）
+  def student_signed_in?
+    current_student.present?
   end
   
   # スタッフ（講師）がログインしているかチェック

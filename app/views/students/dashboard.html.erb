@@ -22,7 +22,7 @@
           <% end %>
         </div>
         <div class="flex items-center space-x-4">
-          <%= button_to "ログアウト", destroy_student_session_path, 
+          <%= button_to "ログアウト", student_logout_path, 
                         method: :delete,
                         class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer border-0",
                         data: { confirm: "ログアウトしますか？" } %>

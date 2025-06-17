@@ -10,7 +10,7 @@ RSpec.describe 'Students', type: :request do
     context 'ログインしていない場合' do
       it 'ログインページにリダイレクトされること' do
         get student_dashboard_path
-        expect(response).to redirect_to(new_student_session_path)
+        expect(response).to redirect_to(student_login_path)
       end
     end
 
@@ -100,7 +100,7 @@ RSpec.describe 'Students', type: :request do
     end
 
     it 'ログアウトが成功すること' do
-      delete destroy_student_session_path
+      delete student_logout_path
       expect(response).to redirect_to(root_path)
     end
   end

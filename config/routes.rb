@@ -36,19 +36,22 @@ Rails.application.routes.draw do
   # Devise認証ルーティング
   # ↑ コメント：Deviseを使用した各種ユーザー認証の設定
 
-  devise_for :students, path: 'student', path_names: {
-    sign_in: 'login',
-    sign_out: 'logout',
-    sign_up: 'register'
-  }
-  # ↑ 学生（Student）用のDeviseルート設定
-  # URLプレフィックスは'student'
-  # /student/login、/student/logout、/student/register
-
+  # シンプルな生徒認証（Devise不使用）
+  get 'student/login', to: 'students#login', as: 'student_login'
+  post 'student/login', to: 'students#authenticate'
+  delete 'student/logout', to: 'students#logout', as: 'student_logout'
+  
   # 生徒用ダッシュボード
   get 'student/dashboard', to: 'students#dashboard', as: 'student_dashboard'
-  # ↑ 生徒用ダッシュボード画面
-  # ログイン後のメイン画面
+
+  # 以下は削除（シンプル版では不要）
+  # devise_for :students, path: 'student', path_names: {
+  #   sign_in: 'login',
+  #   sign_out: 'logout',
+  #   sign_up: 'register'
+  # }, controllers: {
+  #   sessions: 'students/sessions'
+  # }
 
   get "up" => "rails/health#show", as: :rails_health_check
   # ↑ ヘルスチェック用のルート
