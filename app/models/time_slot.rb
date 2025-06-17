@@ -69,10 +69,17 @@ class TimeSlot < ApplicationRecord
   def start_time_within_business_hours
     return unless start_time.present?
     
-    business_start = Time.parse('14:00')
-    business_end = Time.parse('22:00')
+    # 時刻のみを比較するため、同じ日付で統一
+    business_start_hour = 14
+    business_end_hour = 22
     
-    if start_time < business_start || start_time >= business_end
+    start_hour = start_time.hour
+    start_min = start_time.min
+    
+    # 14:00未満または22:00以上の場合はエラー
+    if start_hour < business_start_hour || 
+       start_hour > business_end_hour || 
+       (start_hour == business_end_hour && start_min > 0)
       errors.add(:start_time, "営業時間内（14:00-22:00）で設定してください")
     end
   end
