@@ -97,28 +97,6 @@ RSpec.describe Teacher, type: :model do
       end
     end
 
-    describe 'notification_email' do
-      it 'nilの場合は有効であること' do
-        teacher.notification_email = nil
-        expect(teacher).to be_valid
-      end
-
-      it '空文字の場合は有効であること' do
-        teacher.notification_email = ''
-        expect(teacher).to be_valid
-      end
-
-      it '有効なメールアドレスの場合は有効であること' do
-        teacher.notification_email = 'notification@example.com'
-        expect(teacher).to be_valid
-      end
-
-      it '無効なメールアドレスの場合は無効であること' do
-        teacher.notification_email = 'invalid-email'
-        expect(teacher).not_to be_valid
-        expect(teacher.errors[:notification_email]).to be_present
-      end
-    end
 
     describe 'password' do
       it '存在する場合は有効であること' do
@@ -185,19 +163,19 @@ RSpec.describe Teacher, type: :model do
 
   describe 'リマインダー機能のテスト' do
     describe 'reminder_enabled?' do
-      context 'notification_emailとnotification_timeが両方設定されている場合' do
+      context 'emailとnotification_timeが両方設定されている場合' do
         it 'trueを返すこと' do
           teacher = build(:teacher, 
-                         notification_email: 'reminder@example.com',
+                         email: 'reminder@example.com',
                          notification_time: '09:00')
           expect(teacher.reminder_enabled?).to be true
         end
       end
 
-      context 'notification_emailのみ設定されている場合' do
+      context 'emailのみ設定されている場合' do
         it 'falseを返すこと' do
           teacher = build(:teacher, 
-                         notification_email: 'reminder@example.com',
+                         email: 'reminder@example.com',
                          notification_time: nil)
           expect(teacher.reminder_enabled?).to be false
         end
@@ -206,7 +184,7 @@ RSpec.describe Teacher, type: :model do
       context 'notification_timeのみ設定されている場合' do
         it 'falseを返すこと' do
           teacher = build(:teacher, 
-                         notification_email: nil,
+                         email: nil,
                          notification_time: '09:00')
           expect(teacher.reminder_enabled?).to be false
         end
@@ -215,16 +193,16 @@ RSpec.describe Teacher, type: :model do
       context 'どちらも設定されていない場合' do
         it 'falseを返すこと' do
           teacher = build(:teacher, 
-                         notification_email: nil,
+                         email: nil,
                          notification_time: nil)
           expect(teacher.reminder_enabled?).to be false
         end
       end
 
-      context 'notification_emailが空文字の場合' do
+      context 'emailが空文字の場合' do
         it 'falseを返すこと' do
           teacher = build(:teacher, 
-                         notification_email: '',
+                         email: '',
                          notification_time: '09:00')
           expect(teacher.reminder_enabled?).to be false
         end
@@ -244,14 +222,12 @@ RSpec.describe Teacher, type: :model do
                       user_login_name: 'save_test',
                       name: '保存テスト講師',
                       email: 'save_test@example.com',
-                      notification_email: 'reminder@example.com',
                       notification_time: '09:00')
       
       saved_teacher = Teacher.find(teacher.id)
       expect(saved_teacher.user_login_name).to eq('save_test')
       expect(saved_teacher.name).to eq('保存テスト講師')
       expect(saved_teacher.email).to eq('save_test@example.com')
-      expect(saved_teacher.notification_email).to eq('reminder@example.com')
       expect(saved_teacher.notification_time.strftime('%H:%M')).to eq('09:00')
     end
   end

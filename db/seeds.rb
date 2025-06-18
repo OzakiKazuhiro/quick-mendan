@@ -36,7 +36,6 @@ teacher1 = Teacher.find_or_create_by!(user_login_name: "shibaguchi") do |t|
   t.email = "shibaguchi@example.com"
   t.password = "okkrskz-shibaguchi"
   t.password_confirmation = "okkrskz-shibaguchi"
-  t.notification_email = "shibaguchi@example.com"
   t.notification_time = "09:00"
   t.role = :teacher
 end

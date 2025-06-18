@@ -5,7 +5,6 @@ FactoryBot.define do
     sequence(:email) { |n| "teacher#{n}@example.com" }
     password { "password123" }
     password_confirmation { "password123" }
-    notification_email { nil }
     notification_time { nil }
 
     # 有効なteacherのtrait
@@ -22,13 +21,13 @@ FactoryBot.define do
 
     # リマインダー設定ありのtrait
     trait :with_reminder do
-      notification_email { "reminder@example.com" }
+      email { "reminder@example.com" }
       notification_time { "09:00" }
     end
 
-    # リマインダー部分設定のtrait
+    # リマインダー部分設定のtrait（メールのみ）
     trait :partial_reminder do
-      notification_email { "partial@example.com" }
+      email { "partial@example.com" }
       notification_time { nil }
     end
 
@@ -37,9 +36,9 @@ FactoryBot.define do
       user_login_name { "invalid-login!" }
     end
 
-    # 無効なリマインダーメールのtrait
-    trait :invalid_notification_email do
-      notification_email { "invalid-email" }
+    # 無効なメールアドレスのtrait
+    trait :invalid_email do
+      email { "invalid-email" }
     end
   end
 end

@@ -5,12 +5,11 @@ class DeviseCreateTeachers < ActiveRecord::Migration[8.0]
     create_table :teachers do |t|
       ## Database authenticatable
       t.string :user_login_name,    null: false, default: ""  # ログイン用名前
-      t.string :email,              null: true                # 任意フィールドに変更
+      t.string :email,              null: true                # リマインダー用メール（任意）
       t.string :encrypted_password, null: false, default: ""
       t.string :name,               null: false, default: ""  # 実名
       
       ## Notification settings
-      t.string :notification_email, null: true                # リマインダー用メール（任意）
       t.time   :notification_time,  null: true                # リマインダー送信時刻（任意）
 
       ## Recoverable
