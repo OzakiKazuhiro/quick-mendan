@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_023227) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_144119) do
   create_table "appointments", force: :cascade do |t|
     t.integer "student_id", null: false
     t.integer "time_slot_id", null: false
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_023227) do
     t.index ["campus_id"], name: "index_time_slots_on_campus_id"
     t.index ["date", "start_time"], name: "index_time_slots_on_date_and_start_time"
     t.index ["status"], name: "index_time_slots_on_status"
+    t.index ["teacher_id", "date", "start_time", "campus_id"], name: "index_time_slots_on_teacher_date_time_campus", unique: true
     t.index ["teacher_id", "date", "start_time"], name: "index_time_slots_unique", unique: true
     t.index ["teacher_id"], name: "index_time_slots_on_teacher_id"
   end

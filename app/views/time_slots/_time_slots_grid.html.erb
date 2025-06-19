@@ -37,47 +37,90 @@
         <!-- 各曜日の時間枠 -->
         <% @week_dates.each do |date| %>
         <%
-              # 既存の面談枠データを取得
-              existing_slot = @existing_slots[[date, time_slot]]&.first
+              # 時刻を文字列で比較するための準備
+              time_slot_hour_min = time_slot.strftime('%H:%M')
+              
+              # その日その時刻の全校舎面談枠を検索
+              all_slots_at_time = []
+              @all_existing_slots.each do |key, slots|
+                if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                  all_slots_at_time.concat(slots)
+                end
+              end
+              
+              # 選択中校舎の面談枠を検索
+              existing_slot = nil
+              @existing_slots.each do |key, slots|
+                if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                  existing_slot = slots.first
+                  break
+                end
+              end
               
               # 過去の日付かチェック
               is_past = date < Date.current
               
-              # セルのスタイルを決定
+              # セルの表示内容を決定
               if is_past
                 cell_class = "bg-gray-100 cursor-not-allowed"
                 cell_content = "×"
                 cell_title = "過去の日付"
-              elsif existing_slot
-                case existing_slot.status
-                when 'available'
-                  cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
-                  cell_content = "○"
-                  cell_title = "予約可能（クリックで解除）"
-                when 'booked'
-                  cell_class = "bg-yellow-100 border-yellow-300 cursor-not-allowed"
-                  cell_content = "●"
-                  cell_title = "予約済み"
-                when 'unavailable'
-                  cell_class = "bg-red-100 border-red-300 hover:bg-red-200 cursor-pointer transition-colors"
-                  cell_content = "×"
-                  cell_title = "利用不可（クリックで解除）"
+                clickable = false
+              elsif all_slots_at_time.any?
+                # 全校舎で面談枠が設定されている場合
+                # 選択中校舎で設定済みかチェック
+                selected_campus_slot = all_slots_at_time.find { |slot| slot.campus_id == @selected_campus&.id }
+                
+                if selected_campus_slot
+                  # 選択中校舎で設定済み
+                  case selected_campus_slot.status
+                  when 'available'
+                    cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
+                    cell_title = "予約可能（クリックで解除）"
+                    clickable = true
+                  when 'booked'
+                    cell_class = "bg-yellow-100 border-yellow-300 cursor-not-allowed"
+                    cell_title = "予約済み"
+                    clickable = false
+                  when 'unavailable'
+                    cell_class = "bg-red-100 border-red-300 hover:bg-red-200 cursor-pointer transition-colors"
+                    cell_title = "利用不可（クリックで解除）"
+                    clickable = true
+                  end
+                else
+                  # 他校舎でのみ設定済み
+                  cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
+                  cell_title = "未設定（クリックで予約可能に設定）"
+                  clickable = true
                 end
+                
+                # 全校舎の設定を表示
+                campus_labels = all_slots_at_time.map do |slot|
+                  symbol = case slot.status
+                          when 'available' then '○'
+                          when 'booked' then '●'
+                          when 'unavailable' then '×'
+                          end
+                  "#{slot.campus_display}#{symbol}"
+                end
+                cell_content = campus_labels.join(' ')
               else
+                # どの校舎でも未設定
                 cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
                 cell_content = ""
                 cell_title = "未設定（クリックで予約可能に設定）"
+                clickable = true
               end
             %>
 
         <td class="px-1 py-1 date-column">
-          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
+          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-xs font-medium <%= cell_class %>" <% if clickable %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
             <!-- 時刻表示 -->
             <div class="text-xs text-gray-600 leading-none mb-1 mobile-time">
               <%= time_slot.strftime('%H:%M') %>
             </div>
             <!-- ステータスシンボル -->
-            <div class="text-lg leading-none mobile-symbol">
+            <div class="text-xs leading-none mobile-symbol">
               <%= cell_content %>
             </div>
           </div>

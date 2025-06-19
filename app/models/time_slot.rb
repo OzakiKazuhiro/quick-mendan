@@ -18,8 +18,8 @@ class TimeSlot < ApplicationRecord
   validates :start_time, presence: true
   validates :status, presence: true
   validates :teacher_id, uniqueness: { 
-    scope: [:date, :start_time], 
-    message: "同じ日時に複数の面談枠を設定することはできません" 
+    scope: [:date, :start_time, :campus_id], 
+    message: "同じ校舎・同じ日時に複数の面談枠を設定することはできません" 
   }
 
   # 過去の日付は設定不可
@@ -38,11 +38,16 @@ class TimeSlot < ApplicationRecord
   scope :by_week, ->(start_date) { where(date: start_date..(start_date + 6.days)) }
   scope :ordered, -> { order(:date, :start_time) }
 
-  # 週の面談枠を取得
+  # 週の面談枠を取得（全校舎対応）
   def self.for_week(teacher, start_date, campus = nil)
     scope = by_teacher(teacher).by_week(start_date).ordered
     scope = scope.by_campus(campus) if campus
     scope
+  end
+
+  # 週の面談枠を全校舎で取得
+  def self.for_week_all_campuses(teacher, start_date)
+    by_teacher(teacher).by_week(start_date).includes(:campus).ordered
   end
 
   # 時間枠の表示用文字列
@@ -53,6 +58,22 @@ class TimeSlot < ApplicationRecord
   # 日時の表示用文字列
   def datetime_display
     "#{date.strftime('%m/%d')} #{time_display}"
+  end
+
+  # 校舎名付きの表示用文字列
+  def campus_display
+    case campus.name
+    when /三国.*本部|三国ヶ丘本部/
+      "三国"
+    when /鳳駅前|鳳/
+      "鳳"
+    when /泉ヶ丘駅前|泉ヶ丘/
+      "泉ヶ丘"
+    when /岸和田/
+      "岸和田"
+    else
+      campus.name.slice(0, 3) # フォールバック：最初の3文字
+    end
   end
 
   # 予約可能かどうか

@@ -82,22 +82,31 @@
     <!-- 凡例 -->
     <div class="bg-white rounded-lg shadow-sm p-4 mt-6">
       <h3 class="text-sm font-medium text-gray-900 mb-3">凡例</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
         <div class="flex items-center">
           <div class="w-4 h-4 bg-gray-100 border border-gray-300 rounded mr-2"></div>
           <span class="text-gray-600">未設定</span>
         </div>
         <div class="flex items-center">
           <div class="w-4 h-4 bg-green-100 border border-green-300 rounded mr-2"></div>
-          <span class="text-gray-600">予約可能</span>
+          <span class="text-gray-600">選択校舎で予約可能</span>
         </div>
         <div class="flex items-center">
           <div class="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded mr-2"></div>
-          <span class="text-gray-600">予約済み</span>
+          <span class="text-gray-600">選択校舎で予約済み</span>
         </div>
         <div class="flex items-center">
           <div class="w-4 h-4 bg-red-100 border border-red-300 rounded mr-2"></div>
-          <span class="text-gray-600">利用不可</span>
+          <span class="text-gray-600">選択校舎で利用不可</span>
+        </div>
+      </div>
+      <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+        <h4 class="text-sm font-medium text-blue-800 mb-2">校舎表示について</h4>
+        <div class="text-sm text-blue-700">
+          <p class="mb-1">• <strong>三国○</strong>: 三国ヶ丘本部校で予約可能</p>
+          <p class="mb-1">• <strong>鳳●</strong>: 鳳駅前校で予約済み</p>
+          <p class="mb-1">• <strong>泉ヶ丘×</strong>: 泉ヶ丘駅前校で利用不可</p>
+          <p>• 複数校舎で設定がある場合は並べて表示されます</p>
         </div>
       </div>
     </div>
@@ -114,7 +123,9 @@
           <h3 class="text-sm font-medium text-blue-800">操作方法</h3>
           <div class="mt-2 text-sm text-blue-700">
             <ul class="list-disc list-inside space-y-1">
-              <li><strong>クリック</strong>: 時間枠をクリックして予約可能/未設定を切り替え</li>
+              <li><strong>校舎選択</strong>: 上部で校舎を選択すると、その校舎での設定ができます</li>
+              <li><strong>クリック</strong>: 時間枠をクリックして選択校舎での予約可能/未設定を切り替え</li>
+              <li><strong>全校舎表示</strong>: どの校舎で面談枠が設定されているかが一目で分かります</li>
               <li><strong>面談時間</strong>: 20分面談なら14:00と14:20、30分面談なら14:00と14:30を設定</li>
               <li><strong>予約済み</strong>: 黄色の枠は生徒が予約済みのため変更できません</li>
             </ul>

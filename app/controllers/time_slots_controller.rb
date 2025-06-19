@@ -15,7 +15,11 @@ class TimeSlotsController < ApplicationController
     # 営業時間の時間枠を生成（14:00-22:00、10分刻み）
     @time_slots_grid = generate_time_slots_grid
     
-    # 既存の面談枠データを取得
+    # 全校舎の既存面談枠データを取得
+    @all_existing_slots = TimeSlot.for_week_all_campuses(@current_teacher, @start_date)
+                                  .group_by { |slot| [slot.date, slot.start_time] }
+    
+    # 選択中校舎の面談枠のみを抽出（従来の動作も維持）
     @existing_slots = TimeSlot.for_week(@current_teacher, @start_date, @selected_campus)
                               .includes(:campus)
                               .group_by { |slot| [slot.date, slot.start_time] }
@@ -28,6 +32,12 @@ class TimeSlotsController < ApplicationController
     
     @week_dates = (@start_date..(@start_date + 6.days)).to_a
     @time_slots_grid = generate_time_slots_grid
+    
+    # 全校舎の既存面談枠データを取得
+    @all_existing_slots = TimeSlot.for_week_all_campuses(@current_teacher, @start_date)
+                                  .group_by { |slot| [slot.date, slot.start_time] }
+    
+    # 選択中校舎の面談枠のみを抽出（従来の動作も維持）
     @existing_slots = TimeSlot.for_week(@current_teacher, @start_date, @selected_campus)
                               .includes(:campus)
                               .group_by { |slot| [slot.date, slot.start_time] }
@@ -50,9 +60,16 @@ class TimeSlotsController < ApplicationController
         }
       }
     else
+      # 一意制約エラーの特別処理
+      error_message = if @time_slot.errors[:teacher_id].any? && @time_slot.errors[:teacher_id].first.include?("同じ校舎・同じ日時")
+                        "この校舎のこの時間には既に面談枠が設定されています"
+                      else
+                        @time_slot.errors.full_messages.join(', ')
+                      end
+      
       render json: { 
         status: 'error', 
-        message: @time_slot.errors.full_messages.join(', ')
+        message: error_message
       }
     end
   end
