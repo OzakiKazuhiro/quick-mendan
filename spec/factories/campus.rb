@@ -24,10 +24,34 @@ FactoryBot.define do
       name { "重複テスト校舎" }
     end
 
-    # 生徒付きのtrait
+    # 生徒付きのtrait（多対多対応）
     trait :with_students do
       after(:create) do |campus|
-        create_list(:student, 3, campus: campus)
+        students = create_list(:student, 3)
+        students.each { |student| student.campuses << campus }
+      end
+    end
+    
+    # 特定数の生徒付きのtrait
+    trait :with_specific_student_count do
+      transient do
+        student_count { 2 }
+      end
+      
+      after(:create) do |campus, evaluator|
+        students = create_list(:student, evaluator.student_count)
+        students.each { |student| student.campuses << campus }
+      end
+    end
+    
+    # 既存の生徒を関連付けるtrait
+    trait :with_existing_students do
+      transient do
+        students { [] }
+      end
+      
+      after(:create) do |campus, evaluator|
+        evaluator.students.each { |student| student.campuses << campus }
       end
     end
   end

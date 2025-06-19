@@ -43,18 +43,11 @@
               # 過去の日付かチェック
               is_past = date < Date.current
               
-              # 土日かチェック
-              is_weekend = date.saturday? || date.sunday?
-              
               # セルのスタイルを決定
               if is_past
                 cell_class = "bg-gray-100 cursor-not-allowed"
                 cell_content = "×"
                 cell_title = "過去の日付"
-              elsif is_weekend
-                cell_class = "bg-gray-200 cursor-not-allowed"
-                cell_content = "休"
-                cell_title = "休日"
               elsif existing_slot
                 case existing_slot.status
                 when 'available'
@@ -78,7 +71,7 @@
             %>
 
         <td class="px-1 py-1 date-column">
-          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || is_weekend || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
+          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-sm font-medium <%= cell_class %>" <% unless is_past || (existing_slot&.booked?) %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
             <!-- 時刻表示 -->
             <div class="text-xs text-gray-600 leading-none mb-1 mobile-time">
               <%= time_slot.strftime('%H:%M') %>

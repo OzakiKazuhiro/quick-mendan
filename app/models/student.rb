@@ -4,9 +4,22 @@ class Student < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable
   
-  # 関連付け
-  belongs_to :campus, optional: true
-  # has_many :appointments, dependent: :destroy（将来的に追加予定）
+  # ===================================================================
+  # 関連付け（多対多リレーション）
+  # 【変更内容】1対多 → 多対多に変更
+  # - 以前: belongs_to :campus（1人の生徒は1つの校舎のみ）
+  # - 現在: has_many :through（1人の生徒は複数の校舎に所属可能）
+  # ===================================================================
+  
+  # 中間テーブルとの関連（直接的な関連）
+  has_many :student_campus_affiliations, dependent: :destroy
+  
+  # 校舎との関連（中間テーブル経由の間接的な関連）
+  has_many :campuses, through: :student_campus_affiliations, source: :campus
+  
+  # 予約との関連
+  has_many :appointments, dependent: :destroy
+  has_many :time_slots, through: :appointments
   
   # バリデーション
   validates :student_number, presence: true, uniqueness: true,
@@ -72,8 +85,37 @@ class Student < ApplicationRecord
     student
   end
   
-  # 校舎名を取得（校舎が設定されていない場合は"未設定"を返す）
+  # ===================================================================
+  # 多対多リレーション用の便利メソッド
+  # ===================================================================
+  
+  # 所属校舎名を取得（複数校舎対応）
+  def campus_names
+    campuses.pluck(:name).join(", ")
+  end
+  
+  # メイン校舎名を取得（最初に登録された校舎または指定された校舎）
+  def primary_campus_name
+    campuses.first&.name || "未設定"
+  end
+  
+  # 特定の校舎に所属しているかチェック
+  def belongs_to_campus?(campus)
+    campuses.include?(campus)
+  end
+  
+  # 校舎を追加
+  def add_campus(campus)
+    campuses << campus unless belongs_to_campus?(campus)
+  end
+  
+  # 校舎から除外
+  def remove_campus(campus)
+    campuses.delete(campus)
+  end
+  
+  # 後方互換性のため：既存コードで使用されている可能性があるメソッドを残す
   def campus_name
-    campus&.name || "未設定"
+    primary_campus_name
   end
 end

@@ -2,6 +2,10 @@ class TimeSlot < ApplicationRecord
   belongs_to :teacher
   belongs_to :campus
 
+  # 予約との関連
+  has_one :appointment, dependent: :destroy
+  has_one :student, through: :appointment
+
   # ステータスの定義
   enum :status, {
     available: 0,    # 予約可能

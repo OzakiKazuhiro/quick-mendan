@@ -10,12 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_16_004308) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_023227) do
+  create_table "appointments", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "time_slot_id", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id", "time_slot_id"], name: "index_appointments_unique", unique: true
+    t.index ["student_id"], name: "index_appointments_on_student_id"
+    t.index ["time_slot_id"], name: "index_appointments_on_time_slot_id"
+    t.index ["time_slot_id"], name: "index_appointments_time_slot_unique", unique: true
+  end
+
   create_table "campus", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_campus_on_name", unique: true
+  end
+
+  create_table "student_campus_affiliations", force: :cascade do |t|
+    t.integer "student_id", null: false
+    t.integer "campus_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campus_id"], name: "index_student_campus_affiliations_on_campus_id"
+    t.index ["student_id", "campus_id"], name: "index_student_campus_unique", unique: true
+    t.index ["student_id"], name: "index_student_campus_affiliations_on_student_id"
   end
 
   create_table "students", force: :cascade do |t|
@@ -24,13 +46,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_004308) do
     t.string "name", default: "", null: false
     t.string "grade"
     t.string "school_name"
-    t.integer "campus_id"
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["campus_id"], name: "index_students_on_campus_id"
     t.index ["reset_password_token"], name: "index_students_on_reset_password_token", unique: true
     t.index ["student_number"], name: "index_students_on_student_number", unique: true
   end
@@ -69,7 +89,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_16_004308) do
     t.index ["teacher_id"], name: "index_time_slots_on_teacher_id"
   end
 
-  add_foreign_key "students", "campus", column: "campus_id"
+  add_foreign_key "appointments", "students"
+  add_foreign_key "appointments", "time_slots"
+  add_foreign_key "student_campus_affiliations", "campus", column: "campus_id"
+  add_foreign_key "student_campus_affiliations", "students"
   add_foreign_key "time_slots", "campus", column: "campus_id"
   add_foreign_key "time_slots", "teachers"
 end

@@ -9,7 +9,7 @@ class DeviseCreateStudents < ActiveRecord::Migration[8.0]
       t.string :name,               null: false, default: ""
       t.string :grade,              null: true                # 学年（任意・CSVインポート用）
       t.string :school_name,        null: true                # 高校名（任意・CSVインポート用）
-      t.references :campus, null: true, foreign_key: true    # 所属校舎（任意）
+      # t.references :campus, null: true, foreign_key: true    # 所属校舎（任意）- 多対多リレーション用に削除
 
       ## Recoverable
       t.string   :reset_password_token

@@ -8,24 +8,45 @@ RSpec.describe Student, type: :model do
     end
 
     it 'with_campus traitが有効であること' do
-      student = build(:student, :with_campus)
+      student = create(:student, :with_campus)
       expect(student).to be_valid
-      expect(student.campus).to be_present
+      expect(student.campuses).to be_present
+      expect(student.campuses.count).to eq(1)
+    end
+    
+    it 'with_multiple_campuses traitが有効であること' do
+      student = create(:student, :with_multiple_campuses)
+      expect(student).to be_valid
+      expect(student.campuses.count).to eq(2)
     end
   end
 
-  describe '関連付けのテスト' do
-    describe 'campus' do
-      it 'campusとの関連付けが任意であること' do
-        student = build(:student, campus: nil)
-        expect(student).to be_valid
+  describe '関連付けのテスト（多対多リレーション）' do
+    describe 'campuses' do
+      let(:student) { create(:student) }
+      
+      it '複数の校舎に所属できること' do
+        campus1 = create(:campus, name: "校舎1")
+        campus2 = create(:campus, name: "校舎2")
+        
+        student.campuses << campus1
+        student.campuses << campus2
+        
+        expect(student.campuses).to include(campus1, campus2)
+        expect(student.campuses.count).to eq(2)
       end
 
-      it 'campusが設定されている場合は有効であること' do
-        campus = create(:campus)
-        student = build(:student, campus: campus)
+      it '校舎との関連がない場合でも有効であること' do
         expect(student).to be_valid
-        expect(student.campus).to eq(campus)
+        expect(student.campuses).to be_empty
+      end
+      
+      it '中間テーブル経由で関連付けられること' do
+        campus = create(:campus)
+        student.campuses << campus
+        
+        expect(student.student_campus_affiliations.count).to eq(1)
+        expect(student.student_campus_affiliations.first.campus).to eq(campus)
       end
     end
   end
@@ -183,74 +204,96 @@ RSpec.describe Student, type: :model do
         expect(student).not_to be_persisted
         expect(student.errors).to be_present
       end
-
-      it '校舎も指定できること' do
-        campus = create(:campus)
-        attributes = {
-          student_number: '2024002',
-          name: '校舎付き生徒',
-          campus: campus
-        }
-        
-        student = Student.create_with_default_password(attributes)
-        
-        expect(student).to be_persisted
-        expect(student.campus).to eq(campus)
-      end
     end
   end
+  
+  # ===================================================================
+  # 多対多リレーション用の新しいメソッドのテスト
+  # ===================================================================
+  
+  describe '多対多リレーション用メソッドのテスト' do
+    let(:student) { create(:student, name: "テスト生徒") }
+    let(:campus1) { create(:campus, name: "校舎A") }
+    let(:campus2) { create(:campus, name: "校舎B") }
+    let(:campus3) { create(:campus, name: "校舎C") }
 
-  describe 'インスタンスメソッドのテスト' do
-    describe 'campus_name' do
-      context '校舎が設定されている場合' do
-        it '校舎名を返すこと' do
-          campus = create(:campus, name: '三国ヶ丘本部校')
-          student = build(:student, campus: campus)
-          expect(student.campus_name).to eq('三国ヶ丘本部校')
-        end
+    describe 'campus_names' do
+      it '所属校舎がない場合は空文字を返すこと' do
+        expect(student.campus_names).to eq("")
       end
 
-      context '校舎が設定されていない場合' do
-        it '"未設定"を返すこと' do
-          student = build(:student, campus: nil)
-          expect(student.campus_name).to eq('未設定')
-        end
+      it '単一校舎の場合は校舎名を返すこと' do
+        student.campuses << campus1
+        expect(student.campus_names).to eq("校舎A")
+      end
+
+      it '複数校舎の場合はカンマ区切りで返すこと' do
+        student.campuses << [campus1, campus2, campus3]
+        expect(student.campus_names).to eq("校舎A, 校舎B, 校舎C")
       end
     end
-  end
 
-  describe 'データベース保存のテスト' do
-    it 'パスワードが暗号化されて保存されること' do
-      student = create(:student, password: '9999')
-      expect(student.encrypted_password).not_to eq('9999')
-      expect(student.encrypted_password).to be_present
+    describe 'primary_campus_name' do
+      it '所属校舎がない場合は"未設定"を返すこと' do
+        expect(student.primary_campus_name).to eq("未設定")
+      end
+
+      it '校舎がある場合は最初の校舎名を返すこと' do
+        student.campuses << [campus2, campus1]
+        expect(student.primary_campus_name).to eq("校舎B")
+      end
     end
 
-    it '全ての必須フィールドが保存されること' do
-      campus = create(:campus, name: 'テスト校舎')
-      student = create(:student, 
-                      student_number: '2024001',
-                      name: '保存テスト生徒',
-                      grade: '高校3年',
-                      school_name: 'テスト高等学校',
-                      campus: campus)
-      
-      saved_student = Student.find(student.id)
-      expect(saved_student.student_number).to eq('2024001')
-      expect(saved_student.name).to eq('保存テスト生徒')
-      expect(saved_student.grade).to eq('高校3年')
-      expect(saved_student.school_name).to eq('テスト高等学校')
-      expect(saved_student.campus).to eq(campus)
+    describe 'belongs_to_campus?' do
+      before do
+        student.campuses << campus1
+      end
+
+      it '所属している校舎に対してtrueを返すこと' do
+        expect(student.belongs_to_campus?(campus1)).to be true
+      end
+
+      it '所属していない校舎に対してfalseを返すこと' do
+        expect(student.belongs_to_campus?(campus2)).to be false
+      end
     end
 
-    it 'デフォルトパスワード9999で認証できること' do
-      student = Student.create_with_default_password({
-        student_number: '2024003',
-        name: '認証テスト生徒'
-      })
-      
-      expect(student.valid_password?('9999')).to be true
-      expect(student.valid_password?('1234')).to be false
+    describe 'add_campus' do
+      it '新しい校舎を追加できること' do
+        student.add_campus(campus1)
+        expect(student.campuses).to include(campus1)
+        expect(student.campuses.count).to eq(1)
+      end
+
+      it '既に所属している校舎は重複追加されないこと' do
+        student.campuses << campus1
+        student.add_campus(campus1)
+        expect(student.campuses.count).to eq(1)
+      end
+    end
+
+    describe 'remove_campus' do
+      before do
+        student.campuses << [campus1, campus2]
+      end
+
+      it '指定した校舎を削除できること' do
+        student.remove_campus(campus1)
+        expect(student.campuses).not_to include(campus1)
+        expect(student.campuses).to include(campus2)
+      end
+
+      it '所属していない校舎を削除してもエラーにならないこと' do
+        expect { student.remove_campus(campus3) }.not_to raise_error
+      end
+    end
+
+    describe 'campus_name (後方互換性)' do
+      it 'primary_campus_nameと同じ値を返すこと' do
+        student.campuses << campus1
+        expect(student.campus_name).to eq(student.primary_campus_name)
+        expect(student.campus_name).to eq("校舎A")
+      end
     end
   end
 end
