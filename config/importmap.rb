@@ -3,6 +3,9 @@
 # Rails アプリケーションのメインJavaScriptファイル
 pin "application"
 
+# Turboライブラリ（Rails 7のデフォルト）
+pin "@hotwired/turbo-rails", to: "turbo.min.js"
+
 # Stimulusライブラリ本体を読み込み（import { Controller } from "@hotwired/stimulus" で使用）
 pin "@hotwired/stimulus", to: "stimulus.min.js"
 

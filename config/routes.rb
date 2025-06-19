@@ -43,6 +43,15 @@ Rails.application.routes.draw do
   
   # 生徒用ダッシュボード
   get 'student/dashboard', to: 'students#dashboard', as: 'student_dashboard'
+  
+  # 生徒用講師一覧
+  get 'student/teachers', to: 'students#teachers', as: 'student_teachers'
+  
+  # 生徒用予約機能
+  get 'student/teachers/:teacher_id/booking', to: 'students#booking', as: 'student_teacher_booking'
+  post 'student/appointments', to: 'students#create_appointment', as: 'student_appointments'
+  get 'student/appointments', to: 'students#appointments', as: 'student_appointments_list'
+  delete 'student/appointments/:id', to: 'students#cancel_appointment', as: 'student_cancel_appointment'
 
   # 以下は削除（シンプル版では不要）
   # devise_for :students, path: 'student', path_names: {
