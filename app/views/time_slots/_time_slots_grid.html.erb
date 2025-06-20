@@ -37,37 +37,53 @@
         <!-- 各曜日の時間枠 -->
         <% @week_dates.each do |date| %>
         <%
-              # 時刻を文字列で比較するための準備
+              # ==========================================================
+              # セルの表示内容を決定するための複雑なロジック開始
+              # ==========================================================
+              
+              # 時刻を文字列で比較するための準備（例：14:00 → "14:00"）
               time_slot_hour_min = time_slot.strftime('%H:%M')
               
-              # その日その時刻の全校舎面談枠を検索
+              # その日その時刻の全校舎面談枠を検索するための配列を初期化
               all_slots_at_time = []
+              # 全校舎のデータ（@all_existing_slots）をループで確認
               @all_existing_slots.each do |key, slots|
+                # keyは[日付, 時刻]の配列形式で格納されている
+                # key[0]が日付、key[1]が時刻オブジェクト
                 if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                  # 条件に合致した面談枠を配列に追加
                   all_slots_at_time.concat(slots)
                 end
               end
               
-              # 選択中校舎の面談枠を検索
+              # 選択中校舎の面談枠を検索するための変数を初期化
               existing_slot = nil
+              # 選択中校舎のデータ（@existing_slots）をループで確認
               @existing_slots.each do |key, slots|
+                # 同じ日付・時刻の組み合わせを探す
                 if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                  # 見つかった場合は最初の要素を取得して処理終了
                   existing_slot = slots.first
                   break
                 end
               end
               
-              # 過去の日付かチェック
+              # 過去の日付かどうかをチェック（過去の日付は編集不可にする）
               is_past = date < Date.current
               
-              # セルの表示内容を決定
+              # ==========================================================
+              # セルの表示内容を決定するメインロジック
+              # ==========================================================
+              
               if is_past
+                # 過去の日付の場合：グレーアウトして編集不可
                 cell_class = "bg-gray-100 cursor-not-allowed"
-                cell_content = "×"
-                cell_title = "過去の日付"
-                clickable = false
+                cell_content = "×"  # ×マークで過去を表現
+                cell_title = "過去の日付"  # ホバー時のツールチップ
+                clickable = false  # クリック不可
               elsif all_slots_at_time.any?
-                # 全校舎で面談枠が設定されている場合
+                # 全校舎で面談枠が設定されている場合の処理
+                
                 # 選択中校舎で設定済みかチェック
                 selected_campus_slot = all_slots_at_time.find { |slot| slot.campus_id == @selected_campus&.id }
                 
@@ -75,49 +91,56 @@
                 has_booked_slot = all_slots_at_time.any? { |slot| slot.status == 'booked' }
                 
                 if selected_campus_slot
-                  # 選択中校舎で設定済み
+                  # 選択中校舎で設定済みの場合
                   case selected_campus_slot.status
                   when 'available'
+                    # 予約可能状態の場合
                     if has_booked_slot
                       # 他校舎で予約済みがある場合は黄色ベース
                       cell_class = "bg-yellow-100 border-yellow-300 hover:bg-yellow-200 cursor-pointer transition-colors"
                     else
+                      # 純粋に予約可能な場合は緑色ベース
                       cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
                     end
                     cell_title = "予約可能（クリックで解除）"
-                    clickable = true
+                    clickable = true  # クリック可能
                   when 'booked'
+                    # 予約済みの場合：濃い黄色で編集不可
                     cell_class = "bg-yellow-300 border-yellow-500 cursor-not-allowed"
                     cell_title = "予約済み"
-                    clickable = false
+                    clickable = false  # クリック不可
                   end
                 else
-                  # 他校舎でのみ設定済み
+                  # 他校舎でのみ設定済みの場合
                   if has_booked_slot
-                    # 他校舎で予約済みがある場合は黄色ベース
+                    # 他校舎で予約済みがある場合は薄い黄色ベース
                     cell_class = "bg-yellow-50 border-yellow-200 hover:bg-yellow-100 cursor-pointer transition-colors"
                   else
+                    # 他校舎のみ設定済みの場合は薄いグレーベース
                     cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
                   end
                   cell_title = "未設定（クリックで予約可能に設定）"
-                  clickable = true
+                  clickable = true  # クリック可能
                 end
                 
-                # 全校舎の設定を表示
+                # 全校舎の設定を表示するためのラベル生成
                 campus_labels = all_slots_at_time.map do |slot|
+                  # ステータスに応じてシンボルを決定
                   symbol = case slot.status
-                          when 'available' then '○'
-                          when 'booked' then '●'
+                          when 'available' then '○'  # 予約可能
+                          when 'booked' then '●'     # 予約済み
                           end
+                  # 校舎の短縮名 + シンボルの組み合わせを生成（例：三国○）
                   "#{slot.campus_display}#{symbol}"
                 end
+                # 複数校舎の場合はスペースで区切って表示（例：三国○ 鳳●）
                 cell_content = campus_labels.join(' ')
               else
-                # どの校舎でも未設定
+                # どの校舎でも未設定の場合
                 cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
-                cell_content = ""
+                cell_content = ""  # 空の表示
                 cell_title = "未設定（クリックで予約可能に設定）"
-                clickable = true
+                clickable = true  # クリック可能
               end
             %>
 
