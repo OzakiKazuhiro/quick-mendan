@@ -101,9 +101,14 @@ export default class extends Controller {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          // セルの見た目を更新
-          this.updateCellAppearance(cell, "available", data.slot.id);
-          this.showNotification("success", data.message);
+          // セルの見た目を更新（校舎名付きで表示）
+          this.updateCellAppearance(
+            cell,
+            "available",
+            data.slot.id,
+            data.slot.campus_display
+          );
+          // 成功メッセージは表示しない
         } else {
           this.showNotification("error", data.message);
         }
@@ -131,9 +136,10 @@ export default class extends Controller {
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          // セルの見た目を更新
-          this.updateCellAppearance(cell, "none", null);
-          this.showNotification("success", data.message);
+          // セルの見た目を更新（削除する校舎名を渡す）
+          const campusName = cell.dataset.campusName;
+          this.updateCellAppearance(cell, "none", null, null, campusName);
+          // 成功メッセージは表示しない
         } else {
           this.showNotification("error", data.message);
         }
@@ -150,7 +156,13 @@ export default class extends Controller {
   }
 
   // セルの見た目を更新
-  updateCellAppearance(cell, status, slotId) {
+  updateCellAppearance(
+    cell,
+    status,
+    slotId,
+    campusDisplay,
+    campusNameToRemove
+  ) {
     // 既存のクラスを削除
     cell.className = cell.className
       .replace(/bg-\w+-\d+/g, "")
@@ -162,20 +174,74 @@ export default class extends Controller {
 
     if (status === "available") {
       cell.className += " bg-green-100 border-green-300 hover:bg-green-200";
-      if (statusSymbolEl) {
-        statusSymbolEl.textContent = "○";
+      if (statusSymbolEl && campusDisplay) {
+        // 既存の他校舎の表示がある場合はそれを保持し、新しい校舎の設定を追加
+        const currentContent = statusSymbolEl.textContent.trim();
+        let newContent = "";
+
+        if (currentContent && !currentContent.includes(campusDisplay)) {
+          // 他校舎の設定がある場合は追加
+          newContent = `${currentContent} ${campusDisplay}○`;
+        } else if (currentContent.includes(campusDisplay)) {
+          // 既に同じ校舎の設定がある場合は更新
+          newContent = currentContent.replace(
+            new RegExp(`${campusDisplay}[○●×]`),
+            `${campusDisplay}○`
+          );
+        } else {
+          // 新規設定の場合
+          newContent = `${campusDisplay}○`;
+        }
+
+        statusSymbolEl.textContent = newContent;
       }
       cell.title = "予約可能（クリックで解除）";
       cell.dataset.existingId = slotId;
       cell.dataset.currentStatus = "available";
     } else if (status === "none") {
       cell.className += " bg-gray-50 border-gray-300 hover:bg-green-100";
-      if (statusSymbolEl) {
-        statusSymbolEl.textContent = "";
+      if (statusSymbolEl && campusNameToRemove) {
+        // 削除時：該当校舎の表示のみを削除し、他校舎の表示は保持
+        const currentContent = statusSymbolEl.textContent.trim();
+        if (currentContent) {
+          // 校舎名から短縮名を生成（TimeSlotモデルのcampus_displayと同じロジック）
+          const campusShortName = this.getCampusShortName(campusNameToRemove);
+
+          // 該当校舎の表示を削除
+          let newContent = currentContent
+            .replace(new RegExp(`\\s*${campusShortName}[○●×]`, "g"), "")
+            .replace(new RegExp(`^${campusShortName}[○●×]\\s*`, "g"), "")
+            .trim();
+
+          statusSymbolEl.textContent = newContent;
+        }
       }
       cell.title = "未設定（クリックで予約可能に設定）";
       cell.dataset.existingId = "";
       cell.dataset.currentStatus = "none";
+    }
+  }
+
+  // 校舎名から短縮名を生成（TimeSlotモデルのcampus_displayと同じロジック）
+  getCampusShortName(campusName) {
+    if (!campusName) return "";
+
+    if (
+      campusName.includes("三国") &&
+      (campusName.includes("本部") || campusName.includes("三国ヶ丘本部"))
+    ) {
+      return "三国";
+    } else if (campusName.includes("鳳駅前") || campusName.includes("鳳")) {
+      return "鳳";
+    } else if (
+      campusName.includes("泉ヶ丘駅前") ||
+      campusName.includes("泉ヶ丘")
+    ) {
+      return "泉ヶ丘";
+    } else if (campusName.includes("岸和田")) {
+      return "岸和田";
+    } else {
+      return campusName.slice(0, 3); // フォールバック：最初の3文字
     }
   }
 

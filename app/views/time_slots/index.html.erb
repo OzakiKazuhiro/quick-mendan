@@ -12,18 +12,26 @@
           </p>
         </div>
 
-        <!-- 校舎選択 -->
-        <div class="mt-4 sm:mt-0">
+        <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+          <!-- 校舎選択 -->
           <%= form_with url: time_slots_path, method: :get, local: true, class: "flex items-center space-x-3" do |form| %>
           <%= form.hidden_field :week_start, value: @start_date %>
           <label class="text-sm font-medium text-gray-700">校舎:</label>
           <%= form.select :campus_id, 
-                options_from_collection_for_select(@campuses, :id, :name, @selected_campus&.id),
-                { prompt: "校舎を選択" },
-                { 
-                  class: "rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500",
-                  onchange: "this.form.submit();"
-                } %>
+                  options_from_collection_for_select(@campuses, :id, :name, @selected_campus&.id),
+                  { prompt: "校舎を選択" },
+                  { 
+                    class: "rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+
+          <!-- ダッシュボードに戻るボタン -->
+          <%= link_to staff_dashboard_path, class: "bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          ダッシュボードに戻る
           <% end %>
         </div>
       </div>
@@ -46,9 +54,6 @@
           <h2 class="text-lg font-semibold text-gray-900">
             <%= @start_date.strftime('%Y年%m月%d日') %> 〜 <%= (@start_date + 6.days).strftime('%m月%d日') %>
           </h2>
-          <p class="text-sm text-gray-500 mt-1">
-            <%= @start_date.strftime('%Y年第%U週') %>
-          </p>
         </div>
 
         <!-- 次の週 -->
@@ -82,7 +87,7 @@
     <!-- 凡例 -->
     <div class="bg-white rounded-lg shadow-sm p-4 mt-6">
       <h3 class="text-sm font-medium text-gray-900 mb-3">凡例</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
         <div class="flex items-center">
           <div class="w-4 h-4 bg-gray-100 border border-gray-300 rounded mr-2"></div>
           <span class="text-gray-600">未設定</span>
@@ -93,11 +98,7 @@
         </div>
         <div class="flex items-center">
           <div class="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded mr-2"></div>
-          <span class="text-gray-600">選択校舎で予約済み</span>
-        </div>
-        <div class="flex items-center">
-          <div class="w-4 h-4 bg-red-100 border border-red-300 rounded mr-2"></div>
-          <span class="text-gray-600">選択校舎で利用不可</span>
+          <span class="text-gray-600">予約済み</span>
         </div>
       </div>
       <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
@@ -105,7 +106,6 @@
         <div class="text-sm text-blue-700">
           <p class="mb-1">• <strong>三国○</strong>: 三国ヶ丘本部校で予約可能</p>
           <p class="mb-1">• <strong>鳳●</strong>: 鳳駅前校で予約済み</p>
-          <p class="mb-1">• <strong>泉ヶ丘×</strong>: 泉ヶ丘駅前校で利用不可</p>
           <p>• 複数校舎で設定がある場合は並べて表示されます</p>
         </div>
       </div>

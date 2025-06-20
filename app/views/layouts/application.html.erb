@@ -24,6 +24,7 @@
 </head>
 
 <body class="bg-white min-h-screen">
+  <% unless teacher_signed_in? || student_signed_in? %>
   <!-- ナビゲーションバー -->
   <nav class="bg-white shadow-lg border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,11 +40,11 @@
         </div>
 
         <!-- ナビゲーションメニュー -->
-        <div class="hidden md:flex items-center space-x-8">
+        <div class="hidden md:flex items-center space-x-4">
+          <!-- 未ログイン時のメニュー -->
           <%= link_to "ホーム", root_path, class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "予約する", "#", class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "予約確認", "#", class: "text-gray-600 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors" %>
-          <%= link_to "講師ログイン", "#", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
+          <%= link_to "生徒ログイン", student_login_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
+          <%= link_to "講師ログイン", staff_login_path, class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" %>
         </div>
 
         <!-- モバイルメニューボタン -->
@@ -60,13 +61,14 @@
     <!-- モバイルメニュー -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+        <!-- 未ログイン時のモバイルメニュー -->
         <%= link_to "ホーム", root_path, class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
-        <%= link_to "予約する", "#", class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
-        <%= link_to "予約確認", "#", class: "block px-3 py-2 text-gray-600 hover:text-green-600 rounded-md text-base font-medium" %>
-        <%= link_to "講師ログイン", "#", class: "block px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-base font-medium" %>
+        <%= link_to "生徒ログイン", student_login_path, class: "block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-medium" %>
+        <%= link_to "講師ログイン", staff_login_path, class: "block px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-base font-medium" %>
       </div>
     </div>
   </nav>
+  <% end %>
 
   <!-- メインコンテンツ -->
   <main class="flex-1">

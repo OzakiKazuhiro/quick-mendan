@@ -56,7 +56,8 @@ class TimeSlotsController < ApplicationController
         slot: {
           id: @time_slot.id,
           status: @time_slot.status,
-          datetime: @time_slot.datetime_display
+          datetime: @time_slot.datetime_display,
+          campus_display: @time_slot.campus_display
         }
       }
     else
