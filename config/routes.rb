@@ -41,6 +41,15 @@ Rails.application.routes.draw do
   get 'staff/appointments/:id/interview_record', to: 'auth#interview_record', as: 'interview_record'
   patch 'staff/appointments/:id/interview_record', to: 'auth#save_interview_record', as: 'save_interview_record'
 
+  # 生徒管理機能（講師・管理者共通）
+  get 'staff/students', to: 'auth#students_index', as: 'staff_students'
+  get 'staff/students/new', to: 'auth#students_new', as: 'new_staff_student'
+  post 'staff/students', to: 'auth#students_create', as: 'create_staff_student'
+  get 'staff/students/:id', to: 'auth#students_show', as: 'staff_student'
+  get 'staff/students/:id/edit', to: 'auth#students_edit', as: 'edit_staff_student'
+  patch 'staff/students/:id', to: 'auth#students_update', as: 'update_staff_student'
+  delete 'staff/students/:id', to: 'auth#students_destroy', as: 'destroy_staff_student'
+
   # Devise認証ルーティング
   # ↑ コメント：Deviseを使用した各種ユーザー認証の設定
 

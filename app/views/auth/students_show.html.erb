@@ -1,0 +1,184 @@
+<% content_for :title, "生徒詳細" %>
+
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">
+            生徒詳細
+          </h1>
+          <p class="mt-2 text-gray-600">
+            <%= @student.name %>さんの詳細情報
+          </p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <%= link_to staff_students_path, 
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center" do %>
+          <i class="fas fa-arrow-left mr-2"></i>
+          生徒一覧に戻る
+          <% end %>
+          <%= link_to edit_staff_student_path(@student), 
+                      class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center" do %>
+          <i class="fas fa-edit mr-2"></i>
+          編集
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 生徒情報 -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">基本情報</h2>
+      </div>
+      <div class="px-6 py-6">
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">生徒番号</dt>
+            <dd class="mt-1 text-sm text-gray-900 font-mono bg-gray-100 px-3 py-2 rounded">
+              <%= @student.student_number %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">氏名</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @student.name %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">学年</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @student.grade.present? ? @student.grade : "未設定" %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">高校名</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @student.school_name.present? ? @student.school_name : "未設定" %>
+            </dd>
+          </div>
+
+          <div class="sm:col-span-2">
+            <dt class="text-sm font-medium text-gray-500">所属校舎</dt>
+            <dd class="mt-1">
+              <% if @student.campuses.any? %>
+              <div class="flex flex-wrap gap-2">
+                <% @student.campuses.each do |campus| %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <%= campus.name %>
+                </span>
+                <% end %>
+              </div>
+              <% else %>
+              <span class="text-sm text-gray-400">未設定</span>
+              <% end %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">登録日</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @student.created_at.strftime('%Y年%m月%d日') %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">最終更新</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @student.updated_at.strftime('%Y年%m月%d日') %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ログイン情報 -->
+    <div class="mt-6 bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">ログイン情報</h2>
+      </div>
+      <div class="px-6 py-6">
+        <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-info-circle text-blue-400"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                生徒用ログイン情報
+              </h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <p><strong>生徒番号:</strong> <%= @student.student_number %></p>
+                <p><strong>パスワード:</strong> 9999（全生徒共通）</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 予約履歴 -->
+    <div class="mt-6 bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">予約履歴</h2>
+      </div>
+      <div class="px-6 py-6">
+        <% appointments = @student.appointments.joins(:time_slot).includes(:time_slot => :teacher).order('time_slots.date DESC, time_slots.start_time DESC').limit(10) %>
+        <% if appointments.any? %>
+        <div class="space-y-3">
+          <% appointments.each do |appointment| %>
+          <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                <%= appointment.time_slot.teacher.name %>先生
+              </p>
+              <p class="text-sm text-gray-500">
+                <%= appointment.time_slot.date.strftime('%Y年%m月%d日') %>
+                <%= appointment.time_slot.start_time.strftime('%H:%M') %>〜
+              </p>
+            </div>
+            <div>
+              <% if appointment.interview_record %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                面談済み
+              </span>
+              <% else %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                予約済み
+              </span>
+              <% end %>
+            </div>
+          </div>
+          <% end %>
+        </div>
+        <% else %>
+        <p class="text-center text-gray-500 py-8">予約履歴がありません</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 危険な操作 -->
+    <div class="mt-6 bg-white shadow rounded-lg border-l-4 border-red-400">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-red-900">危険な操作</h2>
+      </div>
+      <div class="px-6 py-6">
+        <p class="text-sm text-gray-600 mb-4">
+          生徒を削除すると、関連する予約履歴も全て削除されます。この操作は取り消すことができません。
+        </p>
+        <%= link_to destroy_staff_student_path(@student), 
+                    method: :delete,
+                    data: { confirm: "本当に生徒「#{@student.name}」を削除しますか？この操作は取り消すことができません。" },
+                    class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center inline-flex" do %>
+        <i class="fas fa-trash mr-2"></i>
+        生徒を削除
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

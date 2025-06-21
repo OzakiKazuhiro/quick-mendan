@@ -83,8 +83,33 @@
     <% end %>
 
     <!-- メニューカード -->
-    <% if @is_admin %>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 生徒管理カード（講師・管理者共通） -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900">生徒管理</h3>
+              <p class="text-sm text-gray-500">生徒の登録・編集・削除</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <%= link_to staff_students_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
+            生徒一覧へ →
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <% if @is_admin %>
+      <!-- システム管理カード（管理者のみ） -->
       <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
         <div class="p-6">
           <div class="flex items-center">
@@ -98,7 +123,7 @@
             </div>
             <div class="ml-4">
               <h3 class="text-lg font-medium text-gray-900">システム管理</h3>
-              <p class="text-sm text-gray-500">講師・生徒・校舎の管理</p>
+              <p class="text-sm text-gray-500">講師・校舎の管理</p>
             </div>
           </div>
           <div class="mt-4">
@@ -108,8 +133,8 @@
           </div>
         </div>
       </div>
+      <% end %>
     </div>
-    <% end %>
   </div>
 </div>
 

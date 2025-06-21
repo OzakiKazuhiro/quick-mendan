@@ -26,6 +26,17 @@ class Student < ApplicationRecord
     campuses.first
   end
   
+  # campus_idsメソッドを追加（フォーム用）
+  def campus_ids
+    campuses.pluck(:id)
+  end
+  
+  def campus_ids=(ids)
+    self.campus_ids_will_change! if respond_to?(:campus_ids_will_change!)
+    ids = ids.reject(&:blank?) if ids.is_a?(Array)
+    self.campuses = Campus.where(id: ids)
+  end
+  
   # バリデーション
   validates :student_number, presence: true, uniqueness: true,
             format: { with: /\A[a-zA-Z0-9]+\z/, message: "英数字のみ使用可能です" }

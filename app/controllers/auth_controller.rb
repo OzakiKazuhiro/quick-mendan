@@ -7,10 +7,11 @@ class AuthController < ApplicationController
   # Webリクエストの処理やレスポンス生成の基本機能を提供
 
   # 講師権限が必要なアクションの前に実行
-  before_action :require_staff, only: [:staff_dashboard, :proxy_booking, :create_proxy_appointment, :interview_record, :save_interview_record]
+  before_action :require_staff, only: [:staff_dashboard, :proxy_booking, :create_proxy_appointment, :interview_record, :save_interview_record, :students_index, :students_new, :students_create, :students_show, :students_edit, :students_update, :students_destroy]
   # ダッシュボードページのキャッシュを無効化（セキュリティ対策）
   before_action :prevent_caching, only: [:staff_dashboard]
   before_action :set_appointment, only: [:interview_record, :save_interview_record]
+  before_action :set_student, only: [:students_show, :students_edit, :students_update, :students_destroy]
 
   # staff_loginアクション
   def staff_login
@@ -129,6 +130,61 @@ class AuthController < ApplicationController
     end
   end
 
+  # 生徒管理機能
+  def students_index
+    @students = Student.includes(:campuses).order(:student_number)
+    @campuses = Campus.all
+  end
+
+  def students_new
+    @student = Student.new
+    @campuses = Campus.all
+  end
+
+  def students_create
+    @student = Student.new(student_params)
+    @student.password = '9999' # 固定パスワード
+    @student.password_confirmation = '9999' # パスワード確認も設定
+    
+    if @student.save
+      flash[:success] = "生徒「#{@student.name}」を登録しました"
+      redirect_to staff_students_path
+    else
+      @campuses = Campus.all
+      flash.now[:error] = "生徒の登録に失敗しました"
+      render :students_new
+    end
+  end
+
+  def students_show
+    # @studentはbefore_actionで設定済み
+  end
+
+  def students_edit
+    @campuses = Campus.all
+  end
+
+  def students_update
+    if @student.update(student_params)
+      flash[:success] = "生徒「#{@student.name}」の情報を更新しました"
+      redirect_to staff_student_path(@student)
+    else
+      @campuses = Campus.all
+      flash.now[:error] = "生徒情報の更新に失敗しました"
+      render :students_edit
+    end
+  end
+
+  def students_destroy
+    student_name = @student.name
+    if @student.destroy
+      flash[:success] = "生徒「#{student_name}」を削除しました"
+    else
+      flash[:error] = "生徒の削除に失敗しました"
+    end
+    redirect_to staff_students_path
+  end
+
   # 29行目: privateメソッドの開始
   private
   # ↑ 以降のメソッドはクラス外部から呼び出し不可
@@ -226,8 +282,16 @@ class AuthController < ApplicationController
     @appointment = Appointment.find(params[:id])
   end
 
+  def set_student
+    @student = Student.find(params[:id])
+  end
+
   def interview_record_params
     params.require(:interview_record).permit(:content)
+  end
+
+  def student_params
+    params.require(:student).permit(:name, :student_number, :grade, :school_name, campus_ids: [])
   end
 # 35行目: クラス定義終了
 end

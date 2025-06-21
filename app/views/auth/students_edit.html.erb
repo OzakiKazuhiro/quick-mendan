@@ -1,0 +1,146 @@
+<% content_for :title, "生徒編集" %>
+
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">
+            生徒編集
+          </h1>
+          <p class="mt-2 text-gray-600">
+            <%= @student.name %>さんの情報を編集します
+          </p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <%= link_to staff_student_path(@student), 
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center" do %>
+          <i class="fas fa-arrow-left mr-2"></i>
+          詳細に戻る
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- フォーム -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">生徒情報編集</h2>
+      </div>
+      <div class="px-6 py-6">
+        <%= form_with model: @student, url: update_staff_student_path(@student), method: :patch, local: true, class: "space-y-6" do |form| %>
+
+        <!-- エラーメッセージ -->
+        <% if @student.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-circle text-red-400"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                入力にエラーがあります
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <% @student.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% end %>
+
+        <!-- 生徒番号 -->
+        <div>
+          <%= form.label :student_number, "生徒番号", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :student_number, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                              placeholder: "例: 2024001" %>
+          <p class="mt-1 text-sm text-gray-500">数字で入力してください（例: 2024001）</p>
+        </div>
+
+        <!-- 氏名 -->
+        <div>
+          <%= form.label :name, "氏名", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :name, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                              placeholder: "例: 山田太郎" %>
+        </div>
+
+        <!-- 学年 -->
+        <div>
+          <%= form.label :grade, "学年", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :grade, 
+                          options_for_select([
+                            ['選択してください', ''],
+                            ['高校1年', '高校1年'],
+                            ['高校2年', '高校2年'],
+                            ['高校3年', '高校3年'],
+                            ['浪人', '浪人'],
+                            ['その他', 'その他']
+                          ], @student.grade),
+                          {},
+                          class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+        </div>
+
+        <!-- 高校名 -->
+        <div>
+          <%= form.label :school_name, "高校名", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :school_name, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                              placeholder: "例: 〇〇高等学校" %>
+          <p class="mt-1 text-sm text-gray-500">任意項目です</p>
+        </div>
+
+        <!-- 所属校舎 -->
+        <div>
+          <%= form.label :campus_ids, "所属校舎", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="space-y-2">
+            <% @campuses.each do |campus| %>
+            <div class="flex items-center">
+              <%= check_box_tag "student[campus_ids][]", campus.id, @student.campus_ids.include?(campus.id), 
+                                id: "student_campus_ids_#{campus.id}",
+                                class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+              <%= label_tag "student_campus_ids_#{campus.id}", campus.name, 
+                            class: "ml-2 text-sm text-gray-700" %>
+            </div>
+            <% end %>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">複数選択可能です</p>
+        </div>
+
+        <!-- パスワード情報 -->
+        <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-info-circle text-blue-400"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                ログイン情報について
+              </h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <p>パスワードは全生徒共通で「9999」に設定されています。</p>
+                <p>生徒は「生徒番号」と「パスワード9999」でログインできます。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ボタン -->
+        <div class="flex justify-end space-x-4">
+          <%= link_to "キャンセル", staff_student_path(@student), 
+                      class: "bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= form.submit "変更を保存", 
+                          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+        </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
