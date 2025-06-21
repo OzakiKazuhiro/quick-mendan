@@ -56,7 +56,8 @@
           現在ログイン中: <%= current_teacher.name %>
           (<%= current_teacher.admin? ? '管理者' : '講師' %>)
         </p>
-        <%= link_to "ログアウト", staff_logout_path, method: :delete, 
+        <%= link_to "ログアウト", staff_logout_path, 
+                      data: { turbo_method: :delete },
                       class: "inline-block mt-2 text-sm text-red-600 hover:text-red-500" %>
       </div>
       <% end %>

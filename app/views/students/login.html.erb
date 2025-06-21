@@ -64,7 +64,8 @@
           現在ログイン中: <%= current_student.name %>
           （生徒番号: <%= current_student.student_number %>）
         </p>
-        <%= link_to "ログアウト", student_logout_path, method: :delete, 
+        <%= link_to "ログアウト", student_logout_path, 
+                      data: { turbo_method: :delete },
                       class: "inline-block mt-2 text-sm text-red-600 hover:text-red-500" %>
       </div>
       <% end %>

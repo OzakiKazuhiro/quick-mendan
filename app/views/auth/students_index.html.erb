@@ -1,6 +1,6 @@
 <% content_for :title, "生徒管理" %>
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8" data-controller="delete-modal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
     <div class="mb-8">
@@ -165,13 +165,9 @@
                             class: "text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition-colors" do %>
                   <i class="fas fa-edit text-sm"></i>
                   <% end %>
-                  <%= link_to destroy_staff_student_path(student), 
-                            method: :delete,
-                            title: "削除する",
-                            data: { confirm: "生徒「#{student.name}」を削除しますか？" },
-                            class: "text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors" do %>
-                  <i class="fas fa-trash text-sm"></i>
-                  <% end %>
+                  <button data-action="click->delete-modal#open" data-student-name="<%= student.name %>" data-student-id="<%= student.id %>" title="削除する" class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors">
+                    <i class="fas fa-trash text-sm"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -189,6 +185,36 @@
             <% end %>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 削除確認モーダル -->
+  <div data-delete-modal-target="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3 text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+          <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+        </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">
+          生徒を削除しますか？
+        </h3>
+        <div class="mt-2 px-7 py-3">
+          <p class="text-sm text-gray-500">
+            生徒「<span class="font-medium text-gray-900" data-delete-modal-target="studentName"></span>」を削除します。
+          </p>
+          <p class="text-sm text-red-600 mt-2">
+            この操作は取り消すことができません。関連する予約履歴も全て削除されます。
+          </p>
+        </div>
+        <div class="items-center px-4 py-3">
+          <button data-delete-modal-target="confirmButton" data-action="click->delete-modal#confirm" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+            削除する
+          </button>
+          <button data-delete-modal-target="cancelButton" data-action="click->delete-modal#close" class="mt-3 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+            キャンセル
+          </button>
+        </div>
       </div>
     </div>
   </div>
