@@ -185,6 +185,27 @@ class AuthController < ApplicationController
     redirect_to staff_students_path
   end
 
+  # 面談記録モーダル表示用アクション
+  def show_interview_record_modal
+    @appointment = Appointment.find(params[:id])
+    @record = @appointment.interview_record
+    render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record }
+  end
+
+  def save_interview_record_in_modal
+    @appointment = Appointment.find(params[:id])
+    @record = @appointment.interview_record || @appointment.build_interview_record
+    
+    if @record.update(interview_record_params)
+      # 成功した場合、更新されたパーシャルを返す
+      render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record }
+    else
+      # 失敗した場合、エラー情報を含んだパーシャルを返す（もしくはエラーメッセージを返す）
+      # ここでは簡単化のため、同じパーシャルを再描画
+      render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record }, status: :unprocessable_entity
+    end
+  end
+
   # 29行目: privateメソッドの開始
   private
   # ↑ 以降のメソッドはクラス外部から呼び出し不可

@@ -41,6 +41,10 @@ Rails.application.routes.draw do
   get 'staff/appointments/:id/interview_record', to: 'auth#interview_record', as: 'interview_record'
   patch 'staff/appointments/:id/interview_record', to: 'auth#save_interview_record', as: 'save_interview_record'
 
+  # 面談記録モーダル用のルート
+  get 'staff/appointments/:id/interview_record_modal', to: 'auth#show_interview_record_modal', as: 'show_interview_record_modal'
+  patch 'staff/appointments/:id/interview_record_modal', to: 'auth#save_interview_record_in_modal', as: 'save_interview_record_in_modal'
+
   # 生徒管理機能（講師・管理者共通）
   get 'staff/students', to: 'auth#students_index', as: 'staff_students'
   get 'staff/students/new', to: 'auth#students_new', as: 'new_staff_student'

@@ -1,0 +1,75 @@
+<div class="p-4 sm:p-6" data-controller="toggle-edit">
+  <div class="flex justify-between items-start">
+    <div>
+      <h3 class="text-xl leading-6 font-bold text-gray-900 mb-2">
+        面談記録詳細
+      </h3>
+      <p class="text-sm text-gray-500">
+        <%= appointment.time_slot.teacher.name %>先生との面談
+      </p>
+      <p class="text-sm text-gray-500">
+        <%= appointment.time_slot.date.strftime('%Y年%m月%d日') %>
+        <%= appointment.time_slot.start_time.strftime('%H:%M') %>〜
+      </p>
+    </div>
+    <button data-action="click->interview-modal#close" class="text-gray-400 hover:text-gray-500">
+      <span class="sr-only">閉じる</span>
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="mt-4 border-t border-gray-200 pt-4">
+    <div data-toggle-edit-target="view">
+      <% if record && record.content.present? %>
+      <div class="prose max-w-none text-gray-700">
+        <%= simple_format(record.content) %>
+      </div>
+      <p class="text-xs text-gray-400 mt-4">
+        記録更新日: <%= record.updated_at.strftime('%Y年%m月%d日 %H:%M') %>
+      </p>
+      <div class="mt-4">
+        <button data-action="click->toggle-edit#show" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+          編集する
+        </button>
+      </div>
+      <% else %>
+      <div class="text-center py-8">
+        <p class="text-gray-500">
+          <i class="fas fa-file-alt fa-2x text-gray-300 mb-2"></i>
+        </p>
+        <p class="text-gray-500">
+          まだ面談記録はありません。
+        </p>
+        <div class="mt-4">
+          <button data-action="click->toggle-edit#show" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            記録を作成する
+          </button>
+        </div>
+      </div>
+      <% end %>
+    </div>
+
+    <div data-toggle-edit-target="form" class="hidden">
+      <%= form_with model: record || InterviewRecord.new(appointment: appointment), 
+                    url: save_interview_record_in_modal_path(appointment),
+                    method: :patch,
+                    data: { action: "submit->interview-modal#submitForm" } do |f| %>
+      <%= f.hidden_field :appointment_id, value: appointment.id %>
+      <div>
+        <%= f.label :content, "面談内容", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= f.text_area :content, rows: 10, class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md" %>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end space-x-3">
+        <button type="button" data-action="click->toggle-edit#hide" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+          キャンセル
+        </button>
+        <%= f.submit "保存する", class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer" %>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>

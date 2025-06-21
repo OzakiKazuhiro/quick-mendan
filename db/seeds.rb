@@ -1,13 +1,3 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-
 puts "🌱 シードデータの作成を開始します..."
 puts "📝 多対多リレーション対応版のテストデータを作成します"
 
@@ -50,36 +40,36 @@ puts "  - #{admin_teacher.name} (ログイン名: #{admin_teacher.user_login_nam
 puts "\n👨‍🏫 講師データを作成中..."
 
 teacher1 = Teacher.find_or_create_by!(user_login_name: "shibaguchi") do |t|
-  t.name = "柴口太郎先生"
+  t.name = "柴口太郎"
   t.email = "shibaguchi@quick-mendan.com"
-  t.password = "okkrskz-shibaguchi"
-  t.password_confirmation = "okkrskz-shibaguchi"
+  t.password = "password-shibaguchi"
+  t.password_confirmation = "password-shibaguchi"
   t.notification_time = "09:00"
   t.role = :teacher
 end
 
 teacher2 = Teacher.find_or_create_by!(user_login_name: "tanaka_a") do |t|
-  t.name = "田中花子先生"
+  t.name = "田中花子"
   t.email = "tanaka@quick-mendan.com"
-  t.password = "okkrskz-tanaka"
-  t.password_confirmation = "okkrskz-tanaka"
+  t.password = "password-tanaka"
+  t.password_confirmation = "password-tanaka"
   t.notification_time = "18:00"
   t.role = :teacher
 end
 
 teacher3 = Teacher.find_or_create_by!(user_login_name: "yamamoto") do |t|
-  t.name = "山本次郎先生"
+  t.name = "山本次郎"
   t.email = "yamamoto@quick-mendan.com"
-  t.password = "okkrskz-yamamoto"
-  t.password_confirmation = "okkrskz-yamamoto"
+  t.password = "password-yamamoto"
+  t.password_confirmation = "password-yamamoto"
   t.role = :teacher
 end
 
 teacher4 = Teacher.find_or_create_by!(user_login_name: "watanabe") do |t|
-  t.name = "渡辺美咲先生"
+  t.name = "渡辺美咲"
   t.email = "watanabe@quick-mendan.com"
-  t.password = "okkrskz-watanabe"
-  t.password_confirmation = "okkrskz-watanabe"
+  t.password = "password-watanabe"
+  t.password_confirmation = "password-watanabe"
   t.role = :teacher
 end
 
@@ -98,7 +88,7 @@ puts "\n👨‍🎓 生徒データを作成中..."
 student1 = Student.find_or_create_by!(student_number: "2024001") do |s|
   s.name = "山田太郎"
   s.grade = "高校2年"
-  s.school_name = "大阪府立○○高等学校"
+  s.school_name = "泉陽学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -106,7 +96,7 @@ end
 student2 = Student.find_or_create_by!(student_number: "2024002") do |s|
   s.name = "田中花子"
   s.grade = "高校1年"
-  s.school_name = "私立△△高等学校"
+  s.school_name = "清教学園学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -115,7 +105,7 @@ end
 student3 = Student.find_or_create_by!(student_number: "2024003") do |s|
   s.name = "佐藤次郎"
   s.grade = "高校3年"
-  s.school_name = "府立□□高等学校"
+  s.school_name = "鳳学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -123,7 +113,7 @@ end
 student4 = Student.find_or_create_by!(student_number: "2024004") do |s|
   s.name = "鈴木美咲"
   s.grade = "高校2年"
-  s.school_name = "私立◇◇高等学校"
+  s.school_name = "三国丘学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -132,7 +122,7 @@ end
 student5 = Student.find_or_create_by!(student_number: "2024005") do |s|
   s.name = "高橋健太"
   s.grade = "高校3年"
-  s.school_name = "府立▽▽高等学校"
+  s.school_name = "天王寺学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -140,7 +130,7 @@ end
 student6 = Student.find_or_create_by!(student_number: "2024006") do |s|
   s.name = "伊藤さくら"
   s.grade = "高校1年"
-  s.school_name = "私立◎◎高等学校"
+  s.school_name = "四天王寺高校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -149,7 +139,7 @@ end
 student7 = Student.find_or_create_by!(student_number: "2024007") do |s|
   s.name = "渡辺大輔"
   s.grade = "高校2年"
-  s.school_name = "府立※※高等学校"
+  s.school_name = "近大泉州学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -158,7 +148,7 @@ end
 student8 = Student.find_or_create_by!(student_number: "2024008") do |s|
   s.name = "中村優子"
   s.grade = "高校3年"
-  s.school_name = "私立☆☆高等学校"
+  s.school_name = "登美丘学校"
   s.password = "9999"
   s.password_confirmation = "9999"
 end
@@ -238,10 +228,10 @@ puts "  ログイン名: admin_master"
 puts "  パスワード: AdminPass2024!"
 puts ""
 puts "【講師】"
-puts "  ログイン名: shibaguchi / パスワード: okkrskz-shibaguchi"
-puts "  ログイン名: tanaka_a / パスワード: okkrskz-tanaka"
-puts "  ログイン名: yamamoto / パスワード: okkrskz-yamamoto"
-puts "  ログイン名: watanabe / パスワード: okkrskz-watanabe"
+puts "  ログイン名: shibaguchi / パスワード: password-shibaguchi"
+puts "  ログイン名: tanaka_a / パスワード: password-tanaka"
+puts "  ログイン名: yamamoto / パスワード: password-yamamoto"
+puts "  ログイン名: watanabe / パスワード: password-watanabe"
 puts ""
 puts "【生徒】"
 puts "  すべての生徒のパスワード: 9999"

@@ -1,6 +1,6 @@
 <% content_for :title, "生徒詳細" %>
 
-<div class="min-h-screen bg-gray-50 py-8" data-controller="delete-modal">
+<div class="min-h-screen bg-gray-50 py-8" data-controller="delete-modal interview-modal">
   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
     <div class="mb-8">
@@ -144,9 +144,9 @@
             </div>
             <div>
               <% if appointment.interview_record %>
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                面談済み
-              </span>
+              <button data-action="click->interview-modal#open" data-appointment-id="<%= appointment.id %>" class="text-sm font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md shadow-sm transition-colors">
+                面談記録の確認
+              </button>
               <% else %>
               <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                 予約済み
@@ -205,6 +205,15 @@
             キャンセル
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 面談記録モーダル -->
+  <div data-interview-modal-target="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+    <div class="relative mx-auto w-full max-w-2xl">
+      <div class="bg-white rounded-lg shadow-xl" data-interview-modal-target="content">
+        <!-- ここに非同期で内容が読み込まれます -->
       </div>
     </div>
   </div>
