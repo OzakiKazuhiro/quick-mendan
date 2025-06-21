@@ -33,6 +33,14 @@ Rails.application.routes.draw do
   # ↑ ログアウト用のルート設定（DELETEとGETの両方に対応）
   # AuthControllerのstaff_logoutアクションで処理
 
+  # 代理予約機能
+  get 'staff/proxy_booking', to: 'auth#proxy_booking', as: 'proxy_booking'
+  post 'staff/create_proxy_appointment', to: 'auth#create_proxy_appointment', as: 'create_proxy_appointment'
+  
+  # 面談記録機能
+  get 'staff/appointments/:id/interview_record', to: 'auth#interview_record', as: 'interview_record'
+  patch 'staff/appointments/:id/interview_record', to: 'auth#save_interview_record', as: 'save_interview_record'
+
   # Devise認証ルーティング
   # ↑ コメント：Deviseを使用した各種ユーザー認証の設定
 

@@ -61,6 +61,11 @@ class Teacher < ApplicationRecord
     role == 'admin'
   end
   
+  # 講師権限チェック
+  def teacher?
+    role == 'teacher'
+  end
+  
   # 講師権限チェック（管理者も講師として機能）
   def can_teach?
     true  # 全てのTeacherレコードは講師として機能可能

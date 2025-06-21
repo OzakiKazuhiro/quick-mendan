@@ -1,0 +1,113 @@
+<!-- 校舎フィルタ -->
+<div class="bg-white rounded-lg shadow mb-6">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-medium text-gray-900">校舎でフィルタ</h2>
+  </div>
+  <div class="px-6 py-4">
+    <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex flex-wrap items-center gap-4" do |form| %>
+    <%= form.hidden_field :tab, value: 'all_appointments' %>
+
+    <% @campuses.each do |campus| %>
+    <label class="flex items-center">
+      <%= check_box_tag "campuses[]", 
+                           campus.id, 
+                           @selected_campuses.include?(campus.id.to_s),
+                           class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+      <span class="ml-2 text-sm text-gray-700"><%= campus.name %></span>
+    </label>
+    <% end %>
+
+    <%= form.submit "フィルタ適用", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium" %>
+
+    <% if @selected_campuses.any? %>
+    <%= link_to "フィルタクリア", staff_dashboard_path(tab: 'all_appointments'), 
+                  class: "text-gray-600 hover:text-gray-800 text-sm" %>
+    <% end %>
+    <% end %>
+  </div>
+</div>
+
+<!-- 予約一覧 -->
+<div class="bg-white rounded-lg shadow">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+      <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+      全体予約確認
+      <% if @selected_campuses.any? %>
+      <span class="ml-2 text-sm text-gray-500">
+        （<%= @campuses.where(id: @selected_campuses).pluck(:name).join(', ') %>のみ表示）
+      </span>
+      <% end %>
+    </h2>
+  </div>
+  <div class="px-6 py-4">
+    <% if @appointments_by_date.any? %>
+    <div class="space-y-6">
+      <% @appointments_by_date.each do |date, appointments| %>
+      <div class="border-l-4 border-blue-500 pl-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-3">
+          <%= date.strftime('%m月%d日 (%a)') %>
+        </h3>
+        <div class="space-y-3">
+          <% appointments.each do |appointment| %>
+          <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div class="flex items-center space-x-4">
+              <div class="bg-blue-500 text-white rounded-lg px-3 py-2 text-center">
+                <div class="text-sm font-bold">
+                  <%= appointment.time_slot.start_time.strftime('%H:%M') %>
+                </div>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">
+                  <%= appointment.student.name %>さん
+                  <% if appointment.student.campus %>
+                  (<%= appointment.student.campus.name %>)
+                  <% end %>
+                </p>
+                <p class="text-sm text-gray-600">
+                  講師: <%= appointment.time_slot.teacher.name %>先生
+                </p>
+                <% if appointment.proxy_booking? %>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  代理予約
+                </span>
+                <% end %>
+              </div>
+            </div>
+            <div class="flex space-x-2">
+              <% if appointment.appointment_datetime < Time.current %>
+              <% if appointment.interview_record %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <i class="fas fa-check-circle mr-1"></i>
+                記録済み
+              </span>
+              <% else %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <i class="fas fa-clock mr-1"></i>
+                記録待ち
+              </span>
+              <% end %>
+              <% else %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <i class="fas fa-calendar mr-1"></i>
+                予定
+              </span>
+              <% end %>
+            </div>
+          </div>
+          <% end %>
+        </div>
+      </div>
+      <% end %>
+    </div>
+    <% else %>
+    <p class="text-gray-500 text-center py-8">
+      <% if @selected_campuses.any? %>
+      選択した校舎に予約はありません
+      <% else %>
+      予約はありません
+      <% end %>
+    </p>
+    <% end %>
+  </div>
+</div>

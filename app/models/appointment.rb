@@ -1,6 +1,7 @@
 class Appointment < ApplicationRecord
   belongs_to :student
   belongs_to :time_slot
+  has_one :interview_record, dependent: :destroy
 
   # バリデーション
   validates :student_id, presence: true
@@ -41,7 +42,7 @@ class Appointment < ApplicationRecord
     "#{time_slot.teacher.name}先生 #{time_slot.date.strftime('%m/%d')} #{time_slot.start_time.strftime('%H:%M')}"
   end
 
-  # キャンセル可能かどうか
+  # キャンセル可能かどうか（生徒向け）
   def cancellable?
     return false unless time_slot&.date
     
@@ -50,9 +51,24 @@ class Appointment < ApplicationRecord
     Time.current <= deadline
   end
 
-  # 変更可能かどうか
+  # 変更可能かどうか（生徒向け）
   def modifiable?
     cancellable? # キャンセル可能な条件と同じ
+  end
+
+  # 講師による変更・キャンセル可能かどうか（制限なし）
+  def teacher_modifiable?
+    true
+  end
+
+  # 面談記録を追加可能かどうか
+  def can_add_interview_record?
+    appointment_datetime < Time.current
+  end
+
+  # 代理予約かどうか
+  def proxy_booking?
+    notes&.include?("代理予約")
   end
 
   private

@@ -21,6 +21,11 @@ class Student < ApplicationRecord
   has_many :appointments, dependent: :destroy
   has_many :time_slots, through: :appointments
   
+  # 後方互換性のためのメソッド（単数形のcampus）
+  def campus
+    campuses.first
+  end
+  
   # バリデーション
   validates :student_number, presence: true, uniqueness: true,
             format: { with: /\A[a-zA-Z0-9]+\z/, message: "英数字のみ使用可能です" }

@@ -1,0 +1,194 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">面談記録</h1>
+          <p class="mt-2 text-gray-600">面談の内容を記録します</p>
+        </div>
+        <%= link_to staff_dashboard_path, 
+            class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center" do %>
+        <i class="fas fa-arrow-left mr-2"></i>
+        ダッシュボードに戻る
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 面談情報 -->
+    <div class="bg-white rounded-lg shadow mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+          <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+          面談情報
+        </h2>
+      </div>
+
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">生徒</label>
+              <div class="mt-1 flex items-center space-x-3">
+                <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
+                  <%= @appointment.student.name[0] %>
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900"><%= @appointment.student.name %>さん</p>
+                  <p class="text-sm text-gray-600">
+                    生徒番号: <%= @appointment.student.student_number %>
+                    <% if @appointment.student.campus %>
+                    | <%= @appointment.student.campus.name %>
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700">講師</label>
+              <p class="mt-1 text-gray-900"><%= @appointment.time_slot.teacher.name %>先生</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">面談日時</label>
+              <p class="mt-1 text-gray-900">
+                <%= @appointment.time_slot.date.strftime('%Y年%m月%d日 (%a)') %>
+                <%= @appointment.time_slot.start_time.strftime('%H:%M') %>から
+              </p>
+            </div>
+
+            <% if @appointment.proxy_booking? %>
+            <div>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <i class="fas fa-user-plus mr-1"></i>
+                代理予約
+              </span>
+            </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面談記録フォーム -->
+    <div class="bg-white rounded-lg shadow">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+          <i class="fas fa-edit text-green-500 mr-2"></i>
+          面談記録
+          <% if @record.persisted? %>
+          <span class="ml-3 text-sm font-normal text-gray-500">
+            (最終更新: <%= @record.updated_at.strftime('%Y/%m/%d %H:%M') %>)
+          </span>
+          <% end %>
+        </h2>
+      </div>
+
+      <div class="px-6 py-6">
+        <%= form_with model: @record, url: save_interview_record_path(@appointment), 
+                      method: :patch, local: true, class: "space-y-6" do |form| %>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            面談内容 <span class="text-red-500">*</span>
+          </label>
+          <%= form.text_area :content, 
+                rows: 12,
+                placeholder: "面談で話した内容、生徒の様子、今後のアドバイスなどを記録してください...\n\n例：\n・学習状況について\n・進路相談について\n・悩みや相談事項\n・今後の学習計画\n・次回面談の予定など",
+                class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none" %>
+
+          <% if @record.errors[:content].any? %>
+          <p class="mt-1 text-sm text-red-600">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            <%= @record.errors[:content].first %>
+          </p>
+          <% end %>
+
+          <p class="mt-2 text-sm text-gray-500">
+            10文字以上2000文字以内で入力してください。
+            <span class="ml-2" id="char-count">
+              現在: <span id="current-count">0</span>文字
+            </span>
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+          <div class="text-sm text-gray-500">
+            <i class="fas fa-lock mr-1"></i>
+            この記録は講師・管理者のみ閲覧可能です
+          </div>
+
+          <div class="flex space-x-3">
+            <%= link_to staff_dashboard_path, 
+                  class: "bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-medium" do %>
+            キャンセル
+            <% end %>
+
+            <%= form.submit (@record.persisted? ? "記録を更新" : "記録を保存"), 
+                  class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium" %>
+          </div>
+        </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 注意事項 -->
+    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+        <i class="fas fa-info-circle mr-2"></i>
+        面談記録について
+      </h3>
+      <ul class="space-y-2 text-sm text-blue-700">
+        <li class="flex items-start">
+          <i class="fas fa-check-circle text-blue-600 mr-2 mt-0.5"></i>
+          面談記録は講師と管理者のみが閲覧できます
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check-circle text-blue-600 mr-2 mt-0.5"></i>
+          記録は後から編集・更新することができます
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check-circle text-blue-600 mr-2 mt-0.5"></i>
+          生徒の個人情報の取り扱いにご注意ください
+        </li>
+        <li class="flex items-start">
+          <i class="fas fa-check-circle text-blue-600 mr-2 mt-0.5"></i>
+          詳細な記録は今後の指導に役立ちます
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 文字数カウント機能
+  document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="interview_record[content]"]');
+    const currentCount = document.getElementById('current-count');
+
+    function updateCharCount() {
+      const count = textarea.value.length;
+      currentCount.textContent = count;
+
+      // 文字数に応じて色を変更
+      if (count < 10) {
+        currentCount.className = 'text-red-600';
+      } else if (count > 2000) {
+        currentCount.className = 'text-red-600';
+      } else {
+        currentCount.className = 'text-green-600';
+      }
+    }
+
+    if (textarea) {
+      // 初期表示
+      updateCharCount();
+
+      // リアルタイム更新
+      textarea.addEventListener('input', updateCharCount);
+    }
+  });
+</script>

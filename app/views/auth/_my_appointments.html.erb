@@ -1,0 +1,169 @@
+<div class="space-y-8">
+  <!-- 今日の予約 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+        <i class="fas fa-clock text-red-500 mr-2"></i>
+        今日の予約 (<%= Date.current.strftime('%m/%d') %>)
+      </h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @today_appointments.any? %>
+      <div class="space-y-3">
+        <% @today_appointments.each do |time_slot| %>
+        <% appointment = time_slot.appointment %>
+        <div class="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div class="flex items-center space-x-4">
+            <div class="bg-yellow-500 text-white rounded-lg px-3 py-2 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-sm font-bold text-white">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">
+                <%= appointment.student.name %>さん
+                <% if appointment.student.campus %>
+                (<%= appointment.student.campus.name %>)
+                <% end %>
+              </p>
+              <% if appointment.proxy_booking? %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                代理予約
+              </span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <% if appointment.interview_record %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm" do %>
+            <i class="fas fa-check-circle mr-1"></i>
+            記録済み
+            <% end %>
+            <% else %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm" do %>
+            <i class="fas fa-edit mr-1"></i>
+            記録追加
+            <% end %>
+            <% end %>
+          </div>
+        </div>
+        <% end %>
+      </div>
+      <% else %>
+      <p class="text-gray-500 text-center py-8">今日の予約はありません</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 今後の予約 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+        <i class="fas fa-calendar-plus text-blue-500 mr-2"></i>
+        今後の予約
+      </h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @upcoming_appointments.any? %>
+      <div class="space-y-4">
+        <% @upcoming_appointments.each do |time_slot| %>
+        <% appointment = time_slot.appointment %>
+        <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="flex items-center space-x-4">
+            <div class="bg-blue-500 text-white rounded-lg px-3 py-2 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-sm font-medium text-gray-900">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900">
+                <%= appointment.student.name %>さん
+                <% if appointment.student.campus %>
+                (<%= appointment.student.campus.name %>)
+                <% end %>
+              </p>
+              <% if appointment.proxy_booking? %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                代理予約
+              </span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button class="text-gray-500 hover:text-gray-700 px-3 py-1 text-sm">
+              <i class="fas fa-info-circle mr-1"></i>
+              詳細
+            </button>
+          </div>
+        </div>
+        <% end %>
+      </div>
+      <% else %>
+      <p class="text-gray-500 text-center py-8">今後の予約はありません</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 過去の面談履歴 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+        <i class="fas fa-history text-gray-500 mr-2"></i>
+        過去の面談履歴（最新20件）
+      </h2>
+    </div>
+    <div class="px-6 py-4">
+      <% if @past_appointments.any? %>
+      <div class="space-y-3">
+        <% @past_appointments.each do |time_slot| %>
+        <% appointment = time_slot.appointment %>
+        <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <div class="flex items-center space-x-4">
+            <div class="bg-gray-500 text-white rounded-lg px-3 py-2 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-sm font-bold text-white">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">
+                <%= appointment.student.name %>さん
+                <% if appointment.student.campus %>
+                (<%= appointment.student.campus.name %>)
+                <% end %>
+              </p>
+              <% if appointment.proxy_booking? %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                代理予約
+              </span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <% if appointment.interview_record %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm" do %>
+            <i class="fas fa-check-circle mr-1"></i>
+            記録済み
+            <% end %>
+            <% else %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm" do %>
+            <i class="fas fa-edit mr-1"></i>
+            記録追加
+            <% end %>
+            <% end %>
+          </div>
+        </div>
+        <% end %>
+      </div>
+      <% else %>
+      <p class="text-gray-500 text-center py-8">過去の面談履歴はありません</p>
+      <% end %>
+    </div>
+  </div>
+</div>

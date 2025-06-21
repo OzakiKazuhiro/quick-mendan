@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_144119) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_21_010148) do
   create_table "appointments", force: :cascade do |t|
     t.integer "student_id", null: false
     t.integer "time_slot_id", null: false
@@ -28,6 +28,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_144119) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_campus_on_name", unique: true
+  end
+
+  create_table "interview_records", force: :cascade do |t|
+    t.integer "appointment_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_interview_records_on_appointment_id"
   end
 
   create_table "student_campus_affiliations", force: :cascade do |t|
@@ -92,6 +100,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_144119) do
 
   add_foreign_key "appointments", "students"
   add_foreign_key "appointments", "time_slots"
+  add_foreign_key "interview_records", "appointments"
   add_foreign_key "student_campus_affiliations", "campus", column: "campus_id"
   add_foreign_key "student_campus_affiliations", "students"
   add_foreign_key "time_slots", "campus", column: "campus_id"
