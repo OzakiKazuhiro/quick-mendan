@@ -17,6 +17,9 @@ require 'devise'
 require 'capybara/rails'
 require 'capybara/rspec'
 
+# ActiveSupportのtime helpersを読み込み
+require 'active_support/testing/time_helpers'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -88,4 +91,15 @@ RSpec.configure do |config|
   # Warden test helper for feature specs
   config.include Warden::Test::Helpers, type: :feature
   config.after(:each, type: :feature) { Warden.test_reset! }
+  
+  # ActiveSupportのtime helpersを含める
+  config.include ActiveSupport::Testing::TimeHelpers
+end
+
+# Shoulda Matchers設定
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
 end
