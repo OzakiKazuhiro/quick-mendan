@@ -61,12 +61,20 @@ class StudentsController < ApplicationController
   # 講師一覧画面
   def teachers
     @student = current_student
-    @teachers = Teacher.joins(:time_slots)
-                      .where(time_slots: { status: :available })
-                      .where('time_slots.date >= ?', Date.current)
-                      .distinct
-                      .includes(:time_slots)
-                      .order(:name)
+    
+    # 担当講師がいる場合はその講師のみ、いない場合は全講師を表示
+    if @student.assigned_teacher
+      @teachers = [@student.assigned_teacher].select do |teacher|
+        teacher.time_slots.available.where('date >= ?', Date.current).exists?
+      end
+    else
+      @teachers = Teacher.joins(:time_slots)
+                        .where(time_slots: { status: :available })
+                        .where('time_slots.date >= ?', Date.current)
+                        .distinct
+                        .includes(:time_slots)
+                        .order(:name)
+    end
   end
 
   # 講師別予約画面

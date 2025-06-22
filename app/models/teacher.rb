@@ -11,6 +11,9 @@ class Teacher < ApplicationRecord
   has_many :time_slots, dependent: :destroy
   # has_many :appointments, through: :time_slots
   
+  # 担当生徒との関連
+  has_many :assigned_students, class_name: 'Student', foreign_key: 'assigned_teacher_id', dependent: :nullify
+  
   # バリデーション
   validates :user_login_name, presence: true, uniqueness: true,
             format: { with: /\A[a-zA-Z0-9_]+\z/, message: "英数字とアンダースコアのみ使用可能です" }

@@ -53,6 +53,9 @@ Rails.application.routes.draw do
   get 'staff/students/:id/edit', to: 'auth#students_edit', as: 'edit_staff_student'
   patch 'staff/students/:id', to: 'auth#students_update', as: 'update_staff_student'
   delete 'staff/students/:id', to: 'auth#students_destroy', as: 'destroy_staff_student'
+  
+  # 生徒一括操作
+  post 'staff/students/bulk_assign_teacher', to: 'auth#bulk_assign_teacher', as: 'bulk_assign_teacher'
 
   # 講師管理機能（管理者のみ）
   get 'staff/teachers', to: 'auth#teachers_index', as: 'staff_teachers'

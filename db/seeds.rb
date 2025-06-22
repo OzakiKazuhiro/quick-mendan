@@ -1,5 +1,5 @@
 puts "🌱 シードデータの作成を開始します..."
-puts "📝 多対多リレーション対応版のテストデータを作成します"
+puts "📝 担当講師機能対応版のテストデータを作成します"
 
 # ===================================================================
 # 校舎データの作成
@@ -80,78 +80,125 @@ puts "  - #{teacher3.name} (ログイン名: #{teacher3.user_login_name})"
 puts "  - #{teacher4.name} (ログイン名: #{teacher4.user_login_name})"
 
 # ===================================================================
-# 生徒データの作成（多対多リレーション対応）
+# 生徒データの作成（多対多リレーション + 担当講師対応）
 # ===================================================================
 puts "\n👨‍🎓 生徒データを作成中..."
 
-# 三国ヶ丘本部校の生徒
-student1 = Student.find_or_create_by!(student_number: "2024001") do |s|
-  s.name = "山田太郎"
-  s.grade = "高校2年"
-  s.school_name = "泉陽学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+# 三国ヶ丘本部校の生徒（柴口先生担当）
+student1 = Student.find_or_initialize_by(student_number: "2024001")
+student1.assign_attributes(
+  name: "山田太郎",
+  grade: "高校2年",
+  school_name: "泉陽高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher1  # 柴口先生担当
+)
+student1.save!
 
-student2 = Student.find_or_create_by!(student_number: "2024002") do |s|
-  s.name = "田中花子"
-  s.grade = "高校1年"
-  s.school_name = "清教学園学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+student2 = Student.find_or_initialize_by(student_number: "2024002")
+student2.assign_attributes(
+  name: "田中花子",
+  grade: "高校1年",
+  school_name: "清教学園高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher1  # 柴口先生担当
+)
+student2.save!
 
-# 泉ヶ丘駅前校の生徒
-student3 = Student.find_or_create_by!(student_number: "2024003") do |s|
-  s.name = "佐藤次郎"
-  s.grade = "高校3年"
-  s.school_name = "鳳学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+# 泉ヶ丘駅前校の生徒（田中先生担当）
+student3 = Student.find_or_initialize_by(student_number: "2024003")
+student3.assign_attributes(
+  name: "佐藤次郎",
+  grade: "高校3年",
+  school_name: "鳳高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher2  # 田中先生担当
+)
+student3.save!
 
-student4 = Student.find_or_create_by!(student_number: "2024004") do |s|
-  s.name = "鈴木美咲"
-  s.grade = "高校2年"
-  s.school_name = "三国丘学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+student4 = Student.find_or_initialize_by(student_number: "2024004")
+student4.assign_attributes(
+  name: "鈴木美咲",
+  grade: "高校2年",
+  school_name: "三国丘高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher2  # 田中先生担当
+)
+student4.save!
 
-# 岸和田校の生徒
-student5 = Student.find_or_create_by!(student_number: "2024005") do |s|
-  s.name = "高橋健太"
-  s.grade = "高校3年"
-  s.school_name = "天王寺学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+# 岸和田校の生徒（山本先生担当）
+student5 = Student.find_or_initialize_by(student_number: "2024005")
+student5.assign_attributes(
+  name: "高橋健太",
+  grade: "高校3年",
+  school_name: "天王寺高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher3  # 山本先生担当
+)
+student5.save!
 
-student6 = Student.find_or_create_by!(student_number: "2024006") do |s|
-  s.name = "伊藤さくら"
-  s.grade = "高校1年"
-  s.school_name = "四天王寺高校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+student6 = Student.find_or_initialize_by(student_number: "2024006")
+student6.assign_attributes(
+  name: "伊藤さくら",
+  grade: "高校1年",
+  school_name: "四天王寺高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher3  # 山本先生担当
+)
+student6.save!
 
-# 鳳駅前校の生徒
-student7 = Student.find_or_create_by!(student_number: "2024007") do |s|
-  s.name = "渡辺大輔"
-  s.grade = "高校2年"
-  s.school_name = "近大泉州学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+# 鳳駅前校の生徒（渡辺先生担当）
+student7 = Student.find_or_initialize_by(student_number: "2024007")
+student7.assign_attributes(
+  name: "渡辺大輔",
+  grade: "高校2年",
+  school_name: "近大泉州高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher4  # 渡辺先生担当
+)
+student7.save!
 
-# 複数校舎に所属する生徒（多対多の利点を活用）
-student8 = Student.find_or_create_by!(student_number: "2024008") do |s|
-  s.name = "中村優子"
-  s.grade = "高校3年"
-  s.school_name = "登美丘学校"
-  s.password = "9999"
-  s.password_confirmation = "9999"
-end
+# 複数校舎に所属する生徒（担当講師なし）
+student8 = Student.find_or_initialize_by(student_number: "2024008")
+student8.assign_attributes(
+  name: "中村優子",
+  grade: "高校3年",
+  school_name: "登美丘高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: nil  # 担当講師なし
+)
+student8.save!
+
+# 担当講師なしの生徒（追加）
+student9 = Student.find_or_initialize_by(student_number: "2024009")
+student9.assign_attributes(
+  name: "小林正人",
+  grade: "高校1年",
+  school_name: "関西大倉高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: nil  # 担当講師なし
+)
+student9.save!
+
+student10 = Student.find_or_initialize_by(student_number: "2024010")
+student10.assign_attributes(
+  name: "松本彩乃",
+  grade: "高校3年",
+  school_name: "大阪女学院高校",
+  password: "9999",
+  password_confirmation: "9999",
+  assigned_teacher: teacher1  # 柴口先生担当（複数生徒担当の例）
+)
+student10.save!
 
 puts "✅ 生徒アカウント作成完了: #{Student.count}名"
 
@@ -166,6 +213,9 @@ unless student1.campuses.include?(campus_mikunigaoka)
 end
 unless student2.campuses.include?(campus_mikunigaoka)
   student2.campuses << campus_mikunigaoka
+end
+unless student10.campuses.include?(campus_mikunigaoka)
+  student10.campuses << campus_mikunigaoka
 end
 
 unless student3.campuses.include?(campus_izumigaoka)
@@ -185,6 +235,9 @@ end
 unless student7.campuses.include?(campus_otori)
   student7.campuses << campus_otori
 end
+unless student9.campuses.include?(campus_otori)
+  student9.campuses << campus_otori
+end
 
 # 複数校舎に所属する生徒の例（多対多の利点）
 unless student8.campuses.include?(campus_mikunigaoka)
@@ -199,7 +252,7 @@ puts "✅ 生徒と校舎の関連付け完了: #{StudentCampusAffiliation.count
 # ===================================================================
 # 結果表示
 # ===================================================================
-puts "\n🎉 シードデータの作成が完了しました！"
+puts "\n🎉 担当講師機能対応版シードデータの作成が完了しました！"
 puts ""
 puts "=== 作成されたデータ ==="
 puts "📍 校舎: #{Campus.count}件"
@@ -210,16 +263,25 @@ end
 puts "\n👨‍🏫 講師: #{Teacher.count}名"
 Teacher.all.each do |teacher|
   role_text = teacher.role == "admin" ? " ※管理者" : ""
-  puts "  - #{teacher.name} (#{teacher.user_login_name})#{role_text}"
+  assigned_count = teacher.assigned_students.count
+  assigned_text = assigned_count > 0 ? " (担当生徒: #{assigned_count}名)" : ""
+  puts "  - #{teacher.name} (#{teacher.user_login_name})#{role_text}#{assigned_text}"
 end
 
 puts "\n👨‍🎓 生徒: #{Student.count}名"
 Student.all.each do |student|
   campus_info = student.campuses.any? ? student.campus_names : "未所属"
-  puts "  - #{student.name} (#{student.student_number}) - 校舎: #{campus_info}"
+  teacher_info = student.assigned_teacher ? student.assigned_teacher.name + "先生" : "担当なし"
+  puts "  - #{student.name} (#{student.student_number}) - 校舎: #{campus_info} - 担当: #{teacher_info}"
 end
 
 puts "\n🔗 生徒-校舎関連: #{StudentCampusAffiliation.count}件"
+
+puts "\n📊 担当講師別生徒数:"
+Teacher.all.each do |teacher|
+  count = teacher.assigned_students.count
+  puts "  - #{teacher.name}先生: #{count}名"
+end
 
 puts ""
 puts "=== ログイン情報 ==="
@@ -228,12 +290,14 @@ puts "  ログイン名: admin_master"
 puts "  パスワード: AdminPass2024!"
 puts ""
 puts "【講師】"
-puts "  ログイン名: shibaguchi / パスワード: password-shibaguchi"
-puts "  ログイン名: tanaka_a / パスワード: password-tanaka"
-puts "  ログイン名: yamamoto / パスワード: password-yamamoto"
-puts "  ログイン名: watanabe / パスワード: password-watanabe"
+puts "  ログイン名: shibaguchi / パスワード: password-shibaguchi (担当生徒: 3名)"
+puts "  ログイン名: tanaka_a / パスワード: password-tanaka (担当生徒: 2名)"
+puts "  ログイン名: yamamoto / パスワード: password-yamamoto (担当生徒: 2名)"
+puts "  ログイン名: watanabe / パスワード: password-watanabe (担当生徒: 1名)"
 puts ""
 puts "【生徒】"
 puts "  すべての生徒のパスワード: 9999"
-puts "  生徒番号: 2024001〜2024008"
+puts "  生徒番号: 2024001〜2024010"
+puts "  担当講師ありの生徒: 8名"
+puts "  担当講師なしの生徒: 2名"
 puts "==================="

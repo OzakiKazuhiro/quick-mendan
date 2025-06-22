@@ -2,10 +2,30 @@
   <!-- 今日の予約 -->
   <div class="bg-white rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-        <i class="fas fa-clock text-red-500 mr-2"></i>
-        今日の予約 (<%= Date.current.strftime('%m/%d') %>)
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+          <i class="fas fa-clock text-red-500 mr-2"></i>
+          <% if @selected_teacher == @current_user %>
+          今日の自分の予定 (<%= Date.current.strftime('%m/%d') %>)
+          <% else %>
+          今日の<%= @selected_teacher.name %>先生の予定 (<%= Date.current.strftime('%m/%d') %>)
+          <% end %>
+        </h2>
+        <!-- 講師選択プルダウン -->
+        <div class="flex items-center space-x-3">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
     </div>
     <div class="px-6 py-4">
       <% if @today_appointments.any? %>
@@ -61,10 +81,30 @@
   <!-- 今後の予約 -->
   <div class="bg-white rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-        <i class="fas fa-calendar-plus text-blue-500 mr-2"></i>
-        今後の予約
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+          <i class="fas fa-calendar-plus text-blue-500 mr-2"></i>
+          <% if @selected_teacher == @current_user %>
+          今後の自分の予定
+          <% else %>
+          今後の<%= @selected_teacher.name %>先生の予定
+          <% end %>
+        </h2>
+        <!-- 講師選択プルダウン -->
+        <div class="flex items-center space-x-3">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
     </div>
     <div class="px-6 py-4">
       <% if @upcoming_appointments.any? %>
@@ -75,7 +115,7 @@
           <div class="flex items-center space-x-4">
             <div class="bg-blue-500 text-white rounded-lg px-3 py-2 text-center">
               <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
-              <div class="text-sm font-medium text-gray-900">
+              <div class="text-sm font-bold text-white">
                 <%= time_slot.start_time.strftime('%H:%M') %>
               </div>
             </div>
@@ -94,10 +134,11 @@
             </div>
           </div>
           <div class="flex space-x-2">
-            <button class="text-gray-500 hover:text-gray-700 px-3 py-1 text-sm">
-              <i class="fas fa-info-circle mr-1"></i>
-              詳細
-            </button>
+            <%= link_to interview_record_path(appointment), 
+                      class: "text-gray-600 hover:text-gray-800 px-3 py-1 text-sm transition-colors" do %>
+            <i class="fas fa-info-circle mr-1"></i>
+            詳細
+            <% end %>
           </div>
         </div>
         <% end %>
@@ -111,10 +152,30 @@
   <!-- 過去の面談履歴 -->
   <div class="bg-white rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-        <i class="fas fa-history text-gray-500 mr-2"></i>
-        過去の面談履歴（最新20件）
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+          <i class="fas fa-history text-gray-500 mr-2"></i>
+          <% if @selected_teacher == @current_user %>
+          過去の面談履歴（最新20件）
+          <% else %>
+          <%= @selected_teacher.name %>先生の過去の面談履歴（最新20件）
+          <% end %>
+        </h2>
+        <!-- 講師選択プルダウン -->
+        <div class="flex items-center space-x-3">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
     </div>
     <div class="px-6 py-4">
       <% if @past_appointments.any? %>

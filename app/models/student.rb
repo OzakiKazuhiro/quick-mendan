@@ -17,6 +17,9 @@ class Student < ApplicationRecord
   # 校舎との関連（中間テーブル経由の間接的な関連）
   has_many :campuses, through: :student_campus_affiliations, source: :campus
   
+  # 担当講師との関連
+  belongs_to :assigned_teacher, class_name: 'Teacher', optional: true
+  
   # 予約との関連
   has_many :appointments, dependent: :destroy
   has_many :time_slots, through: :appointments

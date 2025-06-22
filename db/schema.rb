@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_21_010148) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_22_141106) do
   create_table "appointments", force: :cascade do |t|
     t.integer "student_id", null: false
     t.integer "time_slot_id", null: false
@@ -59,6 +59,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_010148) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "assigned_teacher_id"
+    t.index ["assigned_teacher_id"], name: "index_students_on_assigned_teacher_id"
     t.index ["reset_password_token"], name: "index_students_on_reset_password_token", unique: true
     t.index ["student_number"], name: "index_students_on_student_number", unique: true
   end
@@ -103,6 +105,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_21_010148) do
   add_foreign_key "interview_records", "appointments"
   add_foreign_key "student_campus_affiliations", "campus", column: "campus_id"
   add_foreign_key "student_campus_affiliations", "students"
+  add_foreign_key "students", "teachers", column: "assigned_teacher_id", on_delete: :nullify
   add_foreign_key "time_slots", "campus", column: "campus_id"
   add_foreign_key "time_slots", "teachers"
 end
