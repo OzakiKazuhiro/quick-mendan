@@ -49,6 +49,45 @@ RSpec.describe Student, type: :model do
         expect(student.student_campus_affiliations.first.campus).to eq(campus)
       end
     end
+
+    describe 'assigned_teacher' do
+      let(:student) { create(:student) }
+      let(:teacher) { create(:teacher) }
+
+      it '担当講師を設定できること' do
+        student.assigned_teacher = teacher
+        student.save!
+        
+        expect(student.assigned_teacher).to eq(teacher)
+        expect(student.assigned_teacher_id).to eq(teacher.id)
+      end
+
+      it '担当講師がなくても有効であること' do
+        student.assigned_teacher = nil
+        expect(student).to be_valid
+        expect(student.assigned_teacher).to be_nil
+      end
+
+      it '存在しない講師IDを設定した場合、関連付けが失敗すること' do
+        expect {
+          student.update!(assigned_teacher_id: 99999)
+        }.to raise_error(ActiveRecord::InvalidForeignKey)
+      end
+
+      it 'with_assigned_teacher traitが正しく動作すること' do
+        student_with_teacher = create(:student, :with_assigned_teacher)
+        expect(student_with_teacher.assigned_teacher).to be_present
+        expect(student_with_teacher.assigned_teacher).to be_a(Teacher)
+      end
+
+      it 'with_specific_teacher traitが正しく動作すること' do
+        specific_teacher = create(:teacher, name: "特定の講師")
+        student_with_specific = create(:student, :with_specific_teacher, teacher: specific_teacher)
+        
+        expect(student_with_specific.assigned_teacher).to eq(specific_teacher)
+        expect(student_with_specific.assigned_teacher.name).to eq("特定の講師")
+      end
+    end
   end
 
   describe 'バリデーションのテスト' do

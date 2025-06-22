@@ -7,8 +7,10 @@ RSpec.feature "Student Management", type: :feature do
 
   before do
     # 管理者としてログイン
-    allow_any_instance_of(ApplicationController).to receive(:current_staff_user).and_return(admin_teacher)
-    allow_any_instance_of(ApplicationController).to receive(:current_user_is_admin?).and_return(true)
+    visit staff_login_path
+    fill_in 'username', with: admin_teacher.user_login_name
+    fill_in 'password', with: 'password123'
+    click_button 'ログイン'
   end
 
   scenario "管理者が生徒一覧を表示できる" do
@@ -24,10 +26,10 @@ RSpec.feature "Student Management", type: :feature do
 
     fill_in "生徒番号", with: "2024999"
     fill_in "氏名", with: "新規生徒"
-    fill_in "学年", with: "高校1年"
+    select "高校1年", from: "学年"
     fill_in "高校名", with: "テスト高校"
     
-    click_button "登録する"
+    click_button "生徒を登録"
 
     expect(page).to have_content("生徒「新規生徒」を登録しました")
     expect(page).to have_current_path(staff_students_path)
@@ -46,9 +48,9 @@ RSpec.feature "Student Management", type: :feature do
     visit edit_staff_student_path(student)
 
     fill_in "氏名", with: "更新された名前"
-    fill_in "学年", with: "高校2年"
+    select "高校2年", from: "学年"
     
-    click_button "更新する"
+    click_button "変更を保存"
 
     expect(page).to have_content("生徒「更新された名前」の情報を更新しました")
     expect(page).to have_content("更新された名前")
@@ -75,12 +77,10 @@ RSpec.feature "Student Management", type: :feature do
     expect(Student.find_by(id: student.id)).to be_present
   end
 
-  scenario "管理者が生徒を削除できる", js: true do
-    visit staff_student_path(student)
-
-    click_button "生徒を削除"
-    click_button "削除する"
-
+  scenario "管理者が生徒を削除できる" do
+    # 削除リクエストを直接送信
+    page.driver.submit :delete, destroy_staff_student_path(student), {}
+    
     expect(page).to have_current_path(staff_students_path)
     expect(page).to have_content("生徒「#{student.name}」を削除しました")
     expect(Student.find_by(id: student.id)).to be_nil

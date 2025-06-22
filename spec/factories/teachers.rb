@@ -14,6 +14,29 @@ FactoryBot.define do
       email { "valid_teacher@example.com" }
     end
 
+    # 担当生徒ありのtrait
+    trait :with_assigned_students do
+      after(:create) do |teacher|
+        create_list(:student, 3, assigned_teacher: teacher)
+      end
+    end
+
+    # 特定の担当生徒数を設定するtrait
+    trait :with_students do
+      transient do
+        students_count { 2 }
+      end
+
+      after(:create) do |teacher, evaluator|
+        create_list(:student, evaluator.students_count, assigned_teacher: teacher)
+      end
+    end
+
+    # 担当生徒なしのtrait（明示的）
+    trait :without_assigned_students do
+      # デフォルトの状態（何もしない）
+    end
+
     # メールアドレスなしのtrait
     trait :without_email do
       email { nil }

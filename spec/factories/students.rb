@@ -14,6 +14,25 @@ FactoryBot.define do
       name { "有効な生徒" }
     end
 
+    # 担当講師ありのtrait
+    trait :with_assigned_teacher do
+      association :assigned_teacher, factory: :teacher
+    end
+
+    # 特定の講師を担当に設定するtrait
+    trait :with_specific_teacher do
+      transient do
+        teacher { nil }
+      end
+      
+      assigned_teacher { teacher }
+    end
+
+    # 担当講師なしのtrait（明示的）
+    trait :without_assigned_teacher do
+      assigned_teacher { nil }
+    end
+
     # 単一校舎に所属するtrait（多対多対応）
     trait :with_campus do
       after(:create) do |student|

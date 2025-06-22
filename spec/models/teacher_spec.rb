@@ -111,6 +111,13 @@ RSpec.describe Teacher, type: :model do
         expect(teacher).not_to be_valid
         expect(teacher.errors[:password]).to include("can't be blank")
       end
+
+      it 'パスワード確認が一致しない場合は無効であること' do
+        teacher.password = 'password123'
+        teacher.password_confirmation = 'different'
+        expect(teacher).not_to be_valid
+        expect(teacher.errors[:password_confirmation]).to include("doesn't match Password")
+      end
     end
   end
 
@@ -229,6 +236,59 @@ RSpec.describe Teacher, type: :model do
       expect(saved_teacher.name).to eq('保存テスト講師')
       expect(saved_teacher.email).to eq('save_test@example.com')
       expect(saved_teacher.notification_time.strftime('%H:%M')).to eq('09:00')
+    end
+  end
+
+  describe '担当生徒機能のテスト' do
+    describe 'assigned_students' do
+      let(:teacher) { create(:teacher) }
+
+      it '担当生徒を複数持てること' do
+        student1 = create(:student, assigned_teacher: teacher)
+        student2 = create(:student, assigned_teacher: teacher)
+        
+        expect(teacher.assigned_students).to include(student1, student2)
+        expect(teacher.assigned_students.count).to eq(2)
+      end
+
+      it '担当生徒がいない場合は空配列を返すこと' do
+        expect(teacher.assigned_students).to be_empty
+      end
+
+      it 'with_assigned_students traitが正しく動作すること' do
+        teacher_with_students = create(:teacher, :with_assigned_students)
+        expect(teacher_with_students.assigned_students.count).to eq(3)
+        expect(teacher_with_students.assigned_students.first).to be_a(Student)
+      end
+
+      it 'with_students traitが指定された数の生徒を作成すること' do
+        teacher_with_five = create(:teacher, :with_students, students_count: 5)
+        expect(teacher_with_five.assigned_students.count).to eq(5)
+      end
+
+      it '講師削除時に担当生徒のassigned_teacher_idがnilになること' do
+        student1 = create(:student, assigned_teacher: teacher)
+        student2 = create(:student, assigned_teacher: teacher)
+        
+        teacher.destroy
+        
+        student1.reload
+        student2.reload
+        
+        expect(student1.assigned_teacher_id).to be_nil
+        expect(student2.assigned_teacher_id).to be_nil
+      end
+    end
+
+    describe '担当生徒数カウント' do
+      let(:teacher) { create(:teacher) }
+
+      it '担当生徒数を正しくカウントできること' do
+        create_list(:student, 3, assigned_teacher: teacher)
+        create(:student) # 他の講師の生徒（担当なし）
+        
+        expect(teacher.assigned_students.count).to eq(3)
+      end
     end
   end
 end
