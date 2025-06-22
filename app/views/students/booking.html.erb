@@ -227,87 +227,87 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- 予約確認モーダル -->
-<div id="booking-modal" data-student-booking-target="modal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">予約確認</h3>
+    <!-- 予約確認モーダル -->
+    <div id="booking-modal" data-student-booking-target="modal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">予約確認</h3>
 
-    <div class="mb-4">
-      <div class="text-sm text-gray-600 mb-2">
-        <strong>講師:</strong> <%= @teacher.name %>先生
-      </div>
-      <div class="text-sm text-gray-600 mb-2">
-        <strong>日時:</strong> <span data-student-booking-target="modalDatetime"></span>
-      </div>
-      <div class="text-sm text-gray-600 mb-4">
-        <strong>校舎:</strong> <span data-student-booking-target="modalCampus"></span>
-      </div>
-
-      <div class="mb-4">
-        <label for="appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
-          メモ（任意）
-        </label>
-        <textarea id="appointment-notes" data-student-booking-target="appointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
-      </div>
-    </div>
-
-    <div class="flex justify-end space-x-3">
-      <button type="button" onclick="closeBookingModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
-        キャンセル
-      </button>
-      <button type="button" data-student-booking-target="confirmBtn" data-action="click->student-booking#confirmBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
-        予約確定
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- 予約変更確認モーダル -->
-<div id="change-booking-modal" data-student-booking-target="changeModal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">予約変更確認</h3>
-
-    <div class="mb-4">
-      <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-            </svg>
+        <div class="mb-4">
+          <div class="text-sm text-gray-600 mb-2">
+            <strong>講師:</strong> <%= @teacher.name %>先生
           </div>
-          <div class="ml-3">
-            <p class="text-sm text-yellow-800">
-              面談枠は1つしか予約できません。既に予約している面談枠をキャンセルして、こちらの日時に予約を変更しますか？
-            </p>
+          <div class="text-sm text-gray-600 mb-2">
+            <strong>日時:</strong> <span data-student-booking-target="modalDatetime"></span>
+          </div>
+          <div class="text-sm text-gray-600 mb-4">
+            <strong>校舎:</strong> <span data-student-booking-target="modalCampus"></span>
+          </div>
+
+          <div class="mb-4">
+            <label for="appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
+              メモ（任意）
+            </label>
+            <textarea id="appointment-notes" data-student-booking-target="appointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
           </div>
         </div>
-      </div>
 
-      <div class="text-sm text-gray-600 mb-2">
-        <strong>現在の予約:</strong> <span data-student-booking-target="currentBookingInfo"></span>
-      </div>
-      <div class="text-sm text-gray-600 mb-2">
-        <strong>新しい予約:</strong> <span data-student-booking-target="newBookingInfo"></span>
-      </div>
-
-      <div class="mb-4">
-        <label for="change-appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
-          メモ（任意）
-        </label>
-        <textarea id="change-appointment-notes" data-student-booking-target="changeAppointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
+        <div class="flex justify-end space-x-3">
+          <button type="button" data-action="click->student-booking#cancelBooking" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+            キャンセル
+          </button>
+          <button type="button" data-student-booking-target="confirmBtn" data-action="click->student-booking#confirmBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+            予約確定
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="flex justify-end space-x-3">
-      <button type="button" onclick="closeChangeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
-        キャンセル
-      </button>
-      <button type="button" data-student-booking-target="confirmChangeBtn" data-action="click->student-booking#confirmChangeBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
-        予約変更
-      </button>
+    <!-- 予約変更確認モーダル -->
+    <div id="change-booking-modal" data-student-booking-target="changeModal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">予約変更確認</h3>
+
+        <div class="mb-4">
+          <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-yellow-800">
+                  面談枠は1つしか予約できません。既に予約している面談枠をキャンセルして、こちらの日時に予約を変更しますか？
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm text-gray-600 mb-2">
+            <strong>現在の予約:</strong> <span data-student-booking-target="currentBookingInfo"></span>
+          </div>
+          <div class="text-sm text-gray-600 mb-2">
+            <strong>新しい予約:</strong> <span data-student-booking-target="newBookingInfo"></span>
+          </div>
+
+          <div class="mb-4">
+            <label for="change-appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
+              メモ（任意）
+            </label>
+            <textarea id="change-appointment-notes" data-student-booking-target="changeAppointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <button type="button" data-action="click->student-booking#cancelChangeBooking" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+            キャンセル
+          </button>
+          <button type="button" data-student-booking-target="confirmChangeBtn" data-action="click->student-booking#confirmChangeBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+            予約変更
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -396,22 +396,3 @@
     }
   }
 </style>
-
-<script>
-  // 確実に動作するシンプルなJavaScript関数
-  function closeBookingModal() {
-    const modal = document.getElementById('booking-modal');
-    if (modal) {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-  }
-
-  function closeChangeModal() {
-    const modal = document.getElementById('change-booking-modal');
-    if (modal) {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-  }
-</script>
