@@ -82,6 +82,8 @@ Rails.application.routes.draw do
   post 'student/appointments', to: 'students#create_appointment', as: 'student_appointments'
   get 'student/appointments', to: 'students#appointments', as: 'student_appointments_list'
   delete 'student/appointments/:id', to: 'students#cancel_appointment', as: 'student_cancel_appointment'
+  # JSON API用の予約削除ルート
+  delete 'student/api/appointments/:id', to: 'students#destroy_appointment', as: 'student_destroy_appointment_api'
 
   # 以下は削除（シンプル版では不要）
   # devise_for :students, path: 'student', path_names: {

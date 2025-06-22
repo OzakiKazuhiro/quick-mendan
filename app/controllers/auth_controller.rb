@@ -133,8 +133,41 @@ class AuthController < ApplicationController
 
   # 生徒管理機能
   def students_index
-    @students = Student.includes(:campuses).order(:student_number)
+    # 基本クエリ
+    @students = Student.includes(:campuses)
+    
+    # 検索キーワード（生徒番号・氏名・高校名）
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @students = @students.where(
+        "student_number LIKE ? OR name LIKE ? OR school_name LIKE ?", 
+        search_term, search_term, search_term
+      )
+    end
+    
+    # 校舎フィルタ
+    @selected_campuses = params[:campuses] || []
+    if @selected_campuses.any?
+      @students = @students.joins(:student_campus_affiliations)
+                          .where(student_campus_affiliations: { campus_id: @selected_campuses })
+                          .distinct
+    end
+    
+    # 学年フィルタ
+    @selected_grade = params[:grade]
+    if @selected_grade.present?
+      @students = @students.where(grade: @selected_grade)
+    end
+    
+    # 最終的な並び順
+    @students = @students.order(:student_number)
+    
+    # フィルタ用データ
     @campuses = Campus.all
+    @grades = Student.where.not(grade: [nil, '']).distinct.pluck(:grade).compact.sort
+    
+    # 検索条件の保持
+    @search_keyword = params[:search]
   end
 
   def students_new

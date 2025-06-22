@@ -1,6 +1,6 @@
 <% content_for :title, "#{@teacher.name}先生の予約" %>
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-8" data-controller="student-booking" data-student-booking-student-bookings-value="<%= html_escape(@student_bookings_json) %>" data-student-booking-appointments-path-value="<%= student_appointments_path %>">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
     <div class="mb-8">
@@ -104,6 +104,7 @@
                     # 文字列キーでマッチング
                     key = "#{date}-#{time_slot}"
                     available_slot = @available_slots[key]
+                    student_booking = @student_bookings[key]
                     
                     # 過去の日付かチェック
                     is_past = date < Date.current
@@ -113,6 +114,12 @@
                       cell_class = "bg-gray-100 cursor-not-allowed text-gray-400"
                       cell_content = "×"
                       cell_title = "過去の日付"
+                      clickable = false
+                    elsif student_booking
+                      # 生徒が予約済みの場合
+                      cell_class = "bg-blue-100 border-blue-300 cursor-not-allowed"
+                      cell_content = "✓"
+                      cell_title = "あなたの予約済み"
                       clickable = false
                     elsif available_slot
                       cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
@@ -128,8 +135,35 @@
                   %>
 
               <td class="px-1 py-1 date-column">
-                <div class="w-full h-16 border rounded text-center flex flex-col items-center justify-center text-xs font-medium <%= cell_class %>" <% if clickable %> data-clickable="true" data-slot-id="<%= available_slot.id %>" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot %>" data-campus="<%= available_slot.campus.name %>" <% end %> title="<%= cell_title %>">
-                  <% if clickable %>
+                <div class="w-full h-16 border rounded text-center flex flex-col items-center justify-center text-xs font-medium <%= cell_class %>" <% if clickable %> data-clickable="true" data-slot-id="<%= available_slot.id %>" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot %>" data-campus="<%= available_slot.campus.name %>" data-action="click->student-booking#handleCellClick" <% end %> title="<%= cell_title %>">
+                  <% if student_booking %>
+                  <!-- 予約済みセルの表示 -->
+                  <div class="text-xs text-gray-700 leading-tight mb-1 mobile-campus truncate">
+                    <span class="hidden sm:inline"><%= student_booking.time_slot.campus.name %></span>
+                    <span class="sm:hidden">
+                      <%
+                          # スマートフォン用の校舎名短縮表示
+                          short_name = case student_booking.time_slot.campus.name
+                                      when /三国.*本部|三国ヶ丘本部/
+                                        "三国丘"
+                                      when /鳳駅前|鳳/
+                                        "鳳"
+                                      when /泉ヶ丘駅前|泉ヶ丘/
+                                        "泉ヶ丘"
+                                      when /岸和田/
+                                        "岸和田"
+                                      else
+                                        student_booking.time_slot.campus.name.slice(0, 4) # フォールバック：最初の4文字
+                                      end
+                        %>
+                      <%= short_name %>
+                    </span>
+                  </div>
+                  <div class="text-lg leading-none text-blue-600 mobile-symbol font-bold">
+                    ✓
+                  </div>
+                  <% elsif clickable %>
+                  <!-- 予約可能セルの表示 -->
                   <div class="text-xs text-gray-700 leading-tight mb-1 mobile-campus truncate">
                     <span class="hidden sm:inline"><%= available_slot.campus.name %></span>
                     <span class="sm:hidden">
@@ -155,6 +189,7 @@
                     ○
                   </div>
                   <% else %>
+                  <!-- その他のセルの表示 -->
                   <div class="text-lg leading-none mobile-symbol">
                     <%= cell_content %>
                   </div>
@@ -183,8 +218,9 @@
           </h3>
           <div class="mt-2 text-sm text-blue-700">
             <ul class="list-disc pl-5 space-y-1">
-              <li>校舎名と○印の時間枠をクリックすると予約できます</li>
-              <li>予約完了後は予約一覧から確認できます</li>
+              <li><span class="bg-green-100 text-green-800 px-1 rounded">○</span> 印の時間枠をクリックすると予約できます</li>
+              <li><span class="bg-blue-100 text-blue-800 px-1 rounded font-bold">✓</span> 印はあなたの予約済み枠です</li>
+              <li><strong>面談枠は1つしか予約できません</strong>（既存の予約がある場合は変更確認画面が表示されます）</li>
               <li>予約の変更・キャンセルは前日22:15まで可能です</li>
             </ul>
           </div>
@@ -195,7 +231,7 @@
 </div>
 
 <!-- 予約確認モーダル -->
-<div id="booking-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+<div id="booking-modal" data-student-booking-target="modal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
     <h3 class="text-lg font-medium text-gray-900 mb-4">予約確認</h3>
 
@@ -204,26 +240,73 @@
         <strong>講師:</strong> <%= @teacher.name %>先生
       </div>
       <div class="text-sm text-gray-600 mb-2">
-        <strong>日時:</strong> <span id="modal-datetime"></span>
+        <strong>日時:</strong> <span data-student-booking-target="modalDatetime"></span>
       </div>
       <div class="text-sm text-gray-600 mb-4">
-        <strong>校舎:</strong> <span id="modal-campus"></span>
+        <strong>校舎:</strong> <span data-student-booking-target="modalCampus"></span>
       </div>
 
       <div class="mb-4">
         <label for="appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
           メモ（任意）
         </label>
-        <textarea id="appointment-notes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
+        <textarea id="appointment-notes" data-student-booking-target="appointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
       </div>
     </div>
 
     <div class="flex justify-end space-x-3">
-      <button type="button" id="cancel-booking" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+      <button type="button" onclick="closeBookingModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
         キャンセル
       </button>
-      <button type="button" id="confirm-booking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+      <button type="button" data-student-booking-target="confirmBtn" data-action="click->student-booking#confirmBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
         予約確定
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 予約変更確認モーダル -->
+<div id="change-booking-modal" data-student-booking-target="changeModal" data-action="click->student-booking#closeOnBackdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">予約変更確認</h3>
+
+    <div class="mb-4">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-800">
+              面談枠は1つしか予約できません。既に予約している面談枠をキャンセルして、こちらの日時に予約を変更しますか？
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-sm text-gray-600 mb-2">
+        <strong>現在の予約:</strong> <span data-student-booking-target="currentBookingInfo"></span>
+      </div>
+      <div class="text-sm text-gray-600 mb-2">
+        <strong>新しい予約:</strong> <span data-student-booking-target="newBookingInfo"></span>
+      </div>
+
+      <div class="mb-4">
+        <label for="change-appointment-notes" class="block text-sm font-medium text-gray-700 mb-1">
+          メモ（任意）
+        </label>
+        <textarea id="change-appointment-notes" data-student-booking-target="changeAppointmentNotes" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" placeholder="面談で話したいことがあれば入力してください"></textarea>
+      </div>
+    </div>
+
+    <div class="flex justify-end space-x-3">
+      <button type="button" onclick="closeChangeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+        キャンセル
+      </button>
+      <button type="button" data-student-booking-target="confirmChangeBtn" data-action="click->student-booking#confirmChangeBooking" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+        予約変更
       </button>
     </div>
   </div>
@@ -314,102 +397,21 @@
   }
 </style>
 
-<!-- JavaScript -->
 <script>
-  // Turbo対応のイベントリスナー
-  document.addEventListener('turbo:load', function() {
+  // 確実に動作するシンプルなJavaScript関数
+  function closeBookingModal() {
     const modal = document.getElementById('booking-modal');
-    const modalDatetime = document.getElementById('modal-datetime');
-    const modalCampus = document.getElementById('modal-campus');
-    const appointmentNotes = document.getElementById('appointment-notes');
-    const cancelBtn = document.getElementById('cancel-booking');
-    const confirmBtn = document.getElementById('confirm-booking');
-
-    // 要素が存在しない場合は処理を中止
-    if (!modal || !modalDatetime || !modalCampus || !appointmentNotes || !cancelBtn || !confirmBtn) {
-      return;
-    }
-
-    let selectedSlotId = null;
-    const clickableCells = document.querySelectorAll('[data-clickable="true"]');
-
-    // 予約可能セルのクリックイベント
-    clickableCells.forEach(cell => {
-      cell.addEventListener('click', function() {
-        selectedSlotId = this.dataset.slotId;
-        const date = this.dataset.date;
-        const time = this.dataset.time;
-        const campus = this.dataset.campus;
-
-        // モーダルに情報を設定
-        modalDatetime.textContent = `${date} ${time}〜`;
-        modalCampus.textContent = campus;
-        appointmentNotes.value = '';
-
-        // モーダルを表示
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      });
-    });
-
-    // キャンセルボタン
-    cancelBtn.addEventListener('click', function() {
+    if (modal) {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-      selectedSlotId = null;
-    });
+    }
+  }
 
-    // 予約確定ボタン
-    confirmBtn.addEventListener('click', function() {
-      if (!selectedSlotId) return;
-
-      // ローディング状態
-      confirmBtn.disabled = true;
-      confirmBtn.textContent = '予約中...';
-
-      // 予約リクエスト
-      fetch('<%= student_appointments_path %>', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          },
-          body: JSON.stringify({
-            time_slot_id: selectedSlotId,
-            notes: appointmentNotes.value
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            alert(data.message);
-            // Turbo対応のページリロード
-            window.location.reload();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('予約処理中にエラーが発生しました');
-        })
-        .finally(() => {
-          // ローディング状態を解除
-          confirmBtn.disabled = false;
-          confirmBtn.textContent = '予約確定';
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-          selectedSlotId = null;
-        });
-    });
-
-    // モーダル外クリックで閉じる
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        selectedSlotId = null;
-      }
-    });
-  });
+  function closeChangeModal() {
+    const modal = document.getElementById('change-booking-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
 </script>

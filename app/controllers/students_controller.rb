@@ -2,7 +2,7 @@ class StudentsController < ApplicationController
   # ダッシュボードページのキャッシュを無効化（セキュリティ対策）
   before_action :prevent_caching, only: [:dashboard]
   # ダッシュボードと講師一覧で認証チェック
-  before_action :require_student_login, only: [:dashboard, :teachers, :booking, :create_appointment, :appointments, :cancel_appointment]
+  before_action :require_student_login, only: [:dashboard, :teachers, :booking, :create_appointment, :appointments, :cancel_appointment, :destroy_appointment]
 
   # ログインフォーム表示
   def login
@@ -93,6 +93,26 @@ class StudentsController < ApplicationController
       @available_slots[key] = slot
     end
     
+    # 生徒の予約状況を取得
+    @student_bookings = {}
+    @student.appointments.joins(:time_slot)
+            .where(time_slots: { teacher: @teacher, date: @week_dates })
+            .includes(time_slot: :campus)
+            .each do |appointment|
+      key = "#{appointment.time_slot.date}-#{appointment.time_slot.start_time.strftime('%H:%M')}"
+      @student_bookings[key] = appointment
+    end
+    
+    # JavaScript用のJSONデータを準備
+    @student_bookings_json = @student_bookings.map do |key, appointment|
+      [key, {
+        id: appointment.id,
+        date: appointment.time_slot.date.strftime('%Y年%m月%d日'),
+        time: appointment.time_slot.start_time.strftime('%H:%M'),
+        campus: appointment.time_slot.campus.name
+      }]
+    end.to_h.to_json
+    
     # デバッグ情報（開発環境のみ）
     if Rails.env.development?
       Rails.logger.debug "=== Booking Debug Info ==="
@@ -100,6 +120,8 @@ class StudentsController < ApplicationController
       Rails.logger.debug "Week dates: #{@week_dates}"
       Rails.logger.debug "Available slots count: #{@available_slots.keys.count}"
       Rails.logger.debug "Available slots keys: #{@available_slots.keys.first(3)}"
+      Rails.logger.debug "Student bookings count: #{@student_bookings.keys.count}"
+      Rails.logger.debug "Student bookings keys: #{@student_bookings.keys.first(3)}"
       Rails.logger.debug "Time slots grid sample: #{@time_slots_grid.first(3)}"
       Rails.logger.debug "=========================="
     end
@@ -166,6 +188,20 @@ class StudentsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to student_appointments_list_path, alert: '予約が見つかりません'
+  end
+
+  # 予約削除（JSON API用）
+  def destroy_appointment
+    @student = current_student
+    @appointment = @student.appointments.find(params[:id])
+    
+    if @appointment.destroy
+      render json: { status: 'success', message: '予約を削除しました' }
+    else
+      render json: { status: 'error', message: @appointment.errors.full_messages.join(', ') }
+    end
+  rescue ActiveRecord::RecordNotFound
+    render json: { status: 'error', message: '予約が見つかりません' }
   end
 
   private

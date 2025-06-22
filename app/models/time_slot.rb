@@ -87,7 +87,7 @@ class TimeSlot < ApplicationRecord
     if Rails.env.test?
       available?
     else
-      available? && date >= Date.current
+    available? && date >= Date.current
     end
   end
 
