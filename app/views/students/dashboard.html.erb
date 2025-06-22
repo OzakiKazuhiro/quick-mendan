@@ -30,106 +30,11 @@
       </div>
     </div>
 
-    <!-- メニューカード -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">面談予約</h3>
-              <p class="text-sm text-gray-500">講師との面談を予約する</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_teachers_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
-            予約画面へ →
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">予約確認</h3>
-              <p class="text-sm text-gray-500">現在の予約状況を確認</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_appointments_list_path, class: "text-green-600 hover:text-green-500 text-sm font-medium" do %>
-            確認画面へ →
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">予約変更</h3>
-              <p class="text-sm text-gray-500">予約の変更・キャンセル</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_appointments_list_path, class: "text-yellow-600 hover:text-yellow-500 text-sm font-medium" do %>
-            変更画面へ →
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">講師一覧</h3>
-              <p class="text-sm text-gray-500">面談可能な講師を確認</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_teachers_path, class: "text-indigo-600 hover:text-indigo-500 text-sm font-medium" do %>
-            講師一覧へ →
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 今後の予約一覧 -->
-    <div class="mt-8">
+    <!-- 面談予定日時 -->
+    <div class="mb-8">
       <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">今後の面談予定</h2>
+          <h2 class="text-lg font-medium text-gray-900">面談予定日時</h2>
         </div>
         <div class="divide-y divide-gray-200">
           <% if @upcoming_appointments.any? %>
@@ -178,6 +83,55 @@
             </div>
           </div>
           <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- メニューカード -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900">面談予約</h3>
+              <p class="text-sm text-gray-500">講師との面談を予約する</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <%= link_to student_teachers_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
+            予約画面へ →
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900">予約キャンセル</h3>
+              <p class="text-sm text-gray-500">現在の予約状況を確認・キャンセル</p>
+            </div>
+          </div>
+          <div class="mt-4">
+            <%= link_to student_appointments_list_path, class: "text-green-600 hover:text-green-500 text-sm font-medium" do %>
+            確認画面へ →
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
