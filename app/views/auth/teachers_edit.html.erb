@@ -1,0 +1,167 @@
+<% content_for :title, "講師編集" %>
+
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ヘッダー -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">
+            講師編集
+          </h1>
+          <p class="mt-2 text-gray-600">
+            <%= @teacher.name %>さんの情報を編集します
+          </p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <%= link_to staff_teacher_path(@teacher), 
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center" do %>
+          <i class="fas fa-arrow-left mr-2"></i>
+          詳細に戻る
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- フォーム -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">講師情報編集</h2>
+      </div>
+      <div class="px-6 py-6">
+        <%= form_with model: @teacher, url: update_staff_teacher_path(@teacher), method: :patch, local: true, class: "space-y-6" do |form| %>
+
+        <!-- エラーメッセージ -->
+        <% if @teacher.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-circle text-red-400"></i>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                入力にエラーがあります
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <% @teacher.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% end %>
+
+        <!-- ログイン名 -->
+        <div>
+          <%= form.label :user_login_name, "ログイン名", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :user_login_name, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                              placeholder: "例: tanaka_hanako" %>
+          <p class="mt-1 text-sm text-gray-500">英数字とアンダースコアのみ使用可能です</p>
+        </div>
+
+        <!-- 氏名 -->
+        <div>
+          <%= form.label :name, "氏名", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :name, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                              placeholder: "例: 田中花子" %>
+        </div>
+
+        <!-- メールアドレス -->
+        <div>
+          <%= form.label :email, "メールアドレス", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.email_field :email, 
+                               class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                               placeholder: "例: tanaka@example.com" %>
+          <p class="mt-1 text-sm text-gray-500">リマインダー機能で使用します（任意）</p>
+        </div>
+
+        <!-- 権限（管理者のみ変更可能） -->
+        <% if current_user_is_admin? %>
+        <div>
+          <%= form.label :role, "権限", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="mt-2 space-y-2">
+            <div class="flex items-center">
+              <%= form.radio_button :role, :teacher, 
+                                    id: "teacher_role_teacher",
+                                    class: "h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300" %>
+              <%= form.label :role_teacher, "講師", 
+                             class: "ml-2 text-sm text-gray-700" %>
+            </div>
+            <div class="flex items-center">
+              <%= form.radio_button :role, :admin, 
+                                    id: "teacher_role_admin",
+                                    class: "h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300" %>
+              <%= form.label :role_admin, "管理者", 
+                             class: "ml-2 text-sm text-gray-700" %>
+            </div>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">管理者は全ての機能にアクセスできます</p>
+        </div>
+        <% else %>
+        <!-- 権限表示のみ（一般講師は変更不可） -->
+        <div>
+          <dt class="text-sm font-medium text-gray-700 mb-2">権限</dt>
+          <dd class="mt-1">
+            <% if @teacher.admin? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <i class="fas fa-shield-alt mr-1"></i>
+              管理者
+            </span>
+            <% else %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              <i class="fas fa-chalkboard-teacher mr-1"></i>
+              講師
+            </span>
+            <% end %>
+          </dd>
+        </div>
+        <% end %>
+
+        <!-- リマインダー設定 -->
+        <div>
+          <%= form.label :notification_time, "リマインダー送信時刻", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.time_field :notification_time, 
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm" %>
+          <p class="mt-1 text-sm text-gray-500">メールアドレスと併せて設定すると、翌日の面談予定をメールで通知します</p>
+        </div>
+
+        <!-- パスワード変更 -->
+        <div class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">パスワード変更</h3>
+
+          <div class="space-y-4">
+            <div>
+              <%= form.label :password, "新しいパスワード", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= form.password_field :password, 
+                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                                      placeholder: "変更しない場合は空欄のままにしてください" %>
+              <p class="mt-1 text-sm text-gray-500">6文字以上で入力してください</p>
+            </div>
+
+            <div>
+              <%= form.label :password_confirmation, "パスワード確認", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= form.password_field :password_confirmation, 
+                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                                      placeholder: "上記と同じパスワードを入力してください" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- ボタン -->
+        <div class="flex justify-end space-x-4">
+          <%= link_to "キャンセル", staff_teacher_path(@teacher), 
+                      class: "bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+          <%= form.submit "変更を保存", 
+                          class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+        </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

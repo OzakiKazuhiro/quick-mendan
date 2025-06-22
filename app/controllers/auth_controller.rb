@@ -12,6 +12,7 @@ class AuthController < ApplicationController
   before_action :prevent_caching, only: [:staff_dashboard]
   before_action :set_appointment, only: [:interview_record, :save_interview_record]
   before_action :set_student, only: [:students_show, :students_edit, :students_update, :students_destroy]
+  before_action :set_teacher, only: [:teachers_show, :teachers_edit, :teachers_update, :teachers_destroy]
 
   # staff_loginアクション
   def staff_login
@@ -206,6 +207,71 @@ class AuthController < ApplicationController
     end
   end
 
+  # 講師管理機能
+  def teachers_index
+    @teachers = Teacher.order(:name)
+  end
+
+  def teachers_new
+    @teacher = Teacher.new
+  end
+
+  def teachers_create
+    @teacher = Teacher.new(teacher_params)
+    
+    if @teacher.save
+      flash[:success] = "講師「#{@teacher.name}」を登録しました"
+      redirect_to staff_teachers_path
+    else
+      flash.now[:error] = "講師の登録に失敗しました"
+      render :teachers_new
+    end
+  end
+
+  def teachers_show
+    # @teacherはbefore_actionで設定済み
+    load_teacher_statistics
+  end
+
+  def teachers_edit
+    # @teacherはbefore_actionで設定済み
+  end
+
+  def teachers_update
+    # パスワードが空の場合は更新しない
+    if teacher_params[:password].blank?
+      teacher_update_params = teacher_params.except(:password, :password_confirmation)
+    else
+      teacher_update_params = teacher_params
+    end
+    
+    if @teacher.update(teacher_update_params)
+      flash[:success] = "講師「#{@teacher.name}」の情報を更新しました"
+      redirect_to staff_teacher_path(@teacher)
+    else
+      flash.now[:error] = "講師情報の更新に失敗しました"
+      render :teachers_edit
+    end
+  end
+
+  def teachers_destroy
+    teacher_name = @teacher.name
+    
+    # 現在ログイン中の講師は削除できない
+    if @teacher.id == current_staff_user.id
+      flash[:error] = "現在ログイン中の講師は削除できません"
+      redirect_to staff_teachers_path
+      return
+    end
+    
+    if @teacher.destroy
+      flash[:success] = "講師「#{teacher_name}」を削除しました"
+    else
+      flash[:error] = "講師の削除に失敗しました"
+    end
+    redirect_to staff_teachers_path
+  end
+
   # 29行目: privateメソッドの開始
   private
   # ↑ 以降のメソッドはクラス外部から呼び出し不可
@@ -314,6 +380,31 @@ class AuthController < ApplicationController
   def student_params
     params.require(:student).permit(:name, :student_number, :grade, :school_name, campus_ids: [])
   end
+
+  def teacher_params
+    params.require(:teacher).permit(:name, :user_login_name, :email, :password, :password_confirmation, :role, :notification_time)
+  end
+
+  def load_teacher_statistics
+    # 講師の統計情報を取得
+    @time_slots_count = @teacher.time_slots.count
+    @appointments_count = Appointment.joins(:time_slot).where(time_slots: { teacher_id: @teacher.id }).count
+    @upcoming_appointments = Appointment.joins(:time_slot)
+                                       .where(time_slots: { teacher_id: @teacher.id })
+                                       .where('time_slots.date >= ?', Date.current)
+                                       .includes(:student, time_slot: :campus)
+                                       .order('time_slots.date', 'time_slots.start_time')
+    @past_appointments = Appointment.joins(:time_slot)
+                                   .where(time_slots: { teacher_id: @teacher.id })
+                                   .where('time_slots.date < ?', Date.current)
+                                   .includes(:student, :interview_record, time_slot: :campus)
+                                   .order('time_slots.date DESC', 'time_slots.start_time DESC')
+                                   .limit(10)
+  end
+
+  def set_teacher
+    @teacher = Teacher.find(params[:id])
+  end
 # 35行目: クラス定義終了
 end
 
@@ -328,4 +419,5 @@ end
 # 2. フォーム送信 → staff_authenticate実行
 # 3. Admin認証 → 成功ならログイン完了
 # 4. Teacher認証 → 成功ならログイン完了
+# 5. 両方失敗 → エラーメッセージと共に再表示
 # 5. 両方失敗 → エラーメッセージと共に再表示

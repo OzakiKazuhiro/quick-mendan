@@ -85,25 +85,59 @@
     <!-- メニューカード -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- 生徒管理カード（講師・管理者共通） -->
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+        <div class="p-4">
+          <div class="flex items-center space-x-4">
+            <!-- 左側：画像 -->
             <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                </svg>
+              <div class="w-20 h-20 md:w-32 md:h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
+                <%= image_tag "dashboard/student-manage.png", 
+                     alt: "生徒管理", 
+                     class: "w-16 h-16 md:w-28 md:h-28 object-cover rounded-lg" %>
               </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">生徒管理</h3>
-              <p class="text-sm text-gray-500">生徒の登録・編集・削除</p>
+
+            <!-- 右側：テキストとボタン -->
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2">生徒管理</h3>
+              <p class="text-sm md:text-base text-gray-500 mb-4">生徒の登録・編集・削除</p>
+              <%= link_to staff_students_path, 
+                  class: "inline-flex items-center text-sm md:text-base font-medium text-blue-600 hover:text-blue-800 transition-colors" do %>
+              <span>生徒一覧を見る</span>
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <% end %>
             </div>
           </div>
-          <div class="mt-4">
-            <%= link_to staff_students_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
-            生徒一覧へ →
-            <% end %>
+        </div>
+      </div>
+
+      <!-- 講師管理カード（講師・管理者共通） -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow border-l-4 border-green-500">
+        <div class="p-4">
+          <div class="flex items-center space-x-4">
+            <!-- 左側：画像 -->
+            <div class="flex-shrink-0">
+              <div class="w-20 h-20 md:w-32 md:h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
+                <%= image_tag "dashboard/teacher-manage.png", 
+                     alt: "講師管理", 
+                     class: "w-16 h-16 md:w-28 md:h-28 object-cover rounded-lg" %>
+              </div>
+            </div>
+
+            <!-- 右側：テキストとボタン -->
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2">講師管理</h3>
+              <p class="text-sm md:text-base text-gray-500 mb-4">講師の登録・編集・削除</p>
+              <%= link_to staff_teachers_path, 
+                  class: "inline-flex items-center text-sm md:text-base font-medium text-green-600 hover:text-green-800 transition-colors" do %>
+              <span>講師一覧を見る</span>
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>

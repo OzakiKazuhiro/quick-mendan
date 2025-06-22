@@ -54,6 +54,15 @@ Rails.application.routes.draw do
   patch 'staff/students/:id', to: 'auth#students_update', as: 'update_staff_student'
   delete 'staff/students/:id', to: 'auth#students_destroy', as: 'destroy_staff_student'
 
+  # 講師管理機能（管理者のみ）
+  get 'staff/teachers', to: 'auth#teachers_index', as: 'staff_teachers'
+  get 'staff/teachers/new', to: 'auth#teachers_new', as: 'new_staff_teacher'
+  post 'staff/teachers', to: 'auth#teachers_create', as: 'create_staff_teacher'
+  get 'staff/teachers/:id', to: 'auth#teachers_show', as: 'staff_teacher'
+  get 'staff/teachers/:id/edit', to: 'auth#teachers_edit', as: 'edit_staff_teacher'
+  patch 'staff/teachers/:id', to: 'auth#teachers_update', as: 'update_staff_teacher'
+  delete 'staff/teachers/:id', to: 'auth#teachers_destroy', as: 'destroy_staff_teacher'
+
   # Devise認証ルーティング
   # ↑ コメント：Deviseを使用した各種ユーザー認証の設定
 

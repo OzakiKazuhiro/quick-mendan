@@ -1,82 +1,122 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["modal", "confirmButton", "cancelButton", "studentName"];
-  static values = {
-    studentName: String,
-    studentId: Number,
-  };
+  static targets = [
+    "modal",
+    "studentName",
+    "studentId",
+    "deleteButton",
+    "teacherName",
+    "teacherId",
+  ];
 
   connect() {
-    // モーダルが表示された時の処理
-    this.modalTarget.addEventListener("click", (e) => {
-      if (e.target === this.modalTarget) {
-        this.close();
-      }
-    });
-
     // ESCキーでモーダルを閉じる
-    document.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Escape" &&
-        !this.modalTarget.classList.contains("hidden")
-      ) {
-        this.close();
-      }
-    });
+    this.boundHandleKeyup = this.handleKeyup.bind(this);
+    document.addEventListener("keyup", this.boundHandleKeyup);
+  }
+
+  disconnect() {
+    document.removeEventListener("keyup", this.boundHandleKeyup);
+  }
+
+  handleKeyup(event) {
+    if (event.key === "Escape") {
+      this.close();
+    }
   }
 
   open(event) {
     event.preventDefault();
 
-    // 生徒名とIDを設定
-    const studentName = event.currentTarget.getAttribute("data-student-name");
-    const studentId = event.currentTarget.getAttribute("data-student-id");
+    // 生徒の場合
+    if (event.target.dataset.studentName) {
+      const studentName = event.target.dataset.studentName;
+      const studentId = event.target.dataset.studentId;
 
-    this.studentNameValue = studentName;
-    this.studentIdValue = studentId;
+      if (this.hasStudentNameTarget) {
+        this.studentNameTarget.textContent = studentName;
+      }
 
-    // モーダル内の生徒名を更新
-    this.studentNameTarget.textContent = studentName;
+      if (this.hasDeleteButtonTarget) {
+        this.deleteButtonTarget.onclick = () => this.deleteStudent(studentId);
+      }
+    }
 
-    // モーダルを表示
+    // 講師の場合
+    if (event.target.dataset.teacherName) {
+      const teacherName = event.target.dataset.teacherName;
+      const teacherId = event.target.dataset.teacherId;
+
+      if (this.hasTeacherNameTarget) {
+        this.teacherNameTarget.textContent = teacherName;
+      }
+
+      if (this.hasDeleteButtonTarget) {
+        this.deleteButtonTarget.onclick = () => this.deleteTeacher(teacherId);
+      }
+    }
+
     this.modalTarget.classList.remove("hidden");
-    document.body.classList.add("overflow-hidden");
-
-    // 確認ボタンにフォーカス
-    setTimeout(() => {
-      this.confirmButtonTarget.focus();
-    }, 100);
+    document.body.style.overflow = "hidden";
   }
 
   close() {
     this.modalTarget.classList.add("hidden");
-    document.body.classList.remove("overflow-hidden");
+    document.body.style.overflow = "auto";
   }
 
   confirm() {
-    // 実際の削除リクエストを送信
+    // deleteButtonのonclickが設定されているので、それを実行
+    if (this.deleteButtonTarget.onclick) {
+      this.deleteButtonTarget.onclick();
+    }
+  }
+
+  deleteStudent(studentId) {
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = `/staff/students/${this.studentIdValue}`;
+    form.action = `/staff/students/${studentId}`;
+    form.style.display = "none";
 
-    // メソッドオーバーライド
     const methodInput = document.createElement("input");
     methodInput.type = "hidden";
     methodInput.name = "_method";
     methodInput.value = "DELETE";
+
+    const tokenInput = document.createElement("input");
+    tokenInput.type = "hidden";
+    tokenInput.name = "authenticity_token";
+    tokenInput.value = document
+      .querySelector('meta[name="csrf-token"]')
+      .getAttribute("content");
+
     form.appendChild(methodInput);
+    form.appendChild(tokenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
 
-    // CSRFトークン
-    const csrfToken = document.querySelector('meta[name="csrf-token"]');
-    if (csrfToken) {
-      const csrfInput = document.createElement("input");
-      csrfInput.type = "hidden";
-      csrfInput.name = "authenticity_token";
-      csrfInput.value = csrfToken.getAttribute("content");
-      form.appendChild(csrfInput);
-    }
+  deleteTeacher(teacherId) {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = `/staff/teachers/${teacherId}`;
+    form.style.display = "none";
 
+    const methodInput = document.createElement("input");
+    methodInput.type = "hidden";
+    methodInput.name = "_method";
+    methodInput.value = "DELETE";
+
+    const tokenInput = document.createElement("input");
+    tokenInput.type = "hidden";
+    tokenInput.name = "authenticity_token";
+    tokenInput.value = document
+      .querySelector('meta[name="csrf-token"]')
+      .getAttribute("content");
+
+    form.appendChild(methodInput);
+    form.appendChild(tokenInput);
     document.body.appendChild(form);
     form.submit();
   }

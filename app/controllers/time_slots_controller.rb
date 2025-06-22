@@ -1,7 +1,7 @@
 class TimeSlotsController < ApplicationController
   before_action :require_staff
   before_action :set_current_week, only: [:index, :weekly]
-  before_action :set_time_slot, only: [:show, :update, :destroy]
+  before_action :set_time_slot, only: [:update, :destroy]
 
   # 面談枠設定メイン画面
   def index

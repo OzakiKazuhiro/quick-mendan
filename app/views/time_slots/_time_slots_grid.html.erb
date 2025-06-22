@@ -1,267 +1,269 @@
 <!-- 時間枠グリッド -->
-<div class="overflow-x-auto" data-controller="time-slots-grid">
-  <table class="min-w-full divide-y divide-gray-200" id="time-slots-table" data-time-slots-grid-target="table">
-    <!-- ヘッダー（曜日） -->
-    <thead class="bg-gray-50" id="table-header" data-time-slots-grid-target="tableHeader">
-      <tr>
-        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
-          時間
-        </th>
-        <% @week_dates.each do |date| %>
-        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
-          <div class="flex flex-col">
-            <span class="text-sm font-semibold text-gray-900 mobile-text">
-              <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
-            </span>
-            <span class="text-xs text-gray-500 mt-1 mobile-text">
-              <%= date.strftime('%m/%d') %>
-            </span>
-            <% if date == Date.current %>
-            <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
-            <% end %>
-          </div>
-        </th>
-        <% end %>
-      </tr>
-    </thead>
+<div data-controller="time-slots-grid">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200" id="time-slots-table" data-time-slots-grid-target="table">
+      <!-- ヘッダー（曜日） -->
+      <thead class="bg-gray-50" id="table-header" data-time-slots-grid-target="tableHeader">
+        <tr>
+          <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
+            時間
+          </th>
+          <% @week_dates.each do |date| %>
+          <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
+            <div class="flex flex-col">
+              <span class="text-sm font-semibold text-gray-900 mobile-text">
+                <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
+              </span>
+              <span class="text-xs text-gray-500 mt-1 mobile-text">
+                <%= date.strftime('%m/%d') %>
+              </span>
+              <% if date == Date.current %>
+              <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
+              <% end %>
+            </div>
+          </th>
+          <% end %>
+        </tr>
+      </thead>
 
-    <!-- 時間枠ボディ -->
-    <tbody class="bg-white divide-y divide-gray-200">
-      <% @time_slots_grid.each do |time_slot| %>
-      <tr class="hover:bg-gray-50">
-        <!-- 時間ラベル -->
-        <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 time-column">
-          <%= time_slot.strftime('%H:%M') %>
-        </td>
+      <!-- 時間枠ボディ -->
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @time_slots_grid.each do |time_slot| %>
+        <tr class="hover:bg-gray-50">
+          <!-- 時間ラベル -->
+          <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 time-column">
+            <%= time_slot.strftime('%H:%M') %>
+          </td>
 
-        <!-- 各曜日の時間枠 -->
-        <% @week_dates.each do |date| %>
-        <%
-              # ==========================================================
-              # セルの表示内容を決定するための複雑なロジック開始
-              # ==========================================================
-              
-              # 時刻を文字列で比較するための準備（例：14:00 → "14:00"）
-              time_slot_hour_min = time_slot.strftime('%H:%M')
-              
-              # その日その時刻の全校舎面談枠を検索するための配列を初期化
-              all_slots_at_time = []
-              # 全校舎のデータ（@all_existing_slots）をループで確認
-              @all_existing_slots.each do |key, slots|
-                # keyは[日付, 時刻]の配列形式で格納されている
-                # key[0]が日付、key[1]が時刻オブジェクト
-                if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
-                  # 条件に合致した面談枠を配列に追加
-                  all_slots_at_time.concat(slots)
+          <!-- 各曜日の時間枠 -->
+          <% @week_dates.each do |date| %>
+          <%
+                # ==========================================================
+                # セルの表示内容を決定するための複雑なロジック開始
+                # ==========================================================
+                
+                # 時刻を文字列で比較するための準備（例：14:00 → "14:00"）
+                time_slot_hour_min = time_slot.strftime('%H:%M')
+                
+                # その日その時刻の全校舎面談枠を検索するための配列を初期化
+                all_slots_at_time = []
+                # 全校舎のデータ（@all_existing_slots）をループで確認
+                @all_existing_slots.each do |key, slots|
+                  # keyは[日付, 時刻]の配列形式で格納されている
+                  # key[0]が日付、key[1]が時刻オブジェクト
+                  if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                    # 条件に合致した面談枠を配列に追加
+                    all_slots_at_time.concat(slots)
+                  end
                 end
-              end
-              
-              # 選択中校舎の面談枠を検索するための変数を初期化
-              existing_slot = nil
-              # 選択中校舎のデータ（@existing_slots）をループで確認
-              @existing_slots.each do |key, slots|
-                # 同じ日付・時刻の組み合わせを探す
-                if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
-                  # 見つかった場合は最初の要素を取得して処理終了
-                  existing_slot = slots.first
-                  break
+                
+                # 選択中校舎の面談枠を検索するための変数を初期化
+                existing_slot = nil
+                # 選択中校舎のデータ（@existing_slots）をループで確認
+                @existing_slots.each do |key, slots|
+                  # 同じ日付・時刻の組み合わせを探す
+                  if key[0] == date && key[1].strftime('%H:%M') == time_slot_hour_min
+                    # 見つかった場合は最初の要素を取得して処理終了
+                    existing_slot = slots.first
+                    break
+                  end
                 end
-              end
-              
-              # 過去の日付かどうかをチェック（過去の日付は編集不可にする）
-              is_past = date < Date.current
-              
-              # ==========================================================
-              # セルの表示内容を決定するメインロジック
-              # ==========================================================
-              
-              if is_past
-                # 過去の日付の場合：グレーアウトして編集不可
-                cell_class = "bg-gray-100 cursor-not-allowed"
-                cell_content = "×"  # ×マークで過去を表現
-                cell_title = "過去の日付"  # ホバー時のツールチップ
-                clickable = false  # クリック不可
-              elsif all_slots_at_time.any?
-                # 全校舎で面談枠が設定されている場合の処理
                 
-                # 選択中校舎で設定済みかチェック
-                selected_campus_slot = all_slots_at_time.find { |slot| slot.campus_id == @selected_campus&.id }
+                # 過去の日付かどうかをチェック（過去の日付は編集不可にする）
+                is_past = date < Date.current
                 
-                # 予約済みの枠があるかチェック（全校舎対象）
-                has_booked_slot = all_slots_at_time.any? { |slot| slot.status == 'booked' }
+                # ==========================================================
+                # セルの表示内容を決定するメインロジック
+                # ==========================================================
                 
-                if selected_campus_slot
-                  # 選択中校舎で設定済みの場合
-                  case selected_campus_slot.status
-                  when 'available'
-                    # 予約可能状態の場合
-                    if has_booked_slot
-                      # 他校舎で予約済みがある場合は黄色ベース
-                      cell_class = "bg-yellow-100 border-yellow-300 hover:bg-yellow-200 cursor-pointer transition-colors"
-                    else
-                      # 純粋に予約可能な場合は緑色ベース
-                      cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
+                if is_past
+                  # 過去の日付の場合：グレーアウトして編集不可
+                  cell_class = "bg-gray-100 cursor-not-allowed"
+                  cell_content = "×"  # ×マークで過去を表現
+                  cell_title = "過去の日付"  # ホバー時のツールチップ
+                  clickable = false  # クリック不可
+                elsif all_slots_at_time.any?
+                  # 全校舎で面談枠が設定されている場合の処理
+                  
+                  # 選択中校舎で設定済みかチェック
+                  selected_campus_slot = all_slots_at_time.find { |slot| slot.campus_id == @selected_campus&.id }
+                  
+                  # 予約済みの枠があるかチェック（全校舎対象）
+                  has_booked_slot = all_slots_at_time.any? { |slot| slot.status == 'booked' }
+                  
+                  if selected_campus_slot
+                    # 選択中校舎で設定済みの場合
+                    case selected_campus_slot.status
+                    when 'available'
+                      # 予約可能状態の場合
+                      if has_booked_slot
+                        # 他校舎で予約済みがある場合は黄色ベース
+                        cell_class = "bg-yellow-100 border-yellow-300 hover:bg-yellow-200 cursor-pointer transition-colors"
+                      else
+                        # 純粋に予約可能な場合は緑色ベース
+                        cell_class = "bg-green-100 border-green-300 hover:bg-green-200 cursor-pointer transition-colors"
+                      end
+                      cell_title = "予約可能（クリックで解除）"
+                      clickable = true  # クリック可能
+                    when 'booked'
+                      # 予約済みの場合：濃い黄色で編集不可
+                      cell_class = "bg-yellow-300 border-yellow-500 cursor-not-allowed"
+                      cell_title = "予約済み"
+                      clickable = false  # クリック不可
                     end
-                    cell_title = "予約可能（クリックで解除）"
-                    clickable = true  # クリック可能
-                  when 'booked'
-                    # 予約済みの場合：濃い黄色で編集不可
-                    cell_class = "bg-yellow-300 border-yellow-500 cursor-not-allowed"
-                    cell_title = "予約済み"
-                    clickable = false  # クリック不可
-                  end
-                else
-                  # 他校舎でのみ設定済みの場合
-                  if has_booked_slot
-                    # 他校舎で予約済みがある場合は薄い黄色ベース
-                    cell_class = "bg-yellow-50 border-yellow-200 hover:bg-yellow-100 cursor-pointer transition-colors"
                   else
-                    # 他校舎のみ設定済みの場合は薄いグレーベース
-                    cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
+                    # 他校舎でのみ設定済みの場合
+                    if has_booked_slot
+                      # 他校舎で予約済みがある場合は薄い黄色ベース
+                      cell_class = "bg-yellow-50 border-yellow-200 hover:bg-yellow-100 cursor-pointer transition-colors"
+                    else
+                      # 他校舎のみ設定済みの場合は薄いグレーベース
+                      cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
+                    end
+                    cell_title = "未設定（クリックで予約可能に設定）"
+                    clickable = true  # クリック可能
                   end
+                  
+                  # 全校舎の設定を表示するためのラベル生成
+                  campus_labels = all_slots_at_time.map do |slot|
+                    # ステータスに応じてシンボルを決定
+                    symbol = case slot.status
+                            when 'available' then '○'  # 予約可能
+                            when 'booked' then '●'     # 予約済み
+                            end
+                    # 校舎の短縮名 + シンボルの組み合わせを生成（例：三国○）
+                    "#{slot.campus_display}#{symbol}"
+                  end
+                  # 複数校舎の場合はスペースで区切って表示（例：三国○ 鳳●）
+                  cell_content = campus_labels.join(' ')
+                else
+                  # どの校舎でも未設定の場合
+                  cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
+                  cell_content = ""  # 空の表示
                   cell_title = "未設定（クリックで予約可能に設定）"
                   clickable = true  # クリック可能
                 end
-                
-                # 全校舎の設定を表示するためのラベル生成
-                campus_labels = all_slots_at_time.map do |slot|
-                  # ステータスに応じてシンボルを決定
-                  symbol = case slot.status
-                          when 'available' then '○'  # 予約可能
-                          when 'booked' then '●'     # 予約済み
-                          end
-                  # 校舎の短縮名 + シンボルの組み合わせを生成（例：三国○）
-                  "#{slot.campus_display}#{symbol}"
-                end
-                # 複数校舎の場合はスペースで区切って表示（例：三国○ 鳳●）
-                cell_content = campus_labels.join(' ')
-              else
-                # どの校舎でも未設定の場合
-                cell_class = "bg-gray-50 border-gray-300 hover:bg-green-100 cursor-pointer transition-colors"
-                cell_content = ""  # 空の表示
-                cell_title = "未設定（クリックで予約可能に設定）"
-                clickable = true  # クリック可能
-              end
-            %>
+              %>
 
-        <td class="px-1 py-1 date-column">
-          <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-xs font-medium <%= cell_class %>" <% if clickable %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-campus-name="<%= @selected_campus&.name %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
-            <!-- 時刻表示 -->
-            <div class="text-xs text-gray-600 leading-none mb-1 mobile-time">
-              <%= time_slot.strftime('%H:%M') %>
-            </div>
-            <!-- ステータスシンボル -->
-            <div class="text-xs leading-none mobile-symbol">
-              <%= cell_content %>
-            </div>
-          </div>
-        </td>
-        <% end %>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
-
-<!-- 固定ヘッダー用の隠しクローン -->
-<div id="fixed-header" class="fixed top-0 left-0 right-0 z-50 hidden bg-gray-50 shadow-md" data-time-slots-grid-target="fixedHeader">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead>
-          <tr>
-            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
-              時間
-            </th>
-            <% @week_dates.each do |date| %>
-            <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
-              <div class="flex flex-col">
-                <span class="text-sm font-semibold text-gray-900 mobile-text">
-                  <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
-                </span>
-                <span class="text-xs text-gray-500 mt-1 mobile-text">
-                  <%= date.strftime('%m/%d') %>
-                </span>
-                <% if date == Date.current %>
-                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
-                <% end %>
+          <td class="px-1 py-1 date-column">
+            <div class="w-full h-12 border rounded text-center flex flex-col items-center justify-center text-xs font-medium <%= cell_class %>" <% if clickable %> data-clickable="true" data-date="<%= date.strftime('%Y-%m-%d') %>" data-time="<%= time_slot.strftime('%H:%M') %>" data-campus-id="<%= @selected_campus&.id %>" data-campus-name="<%= @selected_campus&.name %>" data-existing-id="<%= existing_slot&.id %>" data-current-status="<%= existing_slot&.status || 'none' %>" <% end %> title="<%= cell_title %>">
+              <!-- 時刻表示 -->
+              <div class="text-xs text-gray-600 leading-none mb-1 mobile-time">
+                <%= time_slot.strftime('%H:%M') %>
               </div>
-            </th>
-            <% end %>
-          </tr>
-        </thead>
-      </table>
+              <!-- ステータスシンボル -->
+              <div class="text-xs leading-none mobile-symbol">
+                <%= cell_content %>
+              </div>
+            </div>
+          </td>
+          <% end %>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 固定ヘッダー用の隠しクローン -->
+  <div id="fixed-header" class="fixed top-0 left-0 right-0 z-50 hidden bg-gray-50 shadow-md" data-time-slots-grid-target="fixedHeader">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 time-column">
+                時間
+              </th>
+              <% @week_dates.each do |date| %>
+              <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider date-column">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold text-gray-900 mobile-text">
+                    <%= %w[月 火 水 木 金 土 日][date.wday == 0 ? 6 : date.wday - 1] %>
+                  </span>
+                  <span class="text-xs text-gray-500 mt-1 mobile-text">
+                    <%= date.strftime('%m/%d') %>
+                  </span>
+                  <% if date == Date.current %>
+                  <span class="inline-block w-2 h-2 bg-green-500 rounded-full mx-auto mt-1"></span>
+                  <% end %>
+                </div>
+              </th>
+              <% end %>
+            </tr>
+          </thead>
+        </table>
+      </div>
     </div>
   </div>
+
+  <!-- スマホ対応CSS -->
+  <style>
+    @media (max-width: 640px) {
+
+      /* 時間列を非表示 */
+      .time-column {
+        display: none !important;
+      }
+
+      /* 日付列を画面幅いっぱいに調整 */
+      .date-column {
+        width: 14.28% !important;
+        /* 100% ÷ 7日 = 14.28% */
+        min-width: auto !important;
+        padding: 0.25rem !important;
+        /* パディングを小さく */
+      }
+
+      /* テーブル全体の最小幅を削除してレスポンシブに */
+      #time-slots-table,
+      #fixed-header table {
+        min-width: 100% !important;
+        width: 100% !important;
+      }
+
+      /* スマホ用の文字サイズ調整 */
+      .mobile-text {
+        font-size: 0.65rem !important;
+        /* より小さく */
+        line-height: 1.1 !important;
+      }
+
+      .mobile-time {
+        font-size: 0.6rem !important;
+        /* セル内時刻をより小さく */
+        margin-bottom: 0.125rem !important;
+      }
+
+      .mobile-symbol {
+        font-size: 0.875rem !important;
+        /* シンボルも少し小さく */
+      }
+
+      /* セルの高さを調整 */
+      .date-column>div {
+        height: 2.5rem !important;
+        /* 40px → 少し小さく */
+      }
+
+      /* 横スクロールを無効化 */
+      .overflow-x-auto {
+        overflow-x: visible !important;
+      }
+    }
+  </style>
+
+  <!-- 選択された校舎の表示 -->
+  <% if @selected_campus %>
+  <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+    <p class="text-sm text-blue-800">
+      <span class="font-medium">現在の設定校舎:</span> <%= @selected_campus.name %>
+    </p>
+  </div>
+  <% else %>
+  <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+    <p class="text-sm text-yellow-800">
+      <span class="font-medium">注意:</span> 校舎を選択してください
+    </p>
+  </div>
+  <% end %>
 </div>
-
-<!-- スマホ対応CSS -->
-<style>
-  @media (max-width: 640px) {
-
-    /* 時間列を非表示 */
-    .time-column {
-      display: none !important;
-    }
-
-    /* 日付列を画面幅いっぱいに調整 */
-    .date-column {
-      width: 14.28% !important;
-      /* 100% ÷ 7日 = 14.28% */
-      min-width: auto !important;
-      padding: 0.25rem !important;
-      /* パディングを小さく */
-    }
-
-    /* テーブル全体の最小幅を削除してレスポンシブに */
-    #time-slots-table,
-    #fixed-header table {
-      min-width: 100% !important;
-      width: 100% !important;
-    }
-
-    /* スマホ用の文字サイズ調整 */
-    .mobile-text {
-      font-size: 0.65rem !important;
-      /* より小さく */
-      line-height: 1.1 !important;
-    }
-
-    .mobile-time {
-      font-size: 0.6rem !important;
-      /* セル内時刻をより小さく */
-      margin-bottom: 0.125rem !important;
-    }
-
-    .mobile-symbol {
-      font-size: 0.875rem !important;
-      /* シンボルも少し小さく */
-    }
-
-    /* セルの高さを調整 */
-    .date-column>div {
-      height: 2.5rem !important;
-      /* 40px → 少し小さく */
-    }
-
-    /* 横スクロールを無効化 */
-    .overflow-x-auto {
-      overflow-x: visible !important;
-    }
-  }
-</style>
-
-<!-- 選択された校舎の表示 -->
-<% if @selected_campus %>
-<div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-  <p class="text-sm text-blue-800">
-    <span class="font-medium">現在の設定校舎:</span> <%= @selected_campus.name %>
-  </p>
-</div>
-<% else %>
-<div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-  <p class="text-sm text-yellow-800">
-    <span class="font-medium">注意:</span> 校舎を選択してください
-  </p>
-</div>
-<% end %>
