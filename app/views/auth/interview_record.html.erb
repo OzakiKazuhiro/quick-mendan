@@ -91,14 +91,18 @@
         <%= form_with model: @record, url: save_interview_record_path(@appointment), 
                       method: :patch, local: true, class: "space-y-6" do |form| %>
 
-        <div>
+        <div data-controller="character-counter" data-character-counter-min-value="10" data-character-counter-max-value="2000">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             面談内容 <span class="text-red-500">*</span>
           </label>
           <%= form.text_area :content, 
                 rows: 12,
                 placeholder: "面談で話した内容、生徒の様子、今後のアドバイスなどを記録してください...\n\n例：\n・学習状況について\n・進路相談について\n・悩みや相談事項\n・今後の学習計画\n・次回面談の予定など",
-                class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none" %>
+                class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none",
+                data: { 
+                  character_counter_target: "input", 
+                  action: "input->character-counter#updateCount" 
+                } %>
 
           <% if @record.errors[:content].any? %>
           <p class="mt-1 text-sm text-red-600">
@@ -109,8 +113,8 @@
 
           <p class="mt-2 text-sm text-gray-500">
             10文字以上2000文字以内で入力してください。
-            <span class="ml-2" id="char-count">
-              現在: <span id="current-count">0</span>文字
+            <span class="ml-2">
+              現在: <span data-character-counter-target="counter">0</span>文字
             </span>
           </p>
         </div>
@@ -162,33 +166,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  // 文字数カウント機能
-  document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.querySelector('textarea[name="interview_record[content]"]');
-    const currentCount = document.getElementById('current-count');
-
-    function updateCharCount() {
-      const count = textarea.value.length;
-      currentCount.textContent = count;
-
-      // 文字数に応じて色を変更
-      if (count < 10) {
-        currentCount.className = 'text-red-600';
-      } else if (count > 2000) {
-        currentCount.className = 'text-red-600';
-      } else {
-        currentCount.className = 'text-green-600';
-      }
-    }
-
-    if (textarea) {
-      // 初期表示
-      updateCharCount();
-
-      // リアルタイム更新
-      textarea.addEventListener('input', updateCharCount);
-    }
-  });
-</script>
