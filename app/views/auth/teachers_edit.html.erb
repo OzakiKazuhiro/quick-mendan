@@ -58,7 +58,7 @@
         <div>
           <%= form.label :user_login_name, "ログイン名", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.text_field :user_login_name, 
-                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4",
                               placeholder: "例: tanaka_hanako" %>
           <p class="mt-1 text-sm text-gray-500">英数字とアンダースコアのみ使用可能です</p>
         </div>
@@ -67,7 +67,7 @@
         <div>
           <%= form.label :name, "氏名", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.text_field :name, 
-                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4",
                               placeholder: "例: 田中花子" %>
         </div>
 
@@ -75,7 +75,7 @@
         <div>
           <%= form.label :email, "メールアドレス", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.email_field :email, 
-                               class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                               class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4",
                                placeholder: "例: tanaka@example.com" %>
           <p class="mt-1 text-sm text-gray-500">リマインダー機能で使用します（任意）</p>
         </div>
@@ -126,7 +126,7 @@
         <div>
           <%= form.label :notification_time, "リマインダー送信時刻", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.time_field :notification_time, 
-                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm" %>
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4" %>
           <p class="mt-1 text-sm text-gray-500">メールアドレスと併せて設定すると、翌日の面談予定をメールで通知します</p>
         </div>
 
@@ -138,7 +138,7 @@
             <div>
               <%= form.label :password, "新しいパスワード", class: "block text-sm font-medium text-gray-700 mb-2" %>
               <%= form.password_field :password, 
-                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4",
                                       placeholder: "変更しない場合は空欄のままにしてください" %>
               <p class="mt-1 text-sm text-gray-500">6文字以上で入力してください</p>
             </div>
@@ -146,7 +146,7 @@
             <div>
               <%= form.label :password_confirmation, "パスワード確認", class: "block text-sm font-medium text-gray-700 mb-2" %>
               <%= form.password_field :password_confirmation, 
-                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm",
+                                      class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm py-3 px-4",
                                       placeholder: "上記と同じパスワードを入力してください" %>
             </div>
           </div>
