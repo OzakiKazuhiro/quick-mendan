@@ -7,7 +7,9 @@ class AuthController < ApplicationController
   # Webリクエストの処理やレスポンス生成の基本機能を提供
 
   # 講師権限が必要なアクションの前に実行
-  before_action :require_staff, only: [:staff_dashboard, :proxy_booking, :create_proxy_appointment, :interview_record, :save_interview_record, :students_index, :students_new, :students_create, :students_show, :students_edit, :students_update, :students_destroy, :bulk_assign_teacher]
+  before_action :require_staff,
+                only: [:staff_dashboard, :proxy_booking, :create_proxy_appointment, :interview_record, :save_interview_record, :students_index,
+                       :students_new, :students_create, :students_show, :students_edit, :students_update, :students_destroy, :bulk_assign_teacher]
   # ダッシュボードページのキャッシュを無効化（セキュリティ対策）
   before_action :prevent_caching, only: [:staff_dashboard]
   before_action :set_appointment, only: [:interview_record, :save_interview_record]
@@ -29,28 +31,28 @@ class AuthController < ApplicationController
     @teachers_count = Teacher.count
     @students_count = Student.count
     @campuses_count = Campus.count
-    
+
     # 講師選択機能（管理者・講師ともに利用可能）
     @selected_teacher_id = params[:teacher_id]&.to_i
     @selected_teacher = if @selected_teacher_id
-                         Teacher.find(@selected_teacher_id)
-                       else
-                         @current_user  # デフォルトは自分
-                       end
-    
+                          Teacher.find(@selected_teacher_id)
+                        else
+                          @current_user # デフォルトは自分
+                        end
+
     # 全講師リストを取得（管理者・講師ともに）
     @available_teachers = Teacher.all.order(:name)
-    
+
     # 講師の場合は予約情報も取得
-    if current_user_is_teacher?
-      @tab = params[:tab] || 'my_appointments'
-      
-      case @tab
-      when 'my_appointments'
-        load_teacher_appointments(@selected_teacher)
-      when 'all_appointments'
-        load_all_appointments
-      end
+    return unless current_user_is_teacher?
+
+    @tab = params[:tab] || 'my_appointments'
+
+    case @tab
+    when 'my_appointments'
+      load_teacher_appointments(@selected_teacher)
+    when 'all_appointments'
+      load_all_appointments
     end
   end
 
@@ -60,12 +62,12 @@ class AuthController < ApplicationController
 
     # パラメータの取得
     username = params[:username]
-    # ↑ フォームから送信されたユーザー名を取得　
+    # ↑ フォームから送信されたユーザー名を取得
     # 例 => "shibaguti"
-    
+
     password = params[:password]
     # ↑ フォームから送信されたパスワードを取得
-    
+
     remember_me = params[:remember_me] == '1'
     # ↑ 「ログイン状態を保持」チェックボックスの状態を取得
     # '1'の場合true、それ以外（nil含む）はfalseになる
@@ -73,8 +75,8 @@ class AuthController < ApplicationController
     # Teacherモデルで認証を試行
     # Devise は :email キーで認証対象を検索することを前提としているので、ここで意図的にemailキーにusernameを渡している
     teacher = Teacher.find_for_database_authentication(email: username)
-    #↑{email: "shibaguti"} として渡されてteacherモデルのfind_for_database_authenticationメソッドが実行される
-    
+    # ↑{email: "shibaguti"} として渡されてteacherモデルのfind_for_database_authenticationメソッドが実行される
+
     if teacher && teacher.valid_password?(password)
       session[:teacher_id] = teacher.id
       redirect_to after_sign_in_path_for(teacher), notice: 'ログインしました'
@@ -96,23 +98,23 @@ class AuthController < ApplicationController
   def proxy_booking
     @students = Student.includes(:campuses).order(:name)
     @selected_student = Student.find(params[:student_id]) if params[:student_id].present?
-    
-    if @selected_student
-      load_available_time_slots_for_proxy
-    end
+
+    return unless @selected_student
+
+    load_available_time_slots_for_proxy
   end
 
   # 代理予約作成
   def create_proxy_appointment
     @student = Student.find(params[:student_id])
     @time_slot = TimeSlot.find(params[:time_slot_id])
-    
+
     @appointment = Appointment.new(
       student: @student,
       time_slot: @time_slot,
       notes: "代理予約（#{current_staff_user.name}先生による）"
     )
-    
+
     if @appointment.save
       flash[:success] = "#{@student.name}さんの予約を作成しました"
       redirect_to staff_dashboard_path(tab: 'my_appointments')
@@ -132,12 +134,12 @@ class AuthController < ApplicationController
   def save_interview_record
     @appointment = Appointment.find(params[:id])
     @record = @appointment.interview_record || @appointment.build_interview_record
-    
+
     if @record.update(interview_record_params)
-      flash[:success] = "面談記録を保存しました"
+      flash[:success] = '面談記録を保存しました'
       redirect_to staff_dashboard_path
     else
-      flash[:error] = "面談記録の保存に失敗しました"
+      flash[:error] = '面談記録の保存に失敗しました'
       render :interview_record
     end
   end
@@ -146,48 +148,46 @@ class AuthController < ApplicationController
   def students_index
     # 基本クエリ（担当講師も含める）
     @students = Student.includes(:campuses, :assigned_teacher)
-    
+
     # 検索キーワード（生徒番号・氏名・高校名）
     if params[:search].present?
       search_term = "%#{params[:search]}%"
       @students = @students.where(
-        "student_number LIKE ? OR name LIKE ? OR school_name LIKE ?", 
+        'student_number LIKE ? OR name LIKE ? OR school_name LIKE ?',
         search_term, search_term, search_term
       )
     end
-    
+
     # 校舎フィルタ
     @selected_campuses = params[:campuses] || []
     if @selected_campuses.any?
       @students = @students.joins(:student_campus_affiliations)
-                          .where(student_campus_affiliations: { campus_id: @selected_campuses })
-                          .distinct
+                           .where(student_campus_affiliations: { campus_id: @selected_campuses })
+                           .distinct
     end
-    
+
     # 学年フィルタ
     @selected_grade = params[:grade]
-    if @selected_grade.present?
-      @students = @students.where(grade: @selected_grade)
-    end
-    
+    @students = @students.where(grade: @selected_grade) if @selected_grade.present?
+
     # 担当講師フィルタ
     @selected_teacher = params[:assigned_teacher_id]
     if @selected_teacher.present?
-      if @selected_teacher == 'unassigned'
-        @students = @students.where(assigned_teacher_id: nil)
-      else
-        @students = @students.where(assigned_teacher_id: @selected_teacher)
-      end
+      @students = if @selected_teacher == 'unassigned'
+                    @students.where(assigned_teacher_id: nil)
+                  else
+                    @students.where(assigned_teacher_id: @selected_teacher)
+                  end
     end
-    
+
     # 最終的な並び順
     @students = @students.order(:student_number)
-    
+
     # フィルタ用データ
     @campuses = Campus.all
     @grades = Student.where.not(grade: [nil, '']).distinct.pluck(:grade).compact.sort
-    @teachers = Teacher.all.order(:name)  # 一括操作とフィルタ用
-    
+    @teachers = Teacher.all.order(:name) # 一括操作とフィルタ用
+
     # 検索条件の保持
     @search_keyword = params[:search]
   end
@@ -195,21 +195,21 @@ class AuthController < ApplicationController
   def students_new
     @student = Student.new
     @campuses = Campus.all
-    @teachers = Teacher.all.order(:name)  # 担当講師選択用
+    @teachers = Teacher.all.order(:name) # 担当講師選択用
   end
 
   def students_create
     @student = Student.new(student_params)
     @student.password = '9999' # 固定パスワード
     @student.password_confirmation = '9999' # パスワード確認も設定
-    
+
     if @student.save
       flash[:success] = "生徒「#{@student.name}」を登録しました"
       redirect_to staff_students_path
     else
       @campuses = Campus.all
       @teachers = Teacher.all.order(:name)  # 担当講師選択用
-      flash.now[:error] = "生徒の登録に失敗しました"
+      flash.now[:error] = '生徒の登録に失敗しました'
       render :students_new
     end
   end
@@ -220,7 +220,7 @@ class AuthController < ApplicationController
 
   def students_edit
     @campuses = Campus.all
-    @teachers = Teacher.all.order(:name)  # 担当講師選択用
+    @teachers = Teacher.all.order(:name) # 担当講師選択用
   end
 
   def students_update
@@ -229,8 +229,8 @@ class AuthController < ApplicationController
       redirect_to staff_student_path(@student)
     else
       @campuses = Campus.all
-      @teachers = Teacher.all.order(:name)  # 担当講師選択用
-      flash.now[:error] = "生徒情報の更新に失敗しました"
+      @teachers = Teacher.all.order(:name) # 担当講師選択用
+      flash.now[:error] = '生徒情報の更新に失敗しました'
       render :students_edit
     end
   end
@@ -240,7 +240,7 @@ class AuthController < ApplicationController
     if @student.destroy
       flash[:success] = "生徒「#{student_name}」を削除しました"
     else
-      flash[:error] = "生徒の削除に失敗しました"
+      flash[:error] = '生徒の削除に失敗しました'
     end
     redirect_to staff_students_path
   end
@@ -249,16 +249,16 @@ class AuthController < ApplicationController
   def bulk_assign_teacher
     student_ids_string = params[:student_ids]
     teacher_id = params[:teacher_id]
-    
+
     # student_idsを文字列から配列に変換
     student_ids = student_ids_string.present? ? student_ids_string.split(',').map(&:to_i) : []
-    
+
     if student_ids.empty?
-      flash[:error] = "生徒を選択してください"
+      flash[:error] = '生徒を選択してください'
       redirect_to staff_students_path
       return
     end
-    
+
     if teacher_id.present?
       teacher = Teacher.find(teacher_id)
       Student.where(id: student_ids).update_all(assigned_teacher_id: teacher_id)
@@ -267,7 +267,7 @@ class AuthController < ApplicationController
       Student.where(id: student_ids).update_all(assigned_teacher_id: nil)
       flash[:success] = "#{student_ids.length}名の生徒の担当を外しました"
     end
-    
+
     redirect_to staff_students_path
   end
 
@@ -281,14 +281,15 @@ class AuthController < ApplicationController
   def save_interview_record_in_modal
     @appointment = Appointment.find(params[:id])
     @record = @appointment.interview_record || @appointment.build_interview_record
-    
+
     if @record.update(interview_record_params)
       # 成功した場合、更新されたパーシャルを返す
       render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record }
     else
       # 失敗した場合、エラー情報を含んだパーシャルを返す（もしくはエラーメッセージを返す）
       # ここでは簡単化のため、同じパーシャルを再描画
-      render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record }, status: :unprocessable_entity
+      render partial: 'auth/interview_record_modal_content', locals: { appointment: @appointment, record: @record },
+             status: :unprocessable_entity
     end
   end
 
@@ -303,12 +304,12 @@ class AuthController < ApplicationController
 
   def teachers_create
     @teacher = Teacher.new(teacher_params)
-    
+
     if @teacher.save
       flash[:success] = "講師「#{@teacher.name}」を登録しました"
       redirect_to staff_teachers_path
     else
-      flash.now[:error] = "講師の登録に失敗しました"
+      flash.now[:error] = '講師の登録に失敗しました'
       render :teachers_new
     end
   end
@@ -324,41 +325,42 @@ class AuthController < ApplicationController
 
   def teachers_update
     # パスワードが空の場合は更新しない
-    if teacher_params[:password].blank?
-      teacher_update_params = teacher_params.except(:password, :password_confirmation)
-    else
-      teacher_update_params = teacher_params
-    end
-    
+    teacher_update_params = if teacher_params[:password].blank?
+                              teacher_params.except(:password, :password_confirmation)
+                            else
+                              teacher_params
+                            end
+
     if @teacher.update(teacher_update_params)
       flash[:success] = "講師「#{@teacher.name}」の情報を更新しました"
       redirect_to staff_teacher_path(@teacher)
     else
-      flash.now[:error] = "講師情報の更新に失敗しました"
+      flash.now[:error] = '講師情報の更新に失敗しました'
       render :teachers_edit
     end
   end
 
   def teachers_destroy
     teacher_name = @teacher.name
-    
+
     # 現在ログイン中の講師は削除できない
     if @teacher.id == current_staff_user.id
-      flash[:error] = "現在ログイン中の講師は削除できません"
+      flash[:error] = '現在ログイン中の講師は削除できません'
       redirect_to staff_teachers_path
       return
     end
-    
+
     if @teacher.destroy
       flash[:success] = "講師「#{teacher_name}」を削除しました"
     else
-      flash[:error] = "講師の削除に失敗しました"
+      flash[:error] = '講師の削除に失敗しました'
     end
     redirect_to staff_teachers_path
   end
 
   # 29行目: privateメソッドの開始
   private
+
   # ↑ 以降のメソッドはクラス外部から呼び出し不可
   # コントローラ内部でのみ使用される補助メソッド
 
@@ -381,16 +383,16 @@ class AuthController < ApplicationController
 
   # 講師権限チェック
   def require_staff
-    unless current_staff_user
-      redirect_to staff_login_path, alert: 'ログインが必要です'
-    end
+    return if current_staff_user
+
+    redirect_to staff_login_path, alert: 'ログインが必要です'
   end
 
   # キャッシュ無効化
   def prevent_caching
-    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+    response.headers['Cache-Control'] = 'no-cache, no-store, max-age=0, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
   end
 
   def after_sign_in_path_for(resource)
@@ -400,22 +402,22 @@ class AuthController < ApplicationController
   def load_teacher_appointments(teacher = nil)
     # 選択された講師の面談枠に対する予約を取得
     target_teacher = teacher || current_staff_user
-    
+
     @today_appointments = target_teacher.time_slots
                                         .joins(:appointment)
-                                        .includes(:appointment => {:student => :campuses})
+                                        .includes(appointment: { student: :campuses })
                                         .where('time_slots.date = ?', Date.current)
                                         .order(:start_time)
 
     @upcoming_appointments = target_teacher.time_slots
                                            .joins(:appointment)
-                                           .includes(:appointment => {:student => :campuses})
+                                           .includes(appointment: { student: :campuses })
                                            .where('time_slots.date > ?', Date.current)
                                            .order(:date, :start_time)
 
     @past_appointments = target_teacher.time_slots
                                        .joins(:appointment)
-                                       .includes(:appointment => [{:student => :campuses}, :interview_record])
+                                       .includes(appointment: [{ student: :campuses }, :interview_record])
                                        .where('time_slots.date < ?', Date.current)
                                        .order(date: :desc, start_time: :desc)
                                        .limit(20)
@@ -424,30 +426,30 @@ class AuthController < ApplicationController
   def load_all_appointments
     @campuses = Campus.all
     @selected_campuses = params[:campuses] || []
-    
+
     # 全講師の予約を取得
     appointments_query = Appointment.joins(:time_slot, :student)
-                                   .includes(:time_slot => :teacher, :student => :campuses)
-    
+                                    .includes(time_slot: :teacher, student: :campuses)
+
     # 校舎でフィルタリング
     if @selected_campuses.any?
       appointments_query = appointments_query.joins(student: :student_campus_affiliations)
-                                           .where(student_campus_affiliations: { campus_id: @selected_campuses })
+                                             .where(student_campus_affiliations: { campus_id: @selected_campuses })
     end
-    
+
     # 日付でグループ化
     @appointments_by_date = appointments_query.where('time_slots.date >= ?', Date.current)
-                                             .order('time_slots.date', 'time_slots.start_time')
-                                             .group_by { |apt| apt.time_slot.date }
+                                              .order('time_slots.date', 'time_slots.start_time')
+                                              .group_by { |apt| apt.time_slot.date }
   end
 
   def load_available_time_slots_for_proxy
     # 代理予約用の空き時間枠を取得（当日でも可能）
     @available_slots = current_staff_user.time_slots
-                                        .where(status: :available)
-                                        .where('date >= ?', Date.current)
-                                        .order(:date, :start_time)
-                                        .limit(50)
+                                         .where(status: :available)
+                                         .where('date >= ?', Date.current)
+                                         .order(:date, :start_time)
+                                         .limit(50)
   end
 
   def set_appointment
@@ -475,22 +477,22 @@ class AuthController < ApplicationController
     @time_slots_count = @teacher.time_slots.count
     @appointments_count = Appointment.joins(:time_slot).where(time_slots: { teacher_id: @teacher.id }).count
     @upcoming_appointments = Appointment.joins(:time_slot)
-                                       .where(time_slots: { teacher_id: @teacher.id })
-                                       .where('time_slots.date >= ?', Date.current)
-                                       .includes(:student, time_slot: :campus)
-                                       .order('time_slots.date', 'time_slots.start_time')
+                                        .where(time_slots: { teacher_id: @teacher.id })
+                                        .where('time_slots.date >= ?', Date.current)
+                                        .includes(:student, time_slot: :campus)
+                                        .order('time_slots.date', 'time_slots.start_time')
     @past_appointments = Appointment.joins(:time_slot)
-                                   .where(time_slots: { teacher_id: @teacher.id })
-                                   .where('time_slots.date < ?', Date.current)
-                                   .includes(:student, :interview_record, time_slot: :campus)
-                                   .order('time_slots.date DESC', 'time_slots.start_time DESC')
-                                   .limit(10)
+                                    .where(time_slots: { teacher_id: @teacher.id })
+                                    .where('time_slots.date < ?', Date.current)
+                                    .includes(:student, :interview_record, time_slot: :campus)
+                                    .order('time_slots.date DESC', 'time_slots.start_time DESC')
+                                    .limit(20)
   end
 
   def set_teacher
     @teacher = Teacher.find(params[:id])
   end
-# 35行目: クラス定義終了
+  # 35行目: クラス定義終了
 end
 
 # 【このコードの全体的な機能】
