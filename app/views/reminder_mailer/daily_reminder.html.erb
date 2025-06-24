@@ -1,0 +1,84 @@
+<%
+=begin%>
+何をするファイル？
+メールの見た目（HTML版）
+色、レイアウト、絵文字などで見やすく
+スマホでも読めるデザイン
+<%
+=end%>
+
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px;">
+  <!-- ヘッダー -->
+  <div style="background-color: #10b981; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="margin: 0; font-size: 24px;">📅 面談リマインダー</h1>
+    <p style="margin: 10px 0 0 0; font-size: 16px;">quick-mendan</p>
+  </div>
+
+  <!-- メイン内容 -->
+  <div style="background-color: white; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h2 style="color: #374151; margin-top: 0;">
+      <%= @teacher.name %>先生、お疲れ様です！
+    </h2>
+
+    <p style="color: #6b7280; font-size: 16px; line-height: 1.6;">
+      明日（<strong><%= @tomorrow.strftime('%Y年%m月%d日') %></strong>）の面談予定をお知らせします。
+    </p>
+
+    <!-- 面談一覧 -->
+    <div style="margin: 30px 0;">
+      <h3 style="color: #374151; border-bottom: 2px solid #10b981; padding-bottom: 10px;">
+        📋 明日の面談予定（<%= @appointments.count %>件）
+      </h3>
+
+      <% @appointments.each do |time_slot| %>
+      <% appointment = time_slot.appointment %>
+      <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 15px 0; background-color: #f9fafb;">
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+          <div style="background-color: #10b981; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; margin-right: 15px;">
+            <%= time_slot.start_time.strftime('%H:%M') %>
+          </div>
+          <div>
+            <strong style="color: #374151; font-size: 18px;">
+              <%= appointment.student.name %>さん
+            </strong>
+          </div>
+        </div>
+
+        <div style="color: #6b7280; font-size: 14px;">
+          <div style="margin-bottom: 5px;">
+            📍 <strong>校舎:</strong> <%= time_slot.campus.name %>
+          </div>
+          <div style="margin-bottom: 5px;">
+            ⏰ <strong>時間:</strong> <%= time_slot.start_time.strftime('%H:%M') %> - <%= time_slot.end_time.strftime('%H:%M') %>
+          </div>
+          <div>
+            📝 <strong>面談記録:</strong>
+            <% if appointment.interview_record %>
+            <span style="color: #10b981;">記録済み</span>
+            <% else %>
+            <span style="color: #f59e0b;">未記録</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
+
+    <!-- フッター情報 -->
+    <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
+      <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+        💡 <strong>ご注意:</strong><br>
+        • 面談開始の5分前にはお越しください<br>
+        • 面談後は忘れずに記録を残してください<br>
+        • 予定に変更がある場合は、システムで確認してください
+      </p>
+
+      <div style="text-align: center; margin-top: 20px; padding: 15px; background-color: #f3f4f6; border-radius: 6px;">
+        <p style="margin: 0; color: #6b7280; font-size: 12px;">
+          このメールは自動送信されています。<br>
+          quick-mendan 面談予約システム
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

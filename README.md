@@ -21,4 +21,6 @@ Things you may want to cover:
 
 * Deployment instructions
 
+https://liambx.com/erd/p/github.com/OzakiKazuhiro/quick-mendan/blob/main/db/schema.rb?showMode=ALL_FIELDS
+
 * ...
