@@ -180,8 +180,8 @@ class AuthController < ApplicationController
                   end
     end
 
-    # 最終的な並び順
-    @students = @students.order(:student_number)
+    # 最終的な並び順とページネーション
+    @students = @students.order(:student_number).page(params[:page]).per(20)
 
     # フィルタ用データ
     @campuses = Campus.all
