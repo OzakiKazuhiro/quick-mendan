@@ -37,12 +37,18 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # 開発環境でのメール配信設定（コンソールに出力）
+  # 開発環境でのメール配信設定（Rails Credentials使用）
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: 'localhost',
-    port: 1025,
-    domain: 'localhost'
+    address: Rails.application.credentials.smtp[:address],
+    port: Rails.application.credentials.smtp[:port],
+    domain: Rails.application.credentials.smtp[:domain],
+    user_name: Rails.application.credentials.smtp[:user_name],
+    password: Rails.application.credentials.smtp[:password],
+    authentication: :plain,
+    ssl: true,
+    tls: false,
+    enable_starttls_auto: false
   }
 
   # Set localhost to be used by links generated in mailer templates.
