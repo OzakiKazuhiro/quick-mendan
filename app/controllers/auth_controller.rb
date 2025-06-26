@@ -96,7 +96,52 @@ class AuthController < ApplicationController
 
   # 代理予約画面
   def proxy_booking
-    @students = Student.includes(:campuses).order(:name)
+    # 基本クエリ（担当講師も含める）
+    @students = Student.includes(:campuses, :assigned_teacher)
+
+    # 検索キーワード（生徒番号・氏名・高校名）
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @students = @students.where(
+        'student_number LIKE ? OR name LIKE ? OR school_name LIKE ?',
+        search_term, search_term, search_term
+      )
+    end
+
+    # 校舎フィルタ
+    @selected_campuses = params[:campuses] || []
+    if @selected_campuses.any?
+      @students = @students.joins(:student_campus_affiliations)
+                           .where(student_campus_affiliations: { campus_id: @selected_campuses })
+                           .distinct
+    end
+
+    # 学年フィルタ
+    @selected_grade = params[:grade]
+    @students = @students.where(grade: @selected_grade) if @selected_grade.present?
+
+    # 担当講師フィルタ
+    @selected_teacher = params[:assigned_teacher_id]
+    if @selected_teacher.present?
+      @students = if @selected_teacher == 'unassigned'
+                    @students.where(assigned_teacher_id: nil)
+                  else
+                    @students.where(assigned_teacher_id: @selected_teacher)
+                  end
+    end
+
+    # 最終的な並び順とページネーション
+    @students = @students.order(:student_number).page(params[:page]).per(10) # 代理予約では少なめに表示
+
+    # フィルタ用データ
+    @campuses = Campus.all
+    @grades = Student.where.not(grade: [nil, '']).distinct.pluck(:grade).compact.sort
+    @teachers = Teacher.all.order(:name)
+
+    # 検索条件の保持
+    @search_keyword = params[:search]
+
+    # 選択された生徒の処理
     @selected_student = Student.find(params[:student_id]) if params[:student_id].present?
 
     return unless @selected_student
