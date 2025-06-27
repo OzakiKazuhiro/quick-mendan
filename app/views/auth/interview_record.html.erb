@@ -54,10 +54,17 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700">面談日時</label>
+              <% wdays = %w(日 月 火 水 木 金 土) %>
               <p class="mt-1 text-gray-900">
-                <%= @appointment.time_slot.date.strftime('%Y年%m月%d日 (%a)') %>
+                <%= @appointment.time_slot.date.strftime('%Y年%m月%d日') %>（<%= wdays[@appointment.time_slot.date.wday] %>）
                 <%= @appointment.time_slot.start_time.strftime('%H:%M') %>から
               </p>
+              <% if @appointment.notes.present? %>
+              <div class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded">
+                <span class="block text-xs text-gray-500 mb-1">申込時メモ</span>
+                <p class="text-sm text-gray-800 whitespace-pre-line"><%= @appointment.notes %></p>
+              </div>
+              <% end %>
             </div>
 
             <% if @appointment.proxy_booking? %>
