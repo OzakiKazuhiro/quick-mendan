@@ -9,7 +9,8 @@ class AuthController < ApplicationController
   # 講師権限が必要なアクションの前に実行
   before_action :require_staff,
                 only: [:staff_dashboard, :proxy_booking, :create_proxy_appointment, :interview_record, :save_interview_record, :students_index,
-                       :students_new, :students_create, :students_show, :students_edit, :students_update, :students_destroy, :bulk_assign_teacher]
+                       :students_new, :students_create, :students_show, :students_edit, :students_update, :students_destroy, :bulk_assign_teacher,
+                       :students_export, :students_import]
   # ダッシュボードページのキャッシュを無効化（セキュリティ対策）
   before_action :prevent_caching, only: [:staff_dashboard]
   before_action :set_appointment, only: [:interview_record, :save_interview_record]
@@ -316,6 +317,47 @@ class AuthController < ApplicationController
     redirect_to staff_students_path
   end
 
+  # CSV エクスポート機能
+  def students_export
+    # フィルタ条件を適用した生徒データを取得
+    @students = get_filtered_students_for_export
+
+    # CSVファイル名を生成（日時付き）
+    filename = "students_#{Date.current.strftime('%Y%m%d')}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data generate_students_csv(@students),
+                  filename: filename,
+                  type: 'text/csv; charset=utf-8'
+      end
+    end
+  end
+
+  # CSV インポート機能
+  def students_import
+    unless params[:csv_file].present?
+      flash[:error] = 'CSVファイルを選択してください'
+      redirect_to staff_students_path
+      return
+    end
+
+    begin
+      csv_file = params[:csv_file]
+      results = process_students_csv(csv_file)
+
+      if results[:errors].any?
+        flash[:error] = "インポートに失敗しました: #{results[:errors].join(', ')}"
+      else
+        flash[:success] = "#{results[:created]}件の新規生徒を作成し、#{results[:updated]}件の生徒情報を更新しました"
+      end
+    rescue StandardError => e
+      flash[:error] = "CSVファイルの処理中にエラーが発生しました: #{e.message}"
+    end
+
+    redirect_to staff_students_path
+  end
+
   # 面談記録モーダル表示用アクション
   def show_interview_record_modal
     @appointment = Appointment.find(params[:id])
@@ -537,6 +579,147 @@ class AuthController < ApplicationController
   def set_teacher
     @teacher = Teacher.find(params[:id])
   end
+
+  # CSV エクスポート用のヘルパーメソッド
+  def get_filtered_students_for_export
+    # students_indexと同じフィルタ条件を適用
+    students = Student.includes(:campuses, :assigned_teacher)
+
+    # 検索キーワード（生徒番号・氏名・高校名）
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      students = students.where(
+        'student_number LIKE ? OR name LIKE ? OR school_name LIKE ?',
+        search_term, search_term, search_term
+      )
+    end
+
+    # 校舎フィルタ
+    selected_campuses = params[:campuses] || []
+    if selected_campuses.any?
+      students = students.joins(:student_campus_affiliations)
+                         .where(student_campus_affiliations: { campus_id: selected_campuses })
+                         .distinct
+    end
+
+    # 学年フィルタ
+    students = students.where(grade: params[:grade]) if params[:grade].present?
+
+    # 担当講師フィルタ
+    if params[:assigned_teacher_id].present?
+      students = if params[:assigned_teacher_id] == 'unassigned'
+                   students.where(assigned_teacher_id: nil)
+                 else
+                   students.where(assigned_teacher_id: params[:assigned_teacher_id])
+                 end
+    end
+
+    students.order(:student_number)
+  end
+
+  def generate_students_csv(students)
+    require 'csv'
+
+    # 校舎ID対応表をコメントとして追加
+    campus_list = Campus.all.map { |c| "# #{c.id}: #{c.name}" }.join("\n")
+
+    CSV.generate(encoding: 'UTF-8') do |csv|
+      # ヘッダー行の前にコメント行を追加
+      csv << ['# ■■■ CSVファイルインポート時の注意事項 ■■■']
+      csv << ['# このファイルをインポートする場合は、以下の手順に従ってください：']
+      csv << ['# 1. このコメント行（#で始まる行）をすべて削除してください']
+      csv << ['# 2. 1行目が「student_number,name,grade,school_name,campus_ids」になるようにこのコメントが書かれている行は削除して使用してください']
+      csv << ['# 3. ファイルを保存してからインポートしてください']
+      csv << ['# ']
+      csv << ['# 校舎ID対応表']
+      Campus.all.each do |campus|
+        csv << ["# #{campus.id}: #{campus.name}"]
+      end
+      csv << ['# ']
+      csv << ['# 複数校舎の場合はカンマ区切りで入力（例: 1,2,3）']
+      csv << ['# ']
+
+      # ヘッダー行
+      csv << %w[student_number name grade school_name campus_ids]
+
+      # データ行
+      students.each do |student|
+        campus_ids = student.campuses.pluck(:id).join(',')
+        csv << [
+          student.student_number,
+          student.name,
+          student.grade,
+          student.school_name,
+          campus_ids
+        ]
+      end
+    end
+  end
+
+  def process_students_csv(csv_file)
+    require 'csv'
+
+    results = { created: 0, updated: 0, errors: [] }
+
+    CSV.foreach(csv_file.path, headers: true, encoding: 'UTF-8') do |row|
+      # コメント行をスキップ
+      next if row['student_number']&.start_with?('#')
+      next if row['student_number'].blank?
+
+      begin
+        student_data = {
+          student_number: row['student_number'],
+          name: row['name'],
+          grade: row['grade'],
+          school_name: row['school_name'],
+          password: '9999' # 統一パスワード
+        }
+
+        # 既存生徒を検索
+        existing_student = Student.find_by(student_number: student_data[:student_number])
+
+        if existing_student
+          # 既存生徒の更新
+          if existing_student.update(student_data.except(:password))
+            # 校舎関連付けの更新
+            update_student_campuses(existing_student, row['campus_ids'])
+            results[:updated] += 1
+          else
+            results[:errors] << "#{student_data[:student_number]}: #{existing_student.errors.full_messages.join(', ')}"
+          end
+        else
+          # 新規生徒の作成
+          new_student = Student.new(student_data)
+          if new_student.save
+            # 校舎関連付けの設定
+            update_student_campuses(new_student, row['campus_ids'])
+            results[:created] += 1
+          else
+            results[:errors] << "#{student_data[:student_number]}: #{new_student.errors.full_messages.join(', ')}"
+          end
+        end
+      rescue StandardError => e
+        results[:errors] << "#{row['student_number']}: #{e.message}"
+      end
+    end
+
+    results
+  end
+
+  def update_student_campuses(student, campus_ids_string)
+    return unless campus_ids_string.present?
+
+    # 既存の校舎関連付けを削除
+    student.student_campus_affiliations.destroy_all
+
+    # 新しい校舎関連付けを作成
+    campus_ids = campus_ids_string.split(',').map(&:strip).map(&:to_i)
+    campus_ids.each do |campus_id|
+      campus = Campus.find_by(id: campus_id)
+      student.student_campus_affiliations.create!(campus: campus) if campus
+    end
+  end
+
   # 35行目: クラス定義終了
 end
 

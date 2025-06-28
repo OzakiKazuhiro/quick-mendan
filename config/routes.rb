@@ -48,14 +48,19 @@ Rails.application.routes.draw do
   # 生徒管理機能（講師・管理者共通）
   get 'staff/students', to: 'auth#students_index', as: 'staff_students'
   get 'staff/students/new', to: 'auth#students_new', as: 'new_staff_student'
+  
+  # CSV インポート・エクスポート機能（:idより前に配置）
+  get 'staff/students/export', to: 'auth#students_export', as: 'export_staff_students'
+  post 'staff/students/import', to: 'auth#students_import', as: 'import_staff_students'
+  
+  # 生徒一括操作
+  post 'staff/students/bulk_assign_teacher', to: 'auth#bulk_assign_teacher', as: 'bulk_assign_teacher'
+  
   post 'staff/students', to: 'auth#students_create', as: 'create_staff_student'
   get 'staff/students/:id', to: 'auth#students_show', as: 'staff_student'
   get 'staff/students/:id/edit', to: 'auth#students_edit', as: 'edit_staff_student'
   patch 'staff/students/:id', to: 'auth#students_update', as: 'update_staff_student'
   delete 'staff/students/:id', to: 'auth#students_destroy', as: 'destroy_staff_student'
-  
-  # 生徒一括操作
-  post 'staff/students/bulk_assign_teacher', to: 'auth#bulk_assign_teacher', as: 'bulk_assign_teacher'
 
   # 講師管理機能（管理者のみ）
   get 'staff/teachers', to: 'auth#teachers_index', as: 'staff_teachers'
