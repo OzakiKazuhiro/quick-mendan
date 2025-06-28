@@ -48,6 +48,10 @@ gem 'whenever', require: false
 # ページネーション
 gem 'kaminari'
 
+# CSV/Excel処理用（より高機能なCSV処理のため自分で下２行追加）
+gem 'csv' # Ruby 3.4対応
+gem 'roo', '~> 2.10.0'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
