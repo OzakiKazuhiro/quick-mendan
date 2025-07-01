@@ -44,9 +44,7 @@ class AuthController < ApplicationController
     # 全講師リストを取得（管理者・講師ともに）
     @available_teachers = Teacher.all.order(:name)
 
-    # 講師の場合は予約情報も取得
-    return unless current_user_is_teacher?
-
+    # 管理者・講師ともに予約情報を取得
     @tab = params[:tab] || 'my_appointments'
 
     case @tab

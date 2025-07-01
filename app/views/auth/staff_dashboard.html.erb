@@ -24,9 +24,7 @@
       </div>
     </div>
 
-    <!-- 今日の予定・予約管理 -->
-    <% if current_user_is_teacher? %>
-    <!-- 講師の場合：予約管理の内容をタブ切り替えで表示 -->
+    <!-- 予約管理（管理者・講師共通） -->
     <div class="mb-8">
       <!-- タブナビゲーション -->
       <div class="border-b border-gray-200 mb-6">
@@ -66,24 +64,9 @@
       <%= render 'auth/all_appointments' %>
       <% end %>
     </div>
-    <% else %>
-    <!-- 管理者の場合：従来の今日の予定 -->
-    <div class="mb-8">
-      <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">システム概要</h2>
-        </div>
-        <div class="p-6">
-          <p class="text-gray-500 text-center py-8">
-            管理者向けの情報を表示します
-          </p>
-        </div>
-      </div>
-    </div>
-    <% end %>
 
     <!-- メニューカード -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- 生徒管理カード（講師・管理者共通） -->
       <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow border-l-4 border-blue-500">
         <div class="p-4">
@@ -141,39 +124,11 @@
           </div>
         </div>
       </div>
-
-      <% if @is_admin %>
-      <!-- システム管理カード（管理者のみ） -->
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">システム管理</h3>
-              <p class="text-sm text-gray-500">講師・校舎の管理</p>
-            </div>
-          </div>
-          <div class="mt-4">
-            <a href="#" class="text-yellow-600 hover:text-yellow-500 text-sm font-medium">
-              管理画面へ →
-            </a>
-          </div>
-        </div>
-      </div>
-      <% end %>
     </div>
   </div>
 </div>
 
-<!-- 代理予約ボタン（講師のみ） -->
-<% if current_user_is_teacher? %>
+<!-- 代理予約ボタン（管理者・講師共通） -->
 <div class="fixed bottom-6 right-6">
   <%= link_to proxy_booking_path, 
       class: "bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors duration-200 flex items-center" do %>
@@ -181,4 +136,3 @@
   代理予約
   <% end %>
 </div>
-<% end %>
