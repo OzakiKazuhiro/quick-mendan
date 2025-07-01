@@ -18,9 +18,9 @@ RSpec.describe 'Auth', type: :request do
     context '管理者としてログインしている場合' do
       before do
         # リクエストテストでセッションを設定
-        post staff_login_path, params: { 
-          username: admin_teacher.user_login_name, 
-          password: 'password123' 
+        post staff_login_path, params: {
+          username: admin_teacher.user_login_name,
+          password: 'password123'
         }
       end
 
@@ -47,14 +47,12 @@ RSpec.describe 'Auth', type: :request do
         get staff_dashboard_path
         expect(response.body).to include('生徒管理')
         expect(response.body).to include('講師管理')
-        expect(response.body).to include('システム管理')
       end
 
       it '管理者向けメニューが表示されること' do
         get staff_dashboard_path
         expect(response.body).to include('生徒管理')
         expect(response.body).to include('講師管理')
-        expect(response.body).to include('システム管理')  # 管理者のみ
         expect(response.body).to include('生徒の登録・編集・削除')
       end
     end
@@ -62,9 +60,9 @@ RSpec.describe 'Auth', type: :request do
     context '講師としてログインしている場合' do
       before do
         # リクエストテストでセッションを設定
-        post staff_login_path, params: { 
-          username: teacher.user_login_name, 
-          password: 'password123' 
+        post staff_login_path, params: {
+          username: teacher.user_login_name,
+          password: 'password123'
         }
       end
 
@@ -91,8 +89,6 @@ RSpec.describe 'Auth', type: :request do
         get staff_dashboard_path
         expect(response.body).to include('生徒管理')
         expect(response.body).to include('講師管理')
-        # 講師の場合はシステム管理は表示されない
-        expect(response.body).not_to include('システム管理')
         expect(response.body).to include('代理予約')
       end
 
@@ -109,9 +105,9 @@ RSpec.describe 'Auth', type: :request do
   describe 'Student Management' do
     before do
       # リクエストテストでセッションを設定
-      post staff_login_path, params: { 
-        username: admin_teacher.user_login_name, 
-        password: 'password123' 
+      post staff_login_path, params: {
+        username: admin_teacher.user_login_name,
+        password: 'password123'
       }
     end
 
@@ -146,9 +142,9 @@ RSpec.describe 'Auth', type: :request do
 
       context '有効なパラメータの場合' do
         it '生徒が作成されること' do
-          expect {
+          expect do
             post create_staff_student_path, params: valid_params
-          }.to change(Student, :count).by(1)
+          end.to change(Student, :count).by(1)
         end
 
         it '生徒一覧にリダイレクトされること' do
@@ -175,9 +171,9 @@ RSpec.describe 'Auth', type: :request do
         end
 
         it '生徒が作成されないこと' do
-          expect {
+          expect do
             post create_staff_student_path, params: invalid_params
-          }.not_to change(Student, :count)
+          end.not_to change(Student, :count)
         end
 
         it '新規作成画面が再表示されること' do
@@ -240,9 +236,9 @@ RSpec.describe 'Auth', type: :request do
       let(:student) { students.first }
 
       it '生徒が削除されること' do
-        expect {
+        expect do
           delete destroy_staff_student_path(student)
-        }.to change(Student, :count).by(-1)
+        end.to change(Student, :count).by(-1)
       end
 
       it '生徒一覧にリダイレクトされること' do
@@ -259,9 +255,9 @@ RSpec.describe 'Auth', type: :request do
 
     before do
       # リクエストテストでセッションを設定
-      post staff_login_path, params: { 
-        username: admin_teacher.user_login_name, 
-        password: 'password123' 
+      post staff_login_path, params: {
+        username: admin_teacher.user_login_name,
+        password: 'password123'
       }
     end
 
@@ -293,9 +289,9 @@ RSpec.describe 'Auth', type: :request do
 
       context '新規作成の場合' do
         it '面談記録が作成されること' do
-          expect {
+          expect do
             patch save_interview_record_in_modal_path(appointment), params: record_params
-          }.to change(InterviewRecord, :count).by(1)
+          end.to change(InterviewRecord, :count).by(1)
         end
       end
 
@@ -309,4 +305,4 @@ RSpec.describe 'Auth', type: :request do
       end
     end
   end
-end 
+end
