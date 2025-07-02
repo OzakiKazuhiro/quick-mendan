@@ -88,49 +88,61 @@
     </div>
 
     <!-- メニューカード -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white overflow-hidden shadow-lg rounded-xl hover:shadow-2xl transition-all duration-300 border border-gray-100">
+        <div class="p-8">
+          <div class="flex h-48">
             <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
+              <div class="w-48 h-48 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center p-1 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <%= image_tag "student-dashboard/mendan-yoyaku.png", 
+                       alt: "面談予約", 
+                       class: "w-full h-full object-cover object-top rounded-lg drop-shadow-lg",
+                       style: "image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" %>
               </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">面談予約</h3>
-              <p class="text-sm text-gray-500">講師との面談を予約する</p>
+            <div class="ml-8 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">面談予約</h3>
+                <p class="text-base text-gray-600 font-medium">講師との面談を予約する</p>
+              </div>
+              <div class="mt-4">
+                <%= link_to student_teachers_path, class: "inline-flex items-center text-blue-600 hover:text-blue-700 text-base font-semibold hover:underline transition-colors duration-200" do %>
+                予約画面へ
+                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <% end %>
+              </div>
             </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_teachers_path, class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
-            予約画面へ →
-            <% end %>
           </div>
         </div>
       </div>
 
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow">
-        <div class="p-6">
-          <div class="flex items-center">
+      <div class="bg-white overflow-hidden shadow-lg rounded-xl hover:shadow-2xl transition-all duration-300 border border-gray-100">
+        <div class="p-8">
+          <div class="flex h-48">
             <div class="flex-shrink-0">
-              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
+              <div class="w-48 h-48 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center p-1 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <%= image_tag "student-dashboard/mendan-cancel.png", 
+                       alt: "予約キャンセル", 
+                       class: "w-full h-full object-cover object-top rounded-lg drop-shadow-lg",
+                       style: "image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" %>
               </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-medium text-gray-900">予約キャンセル</h3>
-              <p class="text-sm text-gray-500">現在の予約状況を確認・キャンセル</p>
+            <div class="ml-8 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">予約キャンセル</h3>
+                <p class="text-base text-gray-600 font-medium">現在の予約状況を確認・キャンセル</p>
+              </div>
+              <div class="mt-4">
+                <%= link_to student_appointments_list_path, class: "inline-flex items-center text-green-600 hover:text-green-700 text-base font-semibold hover:underline transition-colors duration-200" do %>
+                確認画面へ
+                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <% end %>
+              </div>
             </div>
-          </div>
-          <div class="mt-4">
-            <%= link_to student_appointments_list_path, class: "text-green-600 hover:text-green-500 text-sm font-medium" do %>
-            確認画面へ →
-            <% end %>
           </div>
         </div>
       </div>
@@ -174,4 +186,5 @@
     </div>
     <% end %>
   </div>
+</div>
 </div>
