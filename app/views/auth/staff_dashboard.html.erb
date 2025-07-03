@@ -3,8 +3,29 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center">
+    <div class="mb-6 sm:mb-8">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">
+            ダッシュボード
+          </h1>
+          <p class="text-gray-600">
+            ようこそ、<span class="font-medium text-blue-600"><%= @current_user.name %></span>さん
+            <span class="block text-sm text-gray-500 mt-1">
+              （<%= @is_admin ? '管理者' : '講師' %>）
+            </span>
+          </p>
+        </div>
+        <div class="text-center">
+          <%= link_to "ログアウト", staff_logout_path, 
+                      class: "bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors shadow-sm",
+                      data: { confirm: "ログアウトしますか？" } %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex justify-between items-center">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">
             ダッシュボード
@@ -27,32 +48,62 @@
     <!-- 予約管理（管理者・講師共通） -->
     <div class="mb-8">
       <!-- タブナビゲーション -->
-      <div class="border-b border-gray-200 mb-6">
-        <div class="flex justify-between items-center">
-          <nav class="-mb-px flex space-x-8">
-            <% active_tab_class = "border-blue-500 text-blue-600" %>
-            <% inactive_tab_class = "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" %>
+      <div class="mb-6">
+        <% active_tab_class = "border-blue-500 text-blue-600" %>
+        <% inactive_tab_class = "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" %>
 
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden">
+          <!-- 面談枠設定ボタン -->
+          <div class="mb-4">
+            <%= link_to time_slots_path, 
+                class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center shadow-sm" do %>
+            <i class="fas fa-calendar-plus mr-2"></i>
+            面談枠設定
+            <% end %>
+          </div>
+
+          <!-- タブ -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
             <%= link_to staff_dashboard_path(tab: 'my_appointments'), 
-                class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{@tab == 'my_appointments' ? active_tab_class : inactive_tab_class}" do %>
-            <i class="fas fa-calendar-check mr-2"></i>
+                class: "py-3 px-4 text-center font-medium text-sm rounded-lg transition-colors #{@tab == 'my_appointments' ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' : 'bg-white text-gray-600 border-2 border-gray-200 hover:bg-gray-50'}" do %>
+            <i class="fas fa-calendar-check mb-1 block"></i>
             自分の予約
             <% end %>
 
             <%= link_to staff_dashboard_path(tab: 'all_appointments'), 
-                class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{@tab == 'all_appointments' ? active_tab_class : inactive_tab_class}" do %>
-            <i class="fas fa-calendar-alt mr-2"></i>
+                class: "py-3 px-4 text-center font-medium text-sm rounded-lg transition-colors #{@tab == 'all_appointments' ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' : 'bg-white text-gray-600 border-2 border-gray-200 hover:bg-gray-50'}" do %>
+            <i class="fas fa-calendar-alt mb-1 block"></i>
             全体予約確認
             <% end %>
-          </nav>
+          </div>
+        </div>
 
-          <!-- 面談枠設定ボタン -->
-          <div class="flex items-center">
-            <%= link_to time_slots_path, 
-                class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center" do %>
-            <i class="fas fa-calendar-plus mr-2"></i>
-            面談枠設定
-            <% end %>
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <nav class="-mb-px flex space-x-8">
+              <%= link_to staff_dashboard_path(tab: 'my_appointments'), 
+                  class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{@tab == 'my_appointments' ? active_tab_class : inactive_tab_class}" do %>
+              <i class="fas fa-calendar-check mr-2"></i>
+              自分の予約
+              <% end %>
+
+              <%= link_to staff_dashboard_path(tab: 'all_appointments'), 
+                  class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{@tab == 'all_appointments' ? active_tab_class : inactive_tab_class}" do %>
+              <i class="fas fa-calendar-alt mr-2"></i>
+              全体予約確認
+              <% end %>
+            </nav>
+
+            <!-- 面談枠設定ボタン -->
+            <div class="flex items-center">
+              <%= link_to time_slots_path, 
+                  class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center" do %>
+              <i class="fas fa-calendar-plus mr-2"></i>
+              面談枠設定
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
@@ -66,26 +117,47 @@
     </div>
 
     <!-- メニューカード -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
       <!-- 生徒管理カード（講師・管理者共通） -->
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow border-l-4 border-blue-500">
-        <div class="p-4">
+      <div class="bg-white overflow-hidden shadow-lg rounded-lg hover:shadow-xl transition-shadow border-l-4 border-blue-500">
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden p-4">
+          <div class="text-center mb-4">
+            <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center mx-auto shadow-sm">
+              <%= image_tag "dashboard/student-manage.png", 
+                   alt: "生徒管理", 
+                   class: "w-16 h-16 object-cover rounded-lg" %>
+            </div>
+          </div>
+          <div class="text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">生徒管理</h3>
+            <p class="text-sm text-gray-500 mb-4">生徒の登録・編集・削除</p>
+            <%= link_to staff_students_path, 
+                class: "inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors" do %>
+            <i class="fas fa-users mr-2"></i>
+            生徒一覧を見る
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block p-4">
           <div class="flex items-center space-x-4">
             <!-- 左側：画像 -->
             <div class="flex-shrink-0">
-              <div class="w-20 h-20 md:w-32 md:h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
+              <div class="w-32 h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
                 <%= image_tag "dashboard/student-manage.png", 
                      alt: "生徒管理", 
-                     class: "w-16 h-16 md:w-28 md:h-28 object-cover rounded-lg" %>
+                     class: "w-28 h-28 object-cover rounded-lg" %>
               </div>
             </div>
 
             <!-- 右側：テキストとボタン -->
             <div class="flex-1 min-w-0">
-              <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2">生徒管理</h3>
-              <p class="text-sm md:text-base text-gray-500 mb-4">生徒の登録・編集・削除</p>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">生徒管理</h3>
+              <p class="text-base text-gray-500 mb-4">生徒の登録・編集・削除</p>
               <%= link_to staff_students_path, 
-                  class: "inline-flex items-center text-sm md:text-base font-medium text-blue-600 hover:text-blue-800 transition-colors" do %>
+                  class: "inline-flex items-center text-base font-medium text-blue-600 hover:text-blue-800 transition-colors" do %>
               <span>生徒一覧を見る</span>
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -97,24 +169,45 @@
       </div>
 
       <!-- 講師管理カード（講師・管理者共通） -->
-      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow border-l-4 border-green-500">
-        <div class="p-4">
+      <div class="bg-white overflow-hidden shadow-lg rounded-lg hover:shadow-xl transition-shadow border-l-4 border-green-500">
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden p-4">
+          <div class="text-center mb-4">
+            <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center mx-auto shadow-sm">
+              <%= image_tag "dashboard/teacher-manage.png", 
+                   alt: "講師管理", 
+                   class: "w-16 h-16 object-cover rounded-lg" %>
+            </div>
+          </div>
+          <div class="text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">講師管理</h3>
+            <p class="text-sm text-gray-500 mb-4">講師の登録・編集・削除</p>
+            <%= link_to staff_teachers_path, 
+                class: "inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors" do %>
+            <i class="fas fa-chalkboard-teacher mr-2"></i>
+            講師一覧を見る
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block p-4">
           <div class="flex items-center space-x-4">
             <!-- 左側：画像 -->
             <div class="flex-shrink-0">
-              <div class="w-20 h-20 md:w-32 md:h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
+              <div class="w-32 h-32 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm">
                 <%= image_tag "dashboard/teacher-manage.png", 
                      alt: "講師管理", 
-                     class: "w-16 h-16 md:w-28 md:h-28 object-cover rounded-lg" %>
+                     class: "w-28 h-28 object-cover rounded-lg" %>
               </div>
             </div>
 
             <!-- 右側：テキストとボタン -->
             <div class="flex-1 min-w-0">
-              <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-2">講師管理</h3>
-              <p class="text-sm md:text-base text-gray-500 mb-4">講師の登録・編集・削除</p>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">講師管理</h3>
+              <p class="text-base text-gray-500 mb-4">講師の登録・編集・削除</p>
               <%= link_to staff_teachers_path, 
-                  class: "inline-flex items-center text-sm md:text-base font-medium text-green-600 hover:text-green-800 transition-colors" do %>
+                  class: "inline-flex items-center text-base font-medium text-green-600 hover:text-green-800 transition-colors" do %>
               <span>講師一覧を見る</span>
               <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -125,11 +218,20 @@
         </div>
       </div>
     </div>
+
+    <!-- スマホ用代理予約ボタン（ページ最下部） -->
+    <div class="block sm:hidden mt-8">
+      <%= link_to proxy_booking_path, 
+          class: "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-colors duration-200 flex items-center justify-center" do %>
+      <i class="fas fa-user-plus mr-2"></i>
+      代理予約
+      <% end %>
+    </div>
   </div>
 </div>
 
-<!-- 代理予約ボタン（管理者・講師共通） -->
-<div class="fixed bottom-6 right-6">
+<!-- PC用代理予約ボタン（固定） -->
+<div class="hidden sm:block fixed bottom-6 right-6">
   <%= link_to proxy_booking_path, 
       class: "bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-colors duration-200 flex items-center" do %>
   <i class="fas fa-user-plus mr-2"></i>

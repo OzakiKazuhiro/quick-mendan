@@ -3,8 +3,36 @@
 <div class="min-h-screen bg-gray-50 py-8" data-controller="delete-modal bulk-assign-teacher">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center">
+    <div class="mb-6 sm:mb-8">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h1 class="text-2xl font-bold text-gray-900">
+            生徒管理
+          </h1>
+          <p class="mt-2 text-gray-600">
+            生徒の登録・編集・削除を行います
+          </p>
+        </div>
+
+        <!-- スマホ用ボタン群 -->
+        <div class="grid grid-cols-2 gap-3">
+          <%= link_to new_staff_student_path, 
+                      class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" do %>
+          <i class="fas fa-plus mr-2"></i>
+          新規登録
+          <% end %>
+
+          <%= link_to staff_dashboard_path, 
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" do %>
+          <i class="fas fa-arrow-left mr-2"></i>
+          ダッシュボード
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex justify-between items-center">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">
             生徒管理
@@ -44,68 +72,134 @@
     </div>
 
     <!-- 統計情報 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-users text-white text-sm"></i>
+    <div class="mb-6 sm:mb-8">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden space-y-3">
+        <div class="bg-white overflow-hidden shadow-lg rounded-lg">
+          <div class="p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-users text-white text-sm"></i>
+                </div>
+                <div class="ml-4">
+                  <dt class="text-sm font-medium text-gray-500">
+                    総生徒数
+                  </dt>
+                  <dd class="text-xl font-bold text-gray-900">
+                    <%= @students.count %>名
+                  </dd>
+                </div>
               </div>
             </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  総生徒数
-                </dt>
-                <dd class="text-lg font-medium text-gray-900">
-                  <%= @students.count %>名
-                </dd>
-              </dl>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-lg rounded-lg">
+          <div class="p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-building text-white text-sm"></i>
+                </div>
+                <div class="ml-4">
+                  <dt class="text-sm font-medium text-gray-500">
+                    校舎数
+                  </dt>
+                  <dd class="text-xl font-bold text-gray-900">
+                    <%= @campuses.count %>校舎
+                  </dd>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-lg rounded-lg">
+          <div class="p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-calendar-check text-white text-sm"></i>
+                </div>
+                <div class="ml-4">
+                  <dt class="text-sm font-medium text-gray-500">
+                    今月の予約
+                  </dt>
+                  <dd class="text-xl font-bold text-gray-900">
+                    <%= Appointment.joins(:time_slot).where('time_slots.date >= ? AND time_slots.date < ?', Date.current.beginning_of_month, Date.current.end_of_month).count %>件
+                  </dd>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-building text-white text-sm"></i>
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-users text-white text-sm"></i>
+                </div>
               </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  校舎数
-                </dt>
-                <dd class="text-lg font-medium text-gray-900">
-                  <%= @campuses.count %>校舎
-                </dd>
-              </dl>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    総生徒数
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900">
+                    <%= @students.count %>名
+                  </dd>
+                </dl>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-calendar-check text-white text-sm"></i>
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-building text-white text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    校舎数
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900">
+                    <%= @campuses.count %>校舎
+                  </dd>
+                </dl>
               </div>
             </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  今月の予約
-                </dt>
-                <dd class="text-lg font-medium text-gray-900">
-                  <%= Appointment.joins(:time_slot).where('time_slots.date >= ? AND time_slots.date < ?', Date.current.beginning_of_month, Date.current.end_of_month).count %>件
-                </dd>
-              </dl>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-calendar-check text-white text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    今月の予約
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900">
+                    <%= Appointment.joins(:time_slot).where('time_slots.date >= ? AND time_slots.date < ?', Date.current.beginning_of_month, Date.current.end_of_month).count %>件
+                  </dd>
+                </dl>
+              </div>
             </div>
           </div>
         </div>
@@ -113,94 +207,180 @@
     </div>
 
     <!-- 検索・フィルタリング -->
-    <div class="bg-white shadow rounded-lg mb-6">
-      <div class="px-6 py-6 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">検索・フィルタリング</h2>
+    <div class="bg-white shadow-lg rounded-lg mb-6">
+      <div class="px-4 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900 text-center sm:text-left">検索・フィルタリング</h2>
       </div>
-      <div class="px-8 py-10">
-        <%= form_with url: staff_students_path, method: :get, local: true, class: "space-y-8" do |form| %>
+      <div class="px-4 py-6">
+        <%= form_with url: staff_students_path, method: :get, local: true, class: "space-y-6" do |form| %>
 
-        <!-- 検索キーワードと学年と担当講師（横並び） -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden space-y-6">
           <!-- 検索キーワード -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
               <i class="fas fa-search mr-1"></i>
               検索キーワード
             </label>
             <%= form.text_field :search, 
                                 value: @search_keyword,
                                 placeholder: "生徒番号・氏名・高校名で検索",
-                                class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
-            <p class="mt-2 text-sm text-gray-500">部分一致で検索できます</p>
+                                class: "block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-3 px-4" %>
+            <p class="mt-2 text-sm text-gray-500 text-center">部分一致で検索できます</p>
           </div>
 
-          <!-- 学年フィルタ -->
+          <!-- 学年・担当講師（2列） -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
+                <i class="fas fa-graduation-cap mr-1"></i>
+                学年
+              </label>
+              <%= form.select :grade, 
+                              options_for_select([['すべて', '']] + @grades.map { |grade| [grade, grade] }, @selected_grade),
+                              {},
+                              class: "block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-3 px-4" %>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
+                <i class="fas fa-user-tie mr-1"></i>
+                担当講師
+              </label>
+              <%= form.select :assigned_teacher_id,
+                              options_for_select([['すべて', ''], ['担当なし', 'unassigned']] + @teachers.map { |teacher| [teacher.name + '先生', teacher.id] }, @selected_teacher),
+                              {},
+                              class: "block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-3 px-4" %>
+            </div>
+          </div>
+
+          <!-- 校舎フィルタ -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">
-              <i class="fas fa-graduation-cap mr-1"></i>
-              学年
+            <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
+              <i class="fas fa-building mr-1"></i>
+              校舎
             </label>
-            <%= form.select :grade, 
-                            options_for_select([['すべて', '']] + @grades.map { |grade| [grade, grade] }, @selected_grade),
-                            {},
-                            class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
-          </div>
-
-          <!-- 担当講師フィルタ -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">
-              <i class="fas fa-user-tie mr-1"></i>
-              担当講師
-            </label>
-            <%= form.select :assigned_teacher_id,
-                            options_for_select([['すべて', ''], ['担当なし', 'unassigned']] + @teachers.map { |teacher| [teacher.name + '先生', teacher.id] }, @selected_teacher),
-                            {},
-                            class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
-          </div>
-        </div>
-
-        <!-- 校舎フィルタ（横一列） -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-3">
-            <i class="fas fa-building mr-1"></i>
-            校舎
-          </label>
-          <div class="flex flex-wrap gap-6 p-4 border border-gray-200 rounded-md bg-gray-50">
-            <% @campuses.each do |campus| %>
-            <label class="flex items-center py-1">
-              <%= check_box_tag "campuses[]", 
-                                 campus.id, 
-                                 @selected_campuses.include?(campus.id.to_s),
-                                 class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4" %>
-              <span class="ml-3 text-sm text-gray-700"><%= campus.name %></span>
-            </label>
-            <% end %>
-          </div>
-        </div>
-
-        <!-- ボタン -->
-        <div class="flex items-center justify-between pt-4">
-          <div class="flex space-x-4">
-            <%= form.submit "検索・フィルタ実行", 
-                            class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center" %>
-
-            <% if @search_keyword.present? || @selected_campuses.any? || @selected_grade.present? || @selected_teacher.present? %>
-            <%= link_to staff_students_path, 
-                        class: "bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center" do %>
-            <i class="fas fa-times mr-2"></i>
-            クリア
-            <% end %>
-            <% end %>
+            <div class="grid grid-cols-2 gap-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+              <% @campuses.each do |campus| %>
+              <label class="flex items-center py-1">
+                <%= check_box_tag "campuses[]", 
+                                   campus.id, 
+                                   @selected_campuses.include?(campus.id.to_s),
+                                   class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4" %>
+                <span class="ml-2 text-sm text-gray-700"><%= campus.name %></span>
+              </label>
+              <% end %>
+            </div>
           </div>
 
           <!-- 検索結果表示 -->
-          <div class="text-sm text-gray-600">
+          <div class="text-sm text-gray-600 text-center p-3 bg-blue-50 rounded-lg">
             <% if @search_keyword.present? || @selected_campuses.any? || @selected_grade.present? || @selected_teacher.present? %>
             <span class="font-medium text-blue-600"><%= @students.count %></span>件の生徒が見つかりました
             <% else %>
             全<span class="font-medium"><%= @students.count %></span>名の生徒を表示中
             <% end %>
+          </div>
+
+          <!-- ボタン -->
+          <div class="space-y-3">
+            <%= form.submit "検索・フィルタ実行", 
+                            class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-sm" %>
+
+            <% if @search_keyword.present? || @selected_campuses.any? || @selected_grade.present? || @selected_teacher.present? %>
+            <%= link_to staff_students_path, 
+                        class: "w-full bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" do %>
+            <i class="fas fa-times mr-2"></i>
+            クリア
+            <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block space-y-8">
+          <!-- 検索キーワードと学年と担当講師（横並び） -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 検索キーワード -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                <i class="fas fa-search mr-1"></i>
+                検索キーワード
+              </label>
+              <%= form.text_field :search, 
+                                  value: @search_keyword,
+                                  placeholder: "生徒番号・氏名・高校名で検索",
+                                  class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
+              <p class="mt-2 text-sm text-gray-500">部分一致で検索できます</p>
+            </div>
+
+            <!-- 学年フィルタ -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                <i class="fas fa-graduation-cap mr-1"></i>
+                学年
+              </label>
+              <%= form.select :grade, 
+                              options_for_select([['すべて', '']] + @grades.map { |grade| [grade, grade] }, @selected_grade),
+                              {},
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
+            </div>
+
+            <!-- 担当講師フィルタ -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                <i class="fas fa-user-tie mr-1"></i>
+                担当講師
+              </label>
+              <%= form.select :assigned_teacher_id,
+                              options_for_select([['すべて', ''], ['担当なし', 'unassigned']] + @teachers.map { |teacher| [teacher.name + '先生', teacher.id] }, @selected_teacher),
+                              {},
+                              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm py-3 px-4" %>
+            </div>
+          </div>
+
+          <!-- 校舎フィルタ（横一列） -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              <i class="fas fa-building mr-1"></i>
+              校舎
+            </label>
+            <div class="flex flex-wrap gap-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+              <% @campuses.each do |campus| %>
+              <label class="flex items-center py-1">
+                <%= check_box_tag "campuses[]", 
+                                   campus.id, 
+                                   @selected_campuses.include?(campus.id.to_s),
+                                   class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4" %>
+                <span class="ml-3 text-sm text-gray-700"><%= campus.name %></span>
+              </label>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- ボタン -->
+          <div class="flex items-center justify-between pt-4">
+            <div class="flex space-x-4">
+              <%= form.submit "検索・フィルタ実行", 
+                              class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center" %>
+
+              <% if @search_keyword.present? || @selected_campuses.any? || @selected_grade.present? || @selected_teacher.present? %>
+              <%= link_to staff_students_path, 
+                          class: "bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-3 rounded-md text-sm font-medium transition-colors flex items-center" do %>
+              <i class="fas fa-times mr-2"></i>
+              クリア
+              <% end %>
+              <% end %>
+            </div>
+
+            <!-- 検索結果表示 -->
+            <div class="text-sm text-gray-600">
+              <% if @search_keyword.present? || @selected_campuses.any? || @selected_grade.present? || @selected_teacher.present? %>
+              <span class="font-medium text-blue-600"><%= @students.count %></span>件の生徒が見つかりました
+              <% else %>
+              全<span class="font-medium"><%= @students.count %></span>名の生徒を表示中
+              <% end %>
+            </div>
           </div>
         </div>
 
@@ -209,44 +389,165 @@
     </div>
 
     <!-- 生徒一覧 -->
-    <div class="bg-white shadow rounded-lg">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">生徒一覧</h2>
+    <div class="bg-white shadow-lg rounded-lg">
+      <div class="px-4 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900 text-center sm:text-left">生徒一覧</h2>
       </div>
 
       <!-- 一括操作ツールバー -->
-      <div class="px-6 py-4 bg-yellow-50 border-b border-yellow-200 hidden" data-bulk-assign-teacher-target="toolbar">
-        <%= form_with url: bulk_assign_teacher_path, method: :post, local: true, class: "flex items-center justify-between" do |form| %>
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <i class="fas fa-users text-blue-600"></i>
+      <div class="px-4 py-4 bg-yellow-50 border-b border-yellow-200 hidden" data-bulk-assign-teacher-target="toolbar">
+        <%= form_with url: bulk_assign_teacher_path, method: :post, local: true, class: "space-y-4" do |form| %>
+
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden space-y-3">
+          <div class="text-center">
+            <i class="fas fa-users text-blue-600 mr-2"></i>
             <span class="text-sm font-medium text-gray-700">
               <span data-bulk-assign-teacher-target="selectedCount">0</span>名の生徒を選択中
             </span>
           </div>
-          <div class="flex items-center space-x-3">
-            <span class="text-sm font-medium text-gray-700">
-              担当講師を
-            </span>
-            <%= form.select :teacher_id, 
-                              options_for_select([['外す', ''], ['--- 講師を選択 ---', ''] ] + @teachers.map { |t| [t.name + '先生に変更', t.id] }),
-                              {},
-                              { class: 'rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm' } %>
-            <%= form.submit "実行", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+
+          <div class="space-y-3">
+            <div class="text-center">
+              <span class="text-sm font-medium text-gray-700 block mb-2">担当講師を</span>
+              <%= form.select :teacher_id, 
+                                options_for_select([['外す', ''], ['--- 講師を選択 ---', ''] ] + @teachers.map { |t| [t.name + '先生に変更', t.id] }),
+                                {},
+                                { class: 'w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2' } %>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <%= form.submit "実行", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-colors" %>
+              <button type="button" data-action="click->bulk-assign-teacher#cancelSelection" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-3 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-times mr-1"></i>
+                選択を解除
+              </button>
+            </div>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <button type="button" data-action="click->bulk-assign-teacher#cancelSelection" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-            <i class="fas fa-times mr-1"></i>
-            選択を解除
-          </button>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-users text-blue-600"></i>
+              <span class="text-sm font-medium text-gray-700">
+                <span data-bulk-assign-teacher-target="selectedCount">0</span>名の生徒を選択中
+              </span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-sm font-medium text-gray-700">
+                担当講師を
+              </span>
+              <%= form.select :teacher_id, 
+                                options_for_select([['外す', ''], ['--- 講師を選択 ---', ''] ] + @teachers.map { |t| [t.name + '先生に変更', t.id] }),
+                                {},
+                                { class: 'rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm' } %>
+              <%= form.submit "実行", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" %>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button type="button" data-action="click->bulk-assign-teacher#cancelSelection" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+              <i class="fas fa-times mr-1"></i>
+              選択を解除
+            </button>
+          </div>
         </div>
+
         <!-- 選択された生徒IDを格納する隠しフィールド -->
         <input type="hidden" name="student_ids" data-bulk-assign-teacher-target="studentIds">
         <% end %>
       </div>
 
-      <div class="overflow-x-auto">
+      <!-- スマホ用カード形式 -->
+      <div class="block sm:hidden">
+        <% if @students.any? %>
+        <div class="p-4 border-b border-gray-200 bg-gray-50">
+          <label class="flex items-center justify-center">
+            <input type="checkbox" data-action="change->bulk-assign-teacher#selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4 mr-2">
+            <span class="text-sm font-medium text-gray-700">全て選択</span>
+          </label>
+        </div>
+        <div class="divide-y divide-gray-200">
+          <% @students.each do |student| %>
+          <div class="p-4 hover:bg-gray-50 space-y-3">
+            <!-- 選択チェックボックス -->
+            <div class="flex items-center justify-between">
+              <input type="checkbox" value="<%= student.id %>" data-action="change->bulk-assign-teacher#selectStudent" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4">
+              <div class="flex space-x-2">
+                <%= link_to staff_student_path(student), 
+                          title: "詳細を見る",
+                          class: "text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition-colors" do %>
+                <i class="fas fa-eye text-sm"></i>
+                <% end %>
+                <%= link_to edit_staff_student_path(student), 
+                          title: "編集する",
+                          class: "text-green-600 hover:text-green-900 p-2 rounded-lg hover:bg-green-50 transition-colors" do %>
+                <i class="fas fa-edit text-sm"></i>
+                <% end %>
+                <button data-action="click->delete-modal#open" data-student-name="<%= student.name %>" data-student-id="<%= student.id %>" title="削除する" class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                  <i class="fas fa-trash text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- 生徒情報 -->
+            <div class="text-center space-y-2">
+              <div class="text-lg font-bold text-gray-900">
+                <%= student.name %>
+              </div>
+              <div class="text-sm text-gray-600">
+                生徒番号: <%= student.student_number %>
+              </div>
+              <div class="text-sm text-gray-600">
+                <%= student.grade %> | <%= student.school_name %>
+              </div>
+            </div>
+
+            <!-- 校舎・担当講師 -->
+            <div class="space-y-2">
+              <div class="text-center">
+                <div class="text-xs text-gray-500 mb-1">所属校舎</div>
+                <% if student.campuses.any? %>
+                <div class="flex flex-wrap justify-center gap-1">
+                  <% student.campuses.each do |campus| %>
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <%= campus.name %>
+                  </span>
+                  <% end %>
+                </div>
+                <% else %>
+                <span class="text-gray-400 text-sm">未設定</span>
+                <% end %>
+              </div>
+
+              <div class="text-center">
+                <div class="text-xs text-gray-500 mb-1">担当講師</div>
+                <% if student.assigned_teacher %>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <%= student.assigned_teacher.name %>先生
+                </span>
+                <% else %>
+                <span class="text-gray-400 text-sm">未設定</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <% end %>
+        </div>
+        <% else %>
+        <div class="p-8 text-center text-gray-500">
+          登録されている生徒がありません
+          <div class="mt-4">
+            <%= link_to "新規生徒登録", new_staff_student_path, 
+                      class: "text-blue-600 hover:text-blue-500 font-medium" %>
+          </div>
+        </div>
+        <% end %>
+      </div>
+
+      <!-- PC用テーブル形式 -->
+      <div class="hidden sm:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -350,12 +651,14 @@
       </div>
     </div>
     <!-- ページネーション -->
-    <div class="mt-4"> <%= paginate @students %></div>
+    <div class="mt-6 flex justify-center">
+      <%= paginate @students %>
+    </div>
   </div>
 
   <!-- 削除確認モーダル -->
   <div data-delete-modal-target="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-lg bg-white">
       <div class="mt-3 text-center">
         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
           <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
@@ -363,7 +666,7 @@
         <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">
           生徒を削除しますか？
         </h3>
-        <div class="mt-2 px-7 py-3">
+        <div class="mt-2 px-4 py-3">
           <p class="text-sm text-gray-500">
             生徒「<span class="font-medium text-gray-900" data-delete-modal-target="studentName"></span>」を削除します。
           </p>
@@ -371,11 +674,11 @@
             この操作は取り消すことができません。関連する予約履歴も全て削除されます。
           </p>
         </div>
-        <div class="items-center px-4 py-3">
-          <button data-delete-modal-target="confirmButton" data-action="click->delete-modal#confirm" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+        <div class="items-center px-4 py-3 space-y-3">
+          <button data-delete-modal-target="confirmButton" data-action="click->delete-modal#confirm" class="px-4 py-3 bg-red-600 text-white text-base font-medium rounded-lg w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
             削除する
           </button>
-          <button data-delete-modal-target="cancelButton" data-action="click->delete-modal#close" class="mt-3 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <button data-delete-modal-target="cancelButton" data-action="click->delete-modal#close" class="px-4 py-3 bg-gray-300 text-gray-700 text-base font-medium rounded-lg w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
             キャンセル
           </button>
         </div>
@@ -385,7 +688,7 @@
 
   <!-- CSVインポートモーダル -->
   <div id="csv-import-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-lg shadow-lg rounded-lg bg-white">
       <div class="mt-3">
         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
           <i class="fas fa-upload text-yellow-600 text-xl"></i>
@@ -396,15 +699,15 @@
         <div class="mt-4">
           <%= form_with url: import_staff_students_path, method: :post, multipart: true, local: true do |form| %>
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2 text-center">
               CSVファイルを選択
             </label>
             <%= form.file_field :csv_file, 
                                   accept: ".csv",
-                                  class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+                                  class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
           </div>
 
-          <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+          <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <h4 class="text-sm font-medium text-red-700 mb-2">
               <i class="fas fa-exclamation-triangle mr-1"></i>
               重要：エクスポートしたCSVファイルを使用する場合
@@ -424,10 +727,10 @@
             </ul>
           </div>
 
-          <div class="flex space-x-3">
+          <div class="space-y-3">
             <%= form.submit "取込実行", 
-                              class: "flex-1 px-4 py-2 bg-yellow-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-300" %>
-            <button type="button" onclick="document.getElementById('csv-import-modal').classList.add('hidden')" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                              class: "w-full px-4 py-3 bg-yellow-600 text-white text-base font-medium rounded-lg shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-300" %>
+            <button type="button" onclick="document.getElementById('csv-import-modal').classList.add('hidden')" class="w-full px-4 py-3 bg-gray-300 text-gray-700 text-base font-medium rounded-lg shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
               キャンセル
             </button>
           </div>

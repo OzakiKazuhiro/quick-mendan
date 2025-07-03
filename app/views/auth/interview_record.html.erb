@@ -1,8 +1,24 @@
 <div class="min-h-screen bg-gray-50">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- ヘッダー -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between">
+    <div class="mb-6 sm:mb-8">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">面談記録</h1>
+          <p class="text-gray-600">面談の内容を記録します</p>
+        </div>
+        <div class="text-center">
+          <%= link_to staff_dashboard_path, 
+              class: "bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg inline-flex items-center shadow-sm" do %>
+          <i class="fas fa-arrow-left mr-2"></i>
+          ダッシュボードに戻る
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">面談記録</h1>
           <p class="mt-2 text-gray-600">面談の内容を記録します</p>
@@ -16,24 +32,78 @@
     </div>
 
     <!-- 面談情報 -->
-    <div class="bg-white rounded-lg shadow mb-8">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+    <div class="bg-white rounded-lg shadow-lg mb-6 sm:mb-8">
+      <div class="px-4 py-4 border-b border-gray-200">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900 flex items-center justify-center sm:justify-start">
           <i class="fas fa-info-circle text-blue-500 mr-2"></i>
           面談情報
         </h2>
       </div>
 
-      <div class="px-6 py-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-4">
+      <div class="px-4 py-6">
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden space-y-6">
+          <!-- 生徒情報 -->
+          <div class="text-center">
+            <label class="block text-sm font-medium text-gray-700 mb-3">生徒</label>
             <div>
-              <label class="block text-sm font-medium text-gray-700">生徒</label>
-              <div class="mt-1 flex items-center space-x-3">
-                <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">
-                  <%= @appointment.student.name[0] %>
-                </div>
-                <div>
+              <p class="font-semibold text-gray-900 text-lg"><%= @appointment.student.name %>さん</p>
+              <p class="text-sm text-gray-600 mt-1">
+                生徒番号: <%= @appointment.student.student_number %>
+              </p>
+              <% if @appointment.student.campus %>
+              <p class="text-sm text-gray-600">
+                <%= @appointment.student.campus.name %>
+              </p>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- 講師情報 -->
+          <div class="text-center">
+            <label class="block text-sm font-medium text-gray-700 mb-2">講師</label>
+            <p class="text-gray-900 font-medium"><%= @appointment.time_slot.teacher.name %>先生</p>
+          </div>
+
+          <!-- 面談日時 -->
+          <div class="text-center">
+            <label class="block text-sm font-medium text-gray-700 mb-2">面談日時</label>
+            <% wdays = %w(日 月 火 水 木 金 土) %>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p class="text-gray-900 font-semibold">
+                <%= @appointment.time_slot.date.strftime('%Y年%m月%d日') %>
+              </p>
+              <p class="text-gray-700">
+                （<%= wdays[@appointment.time_slot.date.wday] %>）
+                <%= @appointment.time_slot.start_time.strftime('%H:%M') %>から
+              </p>
+            </div>
+            <% if @appointment.notes.present? %>
+            <div class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg text-left">
+              <span class="block text-xs text-gray-500 mb-1">申込時メモ</span>
+              <p class="text-sm text-gray-800 whitespace-pre-line"><%= @appointment.notes %></p>
+            </div>
+            <% end %>
+          </div>
+
+          <!-- 代理予約バッジ -->
+          <% if @appointment.proxy_booking? %>
+          <div class="text-center">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <i class="fas fa-user-plus mr-2"></i>
+              代理予約
+            </span>
+          </div>
+          <% end %>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">生徒</label>
+                <div class="mt-1">
                   <p class="font-semibold text-gray-900"><%= @appointment.student.name %>さん</p>
                   <p class="text-sm text-gray-600">
                     生徒番号: <%= @appointment.student.student_number %>
@@ -43,90 +113,125 @@
                   </p>
                 </div>
               </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">講師</label>
+                <p class="mt-1 text-gray-900"><%= @appointment.time_slot.teacher.name %>先生</p>
+              </div>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700">講師</label>
-              <p class="mt-1 text-gray-900"><%= @appointment.time_slot.teacher.name %>先生</p>
-            </div>
-          </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">面談日時</label>
+                <% wdays = %w(日 月 火 水 木 金 土) %>
+                <p class="mt-1 text-gray-900">
+                  <%= @appointment.time_slot.date.strftime('%Y年%m月%d日') %>（<%= wdays[@appointment.time_slot.date.wday] %>）
+                  <%= @appointment.time_slot.start_time.strftime('%H:%M') %>から
+                </p>
+                <% if @appointment.notes.present? %>
+                <div class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded">
+                  <span class="block text-xs text-gray-500 mb-1">申込時メモ</span>
+                  <p class="text-sm text-gray-800 whitespace-pre-line"><%= @appointment.notes %></p>
+                </div>
+                <% end %>
+              </div>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">面談日時</label>
-              <% wdays = %w(日 月 火 水 木 金 土) %>
-              <p class="mt-1 text-gray-900">
-                <%= @appointment.time_slot.date.strftime('%Y年%m月%d日') %>（<%= wdays[@appointment.time_slot.date.wday] %>）
-                <%= @appointment.time_slot.start_time.strftime('%H:%M') %>から
-              </p>
-              <% if @appointment.notes.present? %>
-              <div class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded">
-                <span class="block text-xs text-gray-500 mb-1">申込時メモ</span>
-                <p class="text-sm text-gray-800 whitespace-pre-line"><%= @appointment.notes %></p>
+              <% if @appointment.proxy_booking? %>
+              <div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-user-plus mr-1"></i>
+                  代理予約
+                </span>
               </div>
               <% end %>
             </div>
-
-            <% if @appointment.proxy_booking? %>
-            <div>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                <i class="fas fa-user-plus mr-1"></i>
-                代理予約
-              </span>
-            </div>
-            <% end %>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 面談記録フォーム -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-          <i class="fas fa-edit text-green-500 mr-2"></i>
-          面談記録
+    <div class="bg-white rounded-lg shadow-lg">
+      <div class="px-4 py-4 border-b border-gray-200">
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden text-center">
+          <h2 class="text-lg font-semibold text-gray-900 flex items-center justify-center">
+            <i class="fas fa-edit text-green-500 mr-2"></i>
+            面談記録
+          </h2>
           <% if @record.persisted? %>
-          <span class="ml-3 text-sm font-normal text-gray-500">
-            (最終更新: <%= @record.updated_at.strftime('%Y/%m/%d %H:%M') %>)
-          </span>
+          <p class="text-xs text-gray-500 mt-2">
+            最終更新: <%= @record.updated_at.strftime('%Y/%m/%d %H:%M') %>
+          </p>
           <% end %>
-        </h2>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:block">
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-edit text-green-500 mr-2"></i>
+            面談記録
+            <% if @record.persisted? %>
+            <span class="ml-3 text-sm font-normal text-gray-500">
+              (最終更新: <%= @record.updated_at.strftime('%Y/%m/%d %H:%M') %>)
+            </span>
+            <% end %>
+          </h2>
+        </div>
       </div>
 
-      <div class="px-6 py-6">
+      <div class="px-4 py-6">
         <%= form_with model: @record, url: save_interview_record_path(@appointment), 
                       method: :patch, local: true, class: "space-y-6" do |form| %>
 
         <div data-controller="character-counter" data-character-counter-min-value="10" data-character-counter-max-value="2000">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2 text-center sm:text-left">
             面談内容 <span class="text-red-500">*</span>
           </label>
           <%= form.text_area :content, 
                 rows: 12,
                 placeholder: "面談で話した内容、生徒の様子、今後のアドバイスなどを記録してください...\n\n例：\n・学習状況について\n・進路相談について\n・悩みや相談事項\n・今後の学習計画\n・次回面談の予定など",
-                class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none",
+                class: "w-full border border-gray-300 rounded-lg px-3 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm sm:text-base",
                 data: { 
                   character_counter_target: "input", 
                   action: "input->character-counter#updateCount" 
                 } %>
 
           <% if @record.errors[:content].any? %>
-          <p class="mt-1 text-sm text-red-600">
+          <p class="mt-1 text-sm text-red-600 text-center sm:text-left">
             <i class="fas fa-exclamation-circle mr-1"></i>
             <%= @record.errors[:content].first %>
           </p>
           <% end %>
 
-          <p class="mt-2 text-sm text-gray-500">
+          <p class="mt-2 text-sm text-gray-500 text-center sm:text-left">
             10文字以上2000文字以内で入力してください。
-            <span class="ml-2">
+            <span class="block sm:inline sm:ml-2 mt-1 sm:mt-0">
               現在: <span data-character-counter-target="counter">0</span>文字
             </span>
           </p>
         </div>
 
-        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <!-- スマホ用ボタンレイアウト -->
+        <div class="block sm:hidden pt-6 border-t border-gray-200 space-y-4">
+          <div class="text-sm text-gray-500 text-center">
+            <i class="fas fa-lock mr-1"></i>
+            この記録は講師・管理者のみ閲覧可能です
+          </div>
+
+          <div class="space-y-3">
+            <%= form.submit (@record.persisted? ? "記録を更新" : "記録を保存"), 
+                  class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-medium shadow-sm" %>
+
+            <%= link_to staff_dashboard_path, 
+                  class: "w-full bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-4 rounded-lg font-medium text-center inline-block" do %>
+            キャンセル
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用ボタンレイアウト -->
+        <div class="hidden sm:flex items-center justify-between pt-6 border-t border-gray-200">
           <div class="text-sm text-gray-500">
             <i class="fas fa-lock mr-1"></i>
             この記録は講師・管理者のみ閲覧可能です
@@ -147,12 +252,36 @@
     </div>
 
     <!-- 注意事項 -->
-    <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-      <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+    <div class="mt-6 sm:mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-blue-800 mb-4 flex items-center justify-center sm:justify-start">
         <i class="fas fa-info-circle mr-2"></i>
         面談記録について
       </h3>
-      <ul class="space-y-2 text-sm text-blue-700">
+
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden space-y-3">
+        <div class="text-center text-sm text-blue-700 space-y-2">
+          <p class="flex items-center justify-center">
+            <i class="fas fa-check-circle text-blue-600 mr-2"></i>
+            講師と管理者のみが閲覧できます
+          </p>
+          <p class="flex items-center justify-center">
+            <i class="fas fa-check-circle text-blue-600 mr-2"></i>
+            後から編集・更新することができます
+          </p>
+          <p class="flex items-center justify-center">
+            <i class="fas fa-check-circle text-blue-600 mr-2"></i>
+            個人情報の取り扱いにご注意ください
+          </p>
+          <p class="flex items-center justify-center">
+            <i class="fas fa-check-circle text-blue-600 mr-2"></i>
+            詳細な記録は今後の指導に役立ちます
+          </p>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <ul class="hidden sm:block space-y-2 text-sm text-blue-700">
         <li class="flex items-start">
           <i class="fas fa-check-circle text-blue-600 mr-2 mt-0.5"></i>
           面談記録は講師と管理者のみが閲覧できます

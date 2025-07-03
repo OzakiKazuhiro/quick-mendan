@@ -1,25 +1,25 @@
 <% content_for :title, "予約一覧" %>
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div class="mb-4 sm:mb-0">
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
             予約一覧
           </h1>
-          <p class="mt-2 text-gray-600">
+          <p class="mt-2 text-sm sm:text-base text-gray-600">
             あなたの面談予約を確認・管理できます
           </p>
         </div>
-        <div class="flex items-center space-x-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <%= link_to student_dashboard_path, 
-                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center" do %>
           ← ダッシュボードに戻る
           <% end %>
           <%= link_to student_teachers_path, 
-                      class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                      class: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-center" do %>
           新しい予約
           <% end %>
         </div>
@@ -27,10 +27,10 @@
     </div>
 
     <!-- 今後の予約 -->
-    <div class="mb-8">
+    <div class="mb-6 sm:mb-8">
       <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900">
             今後の面談予定（<%= @upcoming_appointments.count %>件）
           </h2>
         </div>
@@ -38,9 +38,10 @@
         <% if @upcoming_appointments.any? %>
         <div class="divide-y divide-gray-200">
           <% @upcoming_appointments.each do |appointment| %>
-          <div class="px-6 py-6">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
+          <div class="px-4 py-4 sm:px-6 sm:py-6">
+            <!-- スマホ: 縦並び、デスクトップ: 横並び -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center mb-4 sm:mb-0">
                 <div class="flex-shrink-0">
                   <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
                     <span class="text-white font-medium text-lg">
@@ -48,12 +49,12 @@
                     </span>
                   </div>
                 </div>
-                <div class="ml-4">
-                  <div class="text-lg font-medium text-gray-900">
+                <div class="ml-3 sm:ml-4">
+                  <div class="text-base sm:text-lg font-medium text-gray-900">
                     <%= appointment.time_slot.teacher.name %>先生
                   </div>
-                  <div class="text-sm text-gray-500">
-                    <div class="flex items-center space-x-4">
+                  <div class="text-xs sm:text-sm text-gray-500 mt-1">
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
                       <span>
                         📅 <%= appointment.time_slot.date.strftime('%Y年%m月%d日（%a）') %>
                       </span>
@@ -65,16 +66,16 @@
                       </span>
                     </div>
                     <% if appointment.notes.present? %>
-                    <div class="mt-2 text-sm text-gray-600">
+                    <div class="mt-2 text-xs sm:text-sm text-gray-600">
                       <strong>メモ:</strong> <%= appointment.notes %>
                     </div>
                     <% end %>
                   </div>
                 </div>
               </div>
-              <div class="flex items-center space-x-3">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <% if appointment.cancellable? %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   変更可能
                 </span>
                 <%= link_to student_cancel_appointment_path(appointment), 
@@ -82,16 +83,16 @@
                                   turbo_method: :delete,
                                   turbo_confirm: "本当にキャンセルしますか？\n\n#{appointment.appointment_display}" 
                                 },
-                                class: "bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors" do %>
+                                class: "bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors text-center" do %>
                 キャンセル
                 <% end %>
                 <% else %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                   変更不可
                 </span>
-                <span class="text-xs text-gray-500">
+                <div class="text-xs text-gray-500 text-center sm:text-left">
                   ※前日22:15を過ぎています
-                </span>
+                </div>
                 <% end %>
               </div>
             </div>
@@ -99,15 +100,15 @@
           <% end %>
         </div>
         <% else %>
-        <div class="px-6 py-12 text-center">
+        <div class="px-4 py-8 sm:px-6 sm:py-12 text-center">
           <div class="text-gray-500">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
             <p class="mt-2 text-sm">今後の予約はありません</p>
             <div class="mt-4">
               <%= link_to student_teachers_path, 
-                            class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                            class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors" do %>
               面談を予約する
               <% end %>
             </div>
@@ -119,18 +120,18 @@
 
     <!-- 過去の面談履歴 -->
     <% if @past_appointments.any? %>
-    <div class="mb-8">
+    <div class="mb-6 sm:mb-8">
       <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900">
             過去の面談履歴（<%= @past_appointments.count %>件）
           </h2>
         </div>
 
         <div class="divide-y divide-gray-200">
           <% @past_appointments.each do |appointment| %>
-          <div class="px-6 py-4">
-            <div class="flex items-center">
+          <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-start sm:items-center">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center">
                   <span class="text-white font-medium text-sm">
@@ -138,12 +139,12 @@
                   </span>
                 </div>
               </div>
-              <div class="ml-4">
+              <div class="ml-3 sm:ml-4">
                 <div class="text-sm font-medium text-gray-900">
                   <%= appointment.time_slot.teacher.name %>先生
                 </div>
-                <div class="text-sm text-gray-500">
-                  <div class="flex items-center space-x-4">
+                <div class="text-xs sm:text-sm text-gray-500 mt-1">
+                  <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
                     <span>
                       📅 <%= appointment.time_slot.date.strftime('%Y年%m月%d日（%a）') %>
                     </span>
@@ -170,19 +171,19 @@
     <% end %>
 
     <!-- 注意事項 -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 sm:p-4">
       <div class="flex">
         <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
           </svg>
         </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-yellow-800">
+        <div class="ml-2 sm:ml-3">
+          <h3 class="text-xs sm:text-sm font-medium text-yellow-800">
             予約のキャンセルについて
           </h3>
-          <div class="mt-2 text-sm text-yellow-700">
-            <ul class="list-disc pl-5 space-y-1">
+          <div class="mt-2 text-xs sm:text-sm text-yellow-700">
+            <ul class="list-disc pl-3 sm:pl-5 space-y-1">
               <li>予約のキャンセルは前日の22:15まで可能です</li>
               <li>キャンセル後は同じ時間枠を他の生徒が予約できるようになります</li>
               <li>当日のキャンセルはできませんので、やむを得ない場合は直接講師にご連絡ください</li>
