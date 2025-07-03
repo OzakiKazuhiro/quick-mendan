@@ -1,47 +1,47 @@
 <% content_for :title, "生徒ダッシュボード" %>
 
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900">
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div class="mb-4 sm:mb-0">
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
             生徒ダッシュボード
           </h1>
-          <p class="mt-2 text-gray-600">
+          <p class="mt-2 text-gray-600 text-sm sm:text-base">
             こんにちは、<span class="font-medium text-blue-600"><%= @student.name %></span>さん
-            <span class="text-sm text-gray-500">
-              （生徒番号: <%= @student.student_number %>）
-            </span>
+          </p>
+          <p class="text-xs sm:text-sm text-gray-500 mt-1">
+            生徒番号: <%= @student.student_number %>
           </p>
           <% if @campus %>
-          <p class="text-sm text-gray-500">
+          <p class="text-xs sm:text-sm text-gray-500">
             所属校舎: <span class="font-medium"><%= @campus.name %></span>
           </p>
           <% end %>
         </div>
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center">
           <%= button_to "ログアウト", student_logout_path, 
                         method: :delete,
-                        class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer border-0",
+                        class: "bg-red-600 hover:bg-red-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors cursor-pointer border-0 w-full sm:w-auto",
                         data: { turbo_confirm: "ログアウトしますか？" } %>
         </div>
       </div>
     </div>
 
     <!-- 面談予定日時 -->
-    <div class="mb-8">
+    <div class="mb-6 sm:mb-8">
       <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">面談予定日時</h2>
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900">面談予定日時</h2>
         </div>
         <div class="divide-y divide-gray-200">
           <% if @upcoming_appointments.any? %>
           <% @upcoming_appointments.each do |appointment| %>
-          <div class="px-6 py-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
+          <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-start sm:items-center justify-between">
+              <div class="flex items-start sm:items-center">
                 <div class="flex-shrink-0">
                   <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                     <span class="text-white font-medium text-sm">
@@ -49,33 +49,37 @@
                     </span>
                   </div>
                 </div>
-                <div class="ml-4">
+                <div class="ml-3 sm:ml-4">
                   <div class="text-sm font-medium text-gray-900">
                     <%= appointment.time_slot.teacher.name %>先生
                   </div>
-                  <div class="text-sm text-gray-500">
-                    <%= appointment.time_slot.date.strftime('%Y年%m月%d日') %>
-                    <%= appointment.time_slot.start_time.strftime('%H:%M') %>〜
-                    <span class="ml-2 text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                      <%= appointment.time_slot.campus.name %>
-                    </span>
+                  <div class="text-xs sm:text-sm text-gray-500 mt-1">
+                    <div class="flex flex-col sm:flex-row sm:items-center">
+                      <span><%= appointment.time_slot.date.strftime('%Y年%m月%d日') %></span>
+                      <span class="sm:ml-2"><%= appointment.time_slot.start_time.strftime('%H:%M') %>〜</span>
+                    </div>
+                    <div class="mt-1 sm:mt-0 sm:ml-2">
+                      <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                        <%= appointment.time_slot.campus.name %>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="text-sm text-gray-500">
+              <div class="text-xs sm:text-sm text-gray-500 ml-2">
                 <% if appointment.cancellable? %>
-                <span class="text-green-600">変更可能</span>
+                <span class="text-green-600 font-medium">変更可能</span>
                 <% else %>
-                <span class="text-red-600">変更不可</span>
+                <span class="text-red-600 font-medium">変更不可</span>
                 <% end %>
               </div>
             </div>
           </div>
           <% end %>
           <% else %>
-          <div class="px-6 py-8 text-center">
+          <div class="px-4 py-6 sm:px-6 sm:py-8 text-center">
             <div class="text-gray-500">
-              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
               <p class="mt-2 text-sm">予約はありません</p>
@@ -88,27 +92,28 @@
     </div>
 
     <!-- メニューカード -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-white overflow-hidden shadow-lg rounded-xl hover:shadow-2xl transition-all duration-300 border border-gray-100">
-        <div class="p-8">
-          <div class="flex h-48">
-            <div class="flex-shrink-0">
-              <div class="w-48 h-48 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center p-1 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <div class="p-4 sm:p-6 lg:p-8">
+          <!-- スマホ: 縦並び、タブレット以上: 横並び -->
+          <div class="flex flex-col md:flex-row md:h-48">
+            <div class="flex-shrink-0 mb-4 md:mb-0">
+              <div class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center p-1 shadow-lg mx-auto">
                 <%= image_tag "student-dashboard/mendan-yoyaku.png", 
                        alt: "面談予約", 
                        class: "w-full h-full object-cover object-top rounded-lg drop-shadow-lg",
                        style: "image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" %>
               </div>
             </div>
-            <div class="ml-8 flex-1 flex flex-col justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">面談予約</h3>
-                <p class="text-base text-gray-600 font-medium">講師との面談を予約する</p>
+            <div class="md:ml-8 flex-1 flex flex-col justify-between">
+              <div class="text-center md:text-left">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">面談予約</h3>
+                <p class="text-sm sm:text-base text-gray-600 font-medium">講師との面談を予約する</p>
               </div>
               <div class="mt-4">
-                <%= link_to student_teachers_path, class: "inline-flex items-center text-blue-600 hover:text-blue-700 text-base font-semibold hover:underline transition-colors duration-200" do %>
+                <%= link_to student_teachers_path, class: "inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base" do %>
                 予約画面へ
-                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="ml-2 w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
                 <% end %>
@@ -119,25 +124,26 @@
       </div>
 
       <div class="bg-white overflow-hidden shadow-lg rounded-xl hover:shadow-2xl transition-all duration-300 border border-gray-100">
-        <div class="p-8">
-          <div class="flex h-48">
-            <div class="flex-shrink-0">
-              <div class="w-48 h-48 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center p-1 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <div class="p-4 sm:p-6 lg:p-8">
+          <!-- スマホ: 縦並び、タブレット以上: 横並び -->
+          <div class="flex flex-col md:flex-row md:h-48">
+            <div class="flex-shrink-0 mb-4 md:mb-0">
+              <div class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center p-1 shadow-lg mx-auto">
                 <%= image_tag "student-dashboard/mendan-cancel.png", 
                        alt: "予約キャンセル", 
                        class: "w-full h-full object-cover object-top rounded-lg drop-shadow-lg",
                        style: "image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" %>
               </div>
             </div>
-            <div class="ml-8 flex-1 flex flex-col justify-between">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">予約キャンセル</h3>
-                <p class="text-base text-gray-600 font-medium">現在の予約状況を確認・キャンセル</p>
+            <div class="md:ml-8 flex-1 flex flex-col justify-between">
+              <div class="text-center md:text-left">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">予約キャンセル</h3>
+                <p class="text-sm sm:text-base text-gray-600 font-medium">現在の予約状況を確認・キャンセル</p>
               </div>
               <div class="mt-4">
-                <%= link_to student_appointments_list_path, class: "inline-flex items-center text-green-600 hover:text-green-700 text-base font-semibold hover:underline transition-colors duration-200" do %>
+                <%= link_to student_appointments_list_path, class: "inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 sm:px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base" do %>
                 確認画面へ
-                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="ml-2 w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
                 <% end %>
@@ -150,15 +156,15 @@
 
     <!-- 過去の面談履歴 -->
     <% if @past_appointments.any? %>
-    <div class="mt-8">
+    <div class="mt-6 sm:mt-8">
       <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-medium text-gray-900">過去の面談履歴</h2>
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900">過去の面談履歴</h2>
         </div>
         <div class="divide-y divide-gray-200">
           <% @past_appointments.each do |appointment| %>
-          <div class="px-6 py-4">
-            <div class="flex items-center">
+          <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-start sm:items-center">
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center">
                   <span class="text-white font-medium text-sm">
@@ -166,16 +172,20 @@
                   </span>
                 </div>
               </div>
-              <div class="ml-4">
+              <div class="ml-3 sm:ml-4">
                 <div class="text-sm font-medium text-gray-900">
                   <%= appointment.time_slot.teacher.name %>先生
                 </div>
-                <div class="text-sm text-gray-500">
-                  <%= appointment.time_slot.date.strftime('%Y年%m月%d日') %>
-                  <%= appointment.time_slot.start_time.strftime('%H:%M') %>〜
-                  <span class="ml-2 text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                    <%= appointment.time_slot.campus.name %>
-                  </span>
+                <div class="text-xs sm:text-sm text-gray-500 mt-1">
+                  <div class="flex flex-col sm:flex-row sm:items-center">
+                    <span><%= appointment.time_slot.date.strftime('%Y年%m月%d日') %></span>
+                    <span class="sm:ml-2"><%= appointment.time_slot.start_time.strftime('%H:%M') %>〜</span>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:ml-2">
+                    <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                      <%= appointment.time_slot.campus.name %>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
