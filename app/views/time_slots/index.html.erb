@@ -1,33 +1,33 @@
-<div class="min-h-screen bg-gray-50 py-8" data-controller="time-slots">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-8" data-controller="time-slots">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- ヘッダー -->
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 mb-2">
+    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+      <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex-1">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
             📅 面談枠設定
           </h1>
-          <p class="text-gray-600">
+          <p class="text-sm sm:text-base text-gray-600">
             <span class="font-semibold text-green-600"><%= @current_teacher.name %></span>の面談可能時間を設定してください
           </p>
         </div>
 
-        <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
           <!-- 校舎選択 -->
-          <%= form_with url: time_slots_path, method: :get, local: true, class: "flex items-center space-x-3" do |form| %>
+          <%= form_with url: time_slots_path, method: :get, local: true, class: "flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3" do |form| %>
           <%= form.hidden_field :week_start, value: @start_date %>
-          <label class="text-sm font-medium text-gray-700">校舎:</label>
+          <label class="text-sm font-medium text-gray-700 sm:whitespace-nowrap">校舎:</label>
           <%= form.select :campus_id, 
                   options_from_collection_for_select(@campuses, :id, :name, @selected_campus&.id),
                   { prompt: "校舎を選択" },
                   { 
-                    class: "rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500",
+                    class: "w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500",
                     onchange: "this.form.submit();"
                   } %>
           <% end %>
 
           <!-- ダッシュボードに戻るボタン -->
-          <%= link_to staff_dashboard_path, class: "bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center" do %>
+          <%= link_to staff_dashboard_path, class: "bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" do %>
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
@@ -39,35 +39,39 @@
 
     <!-- 週ナビゲーション -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-      <div class="flex items-center justify-between">
-        <!-- 前の週 -->
-        <%= link_to time_slots_path(week_start: (@start_date - 1.week), campus_id: @selected_campus&.id), 
-            class: "flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors" do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        前の週
-        <% end %>
+      <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+        <!-- 前の週ボタン -->
+        <div class="flex justify-start">
+          <%= link_to time_slots_path(week_start: (@start_date - 1.week), campus_id: @selected_campus&.id), 
+              class: "flex items-center px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          前の週
+          <% end %>
+        </div>
 
         <!-- 現在の週 -->
-        <div class="text-center">
-          <h2 class="text-lg font-semibold text-gray-900">
+        <div class="text-center flex-1">
+          <h2 class="text-base sm:text-lg font-semibold text-gray-900">
             <%= @start_date.strftime('%Y年%m月%d日') %> 〜 <%= (@start_date + 6.days).strftime('%m月%d日') %>
           </h2>
         </div>
 
-        <!-- 次の週 -->
-        <%= link_to time_slots_path(week_start: (@start_date + 1.week), campus_id: @selected_campus&.id), 
-            class: "flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors" do %>
-        次の週
-        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-        <% end %>
+        <!-- 次の週ボタン -->
+        <div class="flex justify-end">
+          <%= link_to time_slots_path(week_start: (@start_date + 1.week), campus_id: @selected_campus&.id), 
+              class: "flex items-center px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors" do %>
+          次の週
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <% end %>
+        </div>
       </div>
 
       <!-- 今週・来週・再来週ボタン -->
-      <div class="flex justify-center space-x-2 mt-4">
+      <div class="flex flex-wrap justify-center gap-2 mt-4">
         <%= link_to "今週", time_slots_path(week_start: Date.current.beginning_of_week(:monday), campus_id: @selected_campus&.id),
             class: "px-3 py-1 text-xs font-medium rounded-full #{'bg-green-100 text-green-800' if @start_date == Date.current.beginning_of_week(:monday)} #{'bg-gray-100 text-gray-600 hover:bg-gray-200' unless @start_date == Date.current.beginning_of_week(:monday)} transition-colors" %>
         <%= link_to "来週", time_slots_path(week_start: (Date.current + 1.week).beginning_of_week(:monday), campus_id: @selected_campus&.id),

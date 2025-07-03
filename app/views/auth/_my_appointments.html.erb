@@ -1,8 +1,37 @@
-<div class="space-y-8">
+<div class="space-y-6 sm:space-y-8">
   <!-- 今日の予約 -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-4 py-4 border-b border-gray-200">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 flex items-center justify-center">
+            <i class="fas fa-clock text-red-500 mr-2"></i>
+            <% if @selected_teacher == @current_user %>
+            今日の自分の予定 (<%= Date.current.strftime('%m/%d') %>)
+            <% else %>
+            今日の<%= @selected_teacher.name %>先生の予定 (<%= Date.current.strftime('%m/%d') %>)
+            <% end %>
+          </h2>
+        </div>
+        <!-- 講師選択プルダウン -->
+        <div class="mb-2">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex flex-col space-y-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700 text-center">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm w-full",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900 flex items-center">
           <i class="fas fa-clock text-red-500 mr-2"></i>
           <% if @selected_teacher == @current_user %>
@@ -27,12 +56,54 @@
         </div>
       </div>
     </div>
-    <div class="px-6 py-4">
+    <div class="px-4 py-4">
       <% if @today_appointments.any? %>
       <div class="space-y-3">
         <% @today_appointments.each do |time_slot| %>
         <% appointment = time_slot.appointment %>
-        <div class="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div class="flex items-center justify-center mb-3">
+            <div class="bg-yellow-500 text-white rounded-lg px-4 py-3 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-lg font-bold text-white">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mb-4">
+            <p class="font-semibold text-gray-900 text-lg">
+              <%= appointment.student.name %>さん
+              <% if appointment.student.campus %>
+              (<%= appointment.student.campus.name %>)
+              <% end %>
+            </p>
+            <% if appointment.proxy_booking? %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mt-2">
+              代理予約
+            </span>
+            <% end %>
+          </div>
+          <div class="text-center">
+            <% if appointment.interview_record %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-sm font-medium inline-flex items-center justify-center" do %>
+            <i class="fas fa-check-circle mr-2"></i>
+            記録済み
+            <% end %>
+            <% else %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium inline-flex items-center justify-center" do %>
+            <i class="fas fa-edit mr-2"></i>
+            記録追加
+            <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div class="flex items-center space-x-4">
             <div class="bg-yellow-500 text-white rounded-lg px-3 py-2 text-center">
               <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
@@ -79,9 +150,38 @@
   </div>
 
   <!-- 今後の予約 -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-4 py-4 border-b border-gray-200">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 flex items-center justify-center">
+            <i class="fas fa-calendar-plus text-blue-500 mr-2"></i>
+            <% if @selected_teacher == @current_user %>
+            今後の自分の予定
+            <% else %>
+            今後の<%= @selected_teacher.name %>先生の予定
+            <% end %>
+          </h2>
+        </div>
+        <!-- 講師選択プルダウン -->
+        <div class="mb-2">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex flex-col space-y-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700 text-center">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm w-full",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900 flex items-center">
           <i class="fas fa-calendar-plus text-blue-500 mr-2"></i>
           <% if @selected_teacher == @current_user %>
@@ -106,12 +206,39 @@
         </div>
       </div>
     </div>
-    <div class="px-6 py-4">
+    <div class="px-4 py-4">
       <% if @upcoming_appointments.any? %>
       <div class="space-y-4">
         <% @upcoming_appointments.each do |time_slot| %>
         <% appointment = time_slot.appointment %>
-        <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="flex items-center justify-center mb-3">
+            <div class="bg-blue-500 text-white rounded-lg px-4 py-3 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-lg font-bold text-white">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mb-4">
+            <p class="font-semibold text-gray-900 text-lg">
+              <%= appointment.student.name %>さん
+              <% if appointment.student.campus %>
+              (<%= appointment.student.campus.name %>)
+              <% end %>
+            </p>
+            <% if appointment.proxy_booking? %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mt-2">
+              代理予約
+            </span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div class="flex items-center space-x-4">
             <div class="bg-blue-500 text-white rounded-lg px-3 py-2 text-center">
               <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
@@ -150,9 +277,38 @@
   </div>
 
   <!-- 過去の面談履歴 -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-4 py-4 border-b border-gray-200">
+      <!-- スマホ用レイアウト -->
+      <div class="block sm:hidden">
+        <div class="text-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 flex items-center justify-center">
+            <i class="fas fa-history text-gray-500 mr-2"></i>
+            <% if @selected_teacher == @current_user %>
+            過去の面談履歴
+            <% else %>
+            <%= @selected_teacher.name %>先生の履歴
+            <% end %>
+          </h2>
+        </div>
+        <!-- 講師選択プルダウン -->
+        <div class="mb-2">
+          <%= form_with url: staff_dashboard_path, method: :get, local: true, class: "flex flex-col space-y-2" do |form| %>
+          <%= form.hidden_field :tab, value: @tab %>
+          <label class="text-sm font-medium text-gray-700 text-center">講師選択:</label>
+          <%= form.select :teacher_id, 
+                  options_from_collection_for_select(@available_teachers, :id, :name, @selected_teacher.id),
+                  {},
+                  { 
+                    class: "rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm w-full",
+                    onchange: "this.form.submit();"
+                  } %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- PC用レイアウト -->
+      <div class="hidden sm:flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900 flex items-center">
           <i class="fas fa-history text-gray-500 mr-2"></i>
           <% if @selected_teacher == @current_user %>
@@ -177,12 +333,54 @@
         </div>
       </div>
     </div>
-    <div class="px-6 py-4">
+    <div class="px-4 py-4">
       <% if @past_appointments.any? %>
       <div class="space-y-3">
         <% @past_appointments.each do |time_slot| %>
         <% appointment = time_slot.appointment %>
-        <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+
+        <!-- スマホ用レイアウト -->
+        <div class="block sm:hidden bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-center mb-3">
+            <div class="bg-gray-500 text-white rounded-lg px-4 py-3 text-center">
+              <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
+              <div class="text-lg font-bold text-white">
+                <%= time_slot.start_time.strftime('%H:%M') %>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mb-4">
+            <p class="font-semibold text-gray-900 text-lg">
+              <%= appointment.student.name %>さん
+              <% if appointment.student.campus %>
+              (<%= appointment.student.campus.name %>)
+              <% end %>
+            </p>
+            <% if appointment.proxy_booking? %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mt-2">
+              代理予約
+            </span>
+            <% end %>
+          </div>
+          <div class="text-center">
+            <% if appointment.interview_record %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-sm font-medium inline-flex items-center justify-center" do %>
+            <i class="fas fa-check-circle mr-2"></i>
+            記録済み
+            <% end %>
+            <% else %>
+            <%= link_to interview_record_path(appointment), 
+                      class: "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium inline-flex items-center justify-center" do %>
+            <i class="fas fa-edit mr-2"></i>
+            記録追加
+            <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- PC用レイアウト -->
+        <div class="hidden sm:flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <div class="flex items-center space-x-4">
             <div class="bg-gray-500 text-white rounded-lg px-3 py-2 text-center">
               <div class="text-xs font-medium"><%= time_slot.date.strftime('%m/%d') %></div>
