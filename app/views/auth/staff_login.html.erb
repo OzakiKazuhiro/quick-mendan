@@ -50,6 +50,15 @@
       <%= link_to "生徒ログインはこちら", student_login_path, class: "text-blue-600 hover:text-blue-500 block" %>
       <%= link_to "ホームに戻る", root_path, class: "text-green-600 hover:text-green-500 block" %>
 
+      <!-- テストログイン情報 -->
+      <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+        <p class="text-sm text-yellow-800 font-medium mb-2">テストログイン用</p>
+        <p class="text-xs text-yellow-700">
+          ユーザー名: <span class="font-mono">shibaguchi</span><br>
+          パスワード: <span class="font-mono">password-shibaguchi</span>
+        </p>
+      </div>
+
       <% if current_teacher %>
       <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
         <p class="text-sm text-blue-700">
