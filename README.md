@@ -96,61 +96,6 @@
 詳細なデータベース設計は以下のリンクで確認できます：
 [ER 図（GitHub）](https://liambx.com/erd/p/github.com/OzakiKazuhiro/quick-mendan/blob/main/db/schema.rb?showMode=ALL_FIELDS)
 
-## 🚀 セットアップ方法
-
-### 前提条件
-
-- Ruby 3.4 以上
-- Rails 8.0.2
-- Node.js（TailwindCSS 用）
-
-### 1. リポジトリのクローン
-
-```bash
-git clone https://github.com/OzakiKazuhiro/quick-mendan.git
-cd quick-mendan
-```
-
-### 2. 依存関係のインストール
-
-```bash
-bundle install
-```
-
-### 3. データベースのセットアップ
-
-```bash
-# データベース作成
-bin/rails db:create
-
-# マイグレーション実行
-bin/rails db:migrate
-
-# シードデータ投入（テストデータ）
-bin/rails db:seed
-```
-
-### 4. 開発サーバーの起動
-
-```bash
-bin/dev
-```
-
-サーバーが起動したら、`http://localhost:3000`でアクセスできます。
-
-## 🧪 テスト実行
-
-```bash
-# 全テストの実行
-bundle exec rspec
-
-# 特定のテストファイルの実行
-bundle exec rspec spec/models/student_spec.rb
-
-# コード品質チェック
-bundle exec rubocop
-```
-
 ## 🔐 テスト用ログイン情報
 
 ### 管理者
@@ -208,22 +153,5 @@ bundle exec rubocop
 2. **Phase 2**: 面談記録、通知機能
 3. **Phase 3**: 管理機能、統計機能
 4. **Phase 4**: 運用改善、機能拡張
-
-## 🚀 将来の拡張予定
-
-- モバイルアプリ対応
-- 校舎間連携機能
-- 詳細な統計・分析機能
-- 外部システム連携（学校管理システム等）
-
-## 📞 お問い合わせ
-
-このプロジェクトについて質問やフィードバックがございましたら、GitHub の Issues または Pull Requests でお気軽にお声がけください。
-
-## 📄 ライセンス
-
-このプロジェクトは MIT ライセンスの下で公開されています。
-
----
 
 **Quick Mendan** - 面談予約をシンプルに、効率的に。
